@@ -1,7 +1,7 @@
 ﻿using Contracts;
 using Entities.DatabaseUtils;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using MojeWidelo_WebApi.Filters;
 using Repository;
 using System.Reflection;
 
@@ -34,6 +34,7 @@ namespace MojeWidelo_WebApi.Extensions
                     Contact = new Microsoft.OpenApi.Models.OpenApiContact
                     {
                         Name = "Niziołek Norbert, Nowak Mikołaj, Saj Patryk, Sosnowski Jakub, Zagórski Mateusz",
+                        Email = "jakub.sosnowski2001@gmail.com"
                     },
                 });
 
@@ -48,6 +49,11 @@ namespace MojeWidelo_WebApi.Extensions
 
                 Array.ForEach(xmlDocs, d => c.IncludeXmlComments(d));
             });
+        }
+
+        public static void ConfigureFilters(this IServiceCollection services)
+        {
+            services.AddScoped<ModelValidationFilter>();
         }
     }
 }
