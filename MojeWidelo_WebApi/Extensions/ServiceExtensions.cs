@@ -1,7 +1,9 @@
 ﻿using Contracts;
 using Entities.DatabaseUtils;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Repository;
+using System.Reflection;
 
 namespace MojeWidelo_WebApi.Extensions
 {
@@ -18,6 +20,34 @@ namespace MojeWidelo_WebApi.Extensions
         {
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<IUsersRepository, UsersRepository>();
+        }
+
+        public static void ConfigureSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "MojeWideło API",
+                    Version = "v1",
+                    TermsOfService = new Uri("https://ww2.mini.pw.edu.pl/"),
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Niziołek Norbert, Nowak Mikołaj, Saj Patryk, Sosnowski Jakub, Zagórski Mateusz",
+                    },
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+
+                var currentAssembly = Assembly.GetExecutingAssembly();
+                var xmlDocs = currentAssembly.GetReferencedAssemblies()
+                .Select(x => Path.Combine(Path.GetDirectoryName(currentAssembly.Location), $"{x.Name}.xml"))
+                .Where(f => File.Exists(f)).ToArray();
+
+                Array.ForEach(xmlDocs, d => c.IncludeXmlComments(d));
+            });
         }
     }
 }

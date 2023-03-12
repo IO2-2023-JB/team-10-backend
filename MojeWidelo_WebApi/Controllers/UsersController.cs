@@ -17,7 +17,7 @@ namespace MojeWidelo_WebApi.Controllers
         }
 
         /// <summary>
-        /// Users data retrieval
+        /// *Endpoint for testing*
         /// </summary>
         /// <returns>List of all users</returns>
         /// <response code="200">OK</response>
