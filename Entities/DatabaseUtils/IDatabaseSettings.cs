@@ -4,6 +4,12 @@
     {
         string DatabaseName { get; set; }
         string ConnectionString { get; set; }
-        string TestCollectionName { get; set; }
+
+
+        #region Collections
+        
+        string UsersCollectionName { get; set; }
+        
+        #endregion
     }
 }

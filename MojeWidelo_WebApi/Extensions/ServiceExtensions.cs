@@ -1,5 +1,7 @@
-﻿using Entities.DatabaseUtils;
+﻿using Contracts;
+using Entities.DatabaseUtils;
 using Microsoft.Extensions.Options;
+using Repository;
 
 namespace MojeWidelo_WebApi.Extensions
 {
@@ -10,6 +12,12 @@ namespace MojeWidelo_WebApi.Extensions
             services.Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)));
             services.AddSingleton<IDatabaseSettings>(provider =>
                 provider.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+        }
+
+        public static void ConfigureRepository(this IServiceCollection services)
+        {
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
         }
     }
 }
