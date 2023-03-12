@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -10,10 +11,12 @@ namespace MojeWidelo_WebApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
 
-        public UsersController(IRepositoryWrapper repository)
+        public UsersController(IRepositoryWrapper repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -24,11 +27,12 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpGet]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<User>))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<UserDTO>))]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _repository.UsersRepository.GetAll();
-            return Ok(users);
+            var result = _mapper.Map<IEnumerable<UserDTO>>(users);
+            return Ok(result);
         }
 
         /// <summary>
@@ -40,11 +44,12 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpGet("{id}", Name = "UserById")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(User))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _repository.UsersRepository.GetById(id);
-            return Ok(user);
+            var result = _mapper.Map<UserDTO>(user);
+            return Ok(result);
         }
     }
 }
