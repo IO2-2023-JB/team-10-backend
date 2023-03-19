@@ -54,6 +54,7 @@ namespace MojeWidelo_WebApi.Extensions
         public static void ConfigureFilters(this IServiceCollection services)
         {
             services.AddScoped<ModelValidationFilter>();
+            services.AddScoped<ObjectIdValidationFilter>();
         }
     }
 }

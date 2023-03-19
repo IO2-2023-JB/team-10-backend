@@ -1,22 +1,15 @@
 ﻿using Entities.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace Entities.Models
+namespace Entities.Data
 {
-    public class UserDTO
+    public abstract class UserBaseDTO
     {
-        /// <summary>
-        ///     Unique identifier
-        /// </summary>
-        /// <example>640df935f1afe5d21b891805</example>
-        public string Id
-        {
-            get; set;
-        }
-
         /// <summary>
         ///     Email address
         /// </summary>
         /// <example>john.doe@mail.com</example>
+        [Required(ErrorMessage = "Email is required")]
         public string Email
         {
             get; set;
@@ -26,6 +19,7 @@ namespace Entities.Models
         ///     Nickname
         /// </summary>
         /// <example>johnny123</example>
+        [Required(ErrorMessage = "Nickname is required")]
         public string Nickname
         {
             get; set;
@@ -35,6 +29,7 @@ namespace Entities.Models
         ///     Name
         /// </summary>
         /// <example>John</example>
+        [Required(ErrorMessage = "Name is required")]
         public string Name
         {
             get; set;
@@ -44,7 +39,31 @@ namespace Entities.Models
         ///     Surname
         /// </summary>
         /// <example>Doe</example>
+        [Required(ErrorMessage = "Surname is required")]
         public string Surname
+        {
+            get; set;
+        }
+
+        /// <summary>
+        ///     User type: Simple, Creator, Administrator
+        /// </summary>
+        /// <example>Creator</example>
+        [Required(ErrorMessage = "UserType is required")]
+        public UserType UserType
+        {
+            get; set;
+        }
+    }
+
+    public class UserDTO : UserBaseDTO
+    {
+        /// <summary>
+        ///     Unique identifier
+        /// </summary>
+        /// <example>640df935f1afe5d21b891805</example>
+        [Required(ErrorMessage = "Id is required")]
+        public string Id
         {
             get; set;
         }
@@ -57,14 +76,14 @@ namespace Entities.Models
         {
             get; set;
         }
+    }
 
-        /// <summary>
-        ///     User type: Simple, Creator, Administrator
-        /// </summary>
-        /// <example>Creator</example>
-        public UserType UserType
-        {
-            get; set;
-        }
+
+    public class UpdateUserDTO : UserDTO
+    {
+    }
+
+    public class RegisterDTO : UserBaseDTO
+    {
     }
 }

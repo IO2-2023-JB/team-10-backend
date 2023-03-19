@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using MongoDB.Bson;
 using System.Net.Mime;
 
 namespace MojeWidelo_WebApi.Filters
@@ -11,7 +12,7 @@ namespace MojeWidelo_WebApi.Filters
     ///     TYLKO dla HttpPOST i HttpPUT!!!
     ///     Dodać nagłówek ServiceFilter do metody w kontrolerze:
     ///     [HttpPost]
-    ///     [ServiceFilter(typeof(ValidationFilterAttribute))]
+    ///     [ServiceFilter(typeof(ModelValidationFilter))]
     ///     public async Task<IActionResult> CreateUser([FromBody] UserDTO user)
     /// </example>
     public class ModelValidationFilter : IActionFilter

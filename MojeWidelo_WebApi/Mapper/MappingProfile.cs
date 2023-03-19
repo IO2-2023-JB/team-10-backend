@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using Entities.Data;
+using Entities.Models;
 
 namespace MojeWidelo_WebApi.Mapper
 {
@@ -7,6 +8,8 @@ namespace MojeWidelo_WebApi.Mapper
         public MappingProfile()
         {
             CreateMap<User, UserDTO>();
+            CreateMap<UpdateUserDTO, User>();
+            CreateMap<RegisterDTO, User>();
         }
     }
 }
