@@ -17,38 +17,12 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 #endregion
 
-void ConfigureServices(IServiceCollection services)
-{
-    services.AddAuthentication(opt =>
-    {
-        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = "https://localhost:5001",
-            ValidAudience = "https://localhost:5001",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"))
-        };
-
-    });
-
-    services.AddControllers();
-}
-
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
-ConfigureServices(builder.Services);
+builder.Services.ConfigureServices();
 
 var app = builder.Build();
 
