@@ -3,14 +3,12 @@ using Contracts;
 using Entities.Data;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using MojeWidelo_WebApi.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -59,7 +57,8 @@ namespace MojeWidelo_WebApi.Controllers
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _repository.UsersRepository.GetById(id);
-            if(user == null) return NotFound();
+            if (user == null)
+                return NotFound();
             var result = _mapper.Map<UserDto>(user);
             return Ok(result);
         }
@@ -76,11 +75,13 @@ namespace MojeWidelo_WebApi.Controllers
         [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto userDto)
         {
-            var user = await _repository.UsersRepository.Update(userDto.Id, _mapper.Map<User>(userDto));
+            var user = await _repository.UsersRepository.Update(
+                userDto.Id,
+                _mapper.Map<User>(userDto)
+            );
             var result = _mapper.Map<UserDto>(user);
             return Ok(result);
         }
-
 
         /// <summary>
         /// User registration
@@ -124,13 +125,19 @@ namespace MojeWidelo_WebApi.Controllers
             }
 
             var returnedUser = await _repository.UsersRepository.FindUserByEmail(user.Email);
-            if (returnedUser == null) return NotFound();
+            if (returnedUser == null)
+                return NotFound();
             string password = returnedUser.Password;
 
             if (HashHelper.ValidatePassword(user.Password, password))
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"));
-                var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var secretKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes("hasloooo1234$#@!")
+                );
+                var signingCredentials = new SigningCredentials(
+                    secretKey,
+                    SecurityAlgorithms.HmacSha256
+                );
 
                 var tokenOptions = new JwtSecurityToken(
                     issuer: "https://localhost:5001",
