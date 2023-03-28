@@ -2,7 +2,7 @@
 using Entities.Data.User;
 using Entities.DatabaseUtils;
 using Entities.Models;
-using MongoDB.Driver;
+using Microsoft.AspNetCore.Http;
 
 namespace Repository
 {
@@ -26,5 +26,24 @@ namespace Repository
 			}
 			return user;
 		}
-	}
+
+        public async Task<string> UploadAvatar(User user, IFormFile file)
+        {
+            var fileName = user.Id;
+            using var stream = await _bucket.OpenUploadStreamAsync(fileName, new MongoDB.Driver.GridFS.GridFSUploadOptions()
+            {
+                Metadata = new MongoDB.Bson.BsonDocument()
+                {
+                    { "user", user.Id },
+                    { "Type", file.ContentType.ToString() }
+                }
+            });
+
+            var id = stream.Id; // Unique id of the file
+            file.CopyTo(stream);
+            await stream.CloseAsync();
+
+            return id.ToString();
+        }
+    }
 }

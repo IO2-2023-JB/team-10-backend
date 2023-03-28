@@ -1,10 +1,12 @@
 ﻿using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace Contracts
 {
-	public interface IRepositoryBase<T>
-	{
-		IMongoCollection<T> _collection { get; }
+    public interface IRepositoryBase<T>
+    {
+        IMongoCollection<T> _collection { get; }
+        IGridFSBucket _bucket { get; }
 
 		Task<IEnumerable<T>> GetAll();
 		Task<T> GetById(string id);

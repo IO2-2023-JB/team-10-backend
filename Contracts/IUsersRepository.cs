@@ -8,5 +8,6 @@ namespace Contracts
 		Task<User> FindUserByEmail(string email);
 
 		UserDto CheckPermissionToGetAccountBalance(string requesterId, UserDto userDto);
+	        Task<string> UploadAvatar(User user, IFormFile avatarImage);
 	}
 }
