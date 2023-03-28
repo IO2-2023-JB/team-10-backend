@@ -44,7 +44,7 @@ namespace MojeWidelo_WebApi.Extensions
 
                 var currentAssembly = Assembly.GetExecutingAssembly();
                 var xmlDocs = currentAssembly.GetReferencedAssemblies()
-                .Select(x => Path.Combine(Path.GetDirectoryName(currentAssembly.Location), $"{x.Name}.xml"))
+                .Select(x => Path.Combine(Path.GetDirectoryName(currentAssembly.Location)!, $"{x.Name}.xml"))
                 .Where(f => File.Exists(f)).ToArray();
 
                 Array.ForEach(xmlDocs, d => c.IncludeXmlComments(d));

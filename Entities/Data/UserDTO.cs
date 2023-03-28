@@ -78,7 +78,6 @@ namespace Entities.Data
         {
             get; set;
         }
-    }
 
         /// <summary>
         ///     Subscriptions counter
@@ -105,7 +104,5 @@ namespace Entities.Data
         {
             get; set;
         }
-
-        //avatarbinary
     }
 }

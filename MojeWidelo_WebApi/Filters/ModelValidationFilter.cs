@@ -7,14 +7,9 @@ namespace MojeWidelo_WebApi.Filters
 {
     /// <summary>
     ///     Filtr do HttpPut i HttpPost walidujący przesyłanego obiektu
-    /// </summary>
-    /// <example>
-    ///     TYLKO dla HttpPOST i HttpPUT!!!
     ///     Dodać nagłówek ServiceFilter do metody w kontrolerze:
-    ///     [HttpPost]
     ///     [ServiceFilter(typeof(ModelValidationFilter))]
-    ///     public async Task<IActionResult> CreateUser([FromBody] UserDTO user)
-    /// </example>
+    /// </summary>
     public class ModelValidationFilter : IActionFilter
     {
         public void OnActionExecuting(ActionExecutingContext context)
