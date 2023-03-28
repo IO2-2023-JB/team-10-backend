@@ -38,5 +38,10 @@ namespace Entities.Models
         {
             get; set;
         }
+
+        public int SubscriptionsCount
+        {
+            get; set;
+        }
     }
 }

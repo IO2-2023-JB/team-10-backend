@@ -83,12 +83,11 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         [HttpPost("register", Name = "registerUser")]
         [ServiceFilter(typeof(ModelValidationFilter))]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO registerDto)
         {
             var user = await _repository.UsersRepository.Create(_mapper.Map<User>(registerDto));
             var result = _mapper.Map<User>(user);
-            return Ok(result);
+            return Ok();
         }
 
         /// <summary>

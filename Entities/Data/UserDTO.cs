@@ -80,6 +80,15 @@ namespace Entities.Data
         }
     }
 
+        /// <summary>
+        ///     Subscriptions counter
+        /// </summary>
+        /// <example>12000</example>
+        public int SubscriptionsCount
+        {
+            get; set;
+        }
+    }
 
     public class UpdateUserDTO : UserDTO
     {
