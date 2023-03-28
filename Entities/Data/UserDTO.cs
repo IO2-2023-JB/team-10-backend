@@ -1,7 +1,4 @@
-﻿using Entities.Enums;
-using System.ComponentModel.DataAnnotations;
-
-namespace Entities.Data
+﻿namespace Entities.Data
 {
     public abstract class UserBaseDto
     {
