@@ -1,9 +1,13 @@
 ﻿using Contracts;
 using Entities.DatabaseUtils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using Repository;
 using System.Reflection;
+using System.Text;
 
 namespace MojeWidelo_WebApi.Extensions
 {
@@ -49,6 +53,48 @@ namespace MojeWidelo_WebApi.Extensions
 
                 Array.ForEach(xmlDocs, d => c.IncludeXmlComments(d));
             });
+        }
+
+        public static void ConfigureServices(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCORS", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = "https://localhost:5001",
+                    ValidAudience = "https://localhost:5001",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"))
+                };
+
+            });
+
+            services.AddControllers();
         }
 
         public static void ConfigureFilters(this IServiceCollection services)
