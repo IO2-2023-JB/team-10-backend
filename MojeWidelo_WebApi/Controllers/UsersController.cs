@@ -14,7 +14,6 @@ using System.Text;
 
 namespace MojeWidelo_WebApi.Controllers
 {
-    [Route("api/")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -35,7 +34,6 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpGet("getAll", Name = "GetAll")]
-        [Authorize]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<UserDTO>))]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -54,7 +52,6 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="401">Unauthorized</response>
         /// <response code="404">Not found</response>
         [HttpGet("user/{id}", Name = "getUserById")]
-        [Authorize]
         [ServiceFilter(typeof(ObjectIdValidationFilter))]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
         public async Task<IActionResult> GetUserById(string id)
@@ -73,7 +70,6 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpPut("user", Name = "updateUser")]
-        [Authorize]
         [ServiceFilter(typeof(ModelValidationFilter))]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDTO userDTO)
@@ -92,6 +88,7 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad request</response>
         [HttpPost("register", Name = "registerUser")]
+        [AllowAnonymous]
         [ServiceFilter(typeof(ModelValidationFilter))]
         [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO registerDto)
@@ -108,7 +105,6 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpDelete("user/{id}", Name = "deleteUser")]
-        [Authorize]
         [ServiceFilter(typeof(ObjectIdValidationFilter))]
         public async Task<IActionResult> DeleteUser(string id)
         {
@@ -117,6 +113,7 @@ namespace MojeWidelo_WebApi.Controllers
         }
 
         [HttpPost, Route("login")]
+        [AllowAnonymous]
         public IActionResult Login([FromBody] LoginModel user)
         {
             if (user == null)

@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities.DatabaseUtils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
@@ -56,6 +57,13 @@ namespace MojeWidelo_WebApi.Extensions
 
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
             services.AddCors(options =>
             {
                 options.AddPolicy("EnableCORS", builder =>
