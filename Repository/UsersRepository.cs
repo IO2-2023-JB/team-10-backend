@@ -1,7 +1,6 @@
 ﻿using Contracts;
 using Entities.DatabaseUtils;
 using Entities.Models;
-using MongoDB.Driver;
 
 namespace Repository
 {
