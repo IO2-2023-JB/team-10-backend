@@ -1,14 +1,24 @@
-﻿using System.Net.Mime;
+﻿using AutoMapper;
+using Contracts;
+using Entities.Data;
+using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using MojeWidelo_WebApi.Filters;
+using MojeWidelo_WebApi.Helpers;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mime;
+using System.Security.Claims;
 using System.Text;
 
 namespace MojeWidelo_WebApi.Controllers
 {
 	[ApiController]
-    public class UsersController : BaseController
-    {
-        public UsersController(IRepositoryWrapper repository, IMapper mapper) : base(repository, mapper)
-        {
-        }
+	public class UsersController : BaseController
+	{
+		public UsersController(IRepositoryWrapper repository, IMapper mapper)
+			: base(repository, mapper) { }
 
 		/// <summary>
 		/// *Endpoint for testing*
@@ -115,6 +125,13 @@ namespace MojeWidelo_WebApi.Controllers
 				return NotFound();
 			string password = returnedUser.Password;
 
+			var claims = new List<Claim>()
+			{
+				new Claim(ClaimTypes.Role, returnedUser.UserType.ToString()),
+				new Claim(ClaimTypes.NameIdentifier, returnedUser.Id),
+				new Claim(ClaimTypes.Name, returnedUser.Nickname),
+			};
+
 			if (HashHelper.ValidatePassword(user.Password, password))
 			{
 				var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"));
@@ -123,7 +140,7 @@ namespace MojeWidelo_WebApi.Controllers
 				var tokenOptions = new JwtSecurityToken(
 					issuer: "https://localhost:5001",
 					audience: "https://localhost:5001",
-					claims: new List<Claim>(),
+					claims: claims,
 					signingCredentials: signingCredentials
 				);
 
