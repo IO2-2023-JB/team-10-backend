@@ -12,7 +12,7 @@ namespace Entities.Data
             get; set; 
         }
 
-        public string Description
+        public string? Description
         {
             get; set;
         }
@@ -22,7 +22,7 @@ namespace Entities.Data
             get; set;
         }
 
-        public IEnumerable<string> Tags
+        public IEnumerable<string>? Tags
         {
             get; set;
         }
