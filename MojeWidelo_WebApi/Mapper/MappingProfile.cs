@@ -10,7 +10,7 @@ namespace MojeWidelo_WebApi.Mapper
         {
             CreateMap<User, UserDto>();
             CreateMap<UpdateUserDto, User>();
-            CreateMap<RegisterDto, User>()
+            CreateMap<RegisterRequestDTO, User>()
                 .ForMember(
                     user => user.Password,
                     opt => opt.MapFrom(register => HashHelper.HashPassword(register.Password))
