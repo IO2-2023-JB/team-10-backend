@@ -87,12 +87,6 @@ namespace Entities.Data
         {
             get; set;
         }
-
-        // TODO: password should be there? it is in registerDTO
-        public string Password
-        {
-            get; set;
-        }
     }
 
     public class UpdateUserDTO : UserDTO

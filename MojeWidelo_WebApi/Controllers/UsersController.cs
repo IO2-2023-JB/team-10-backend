@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using MojeWidelo_WebApi.Helpers;
-using MojeWidelo_WebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
 using System.Runtime.InteropServices;
@@ -116,7 +115,8 @@ namespace MojeWidelo_WebApi.Controllers
 
         [HttpPost, Route("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginModel user)
+        [ServiceFilter(typeof(ModelValidationFilter))]
+        public async Task<IActionResult> Login([FromBody] LoginDTO user)
         {
             if (user == null)
             {
@@ -125,15 +125,9 @@ namespace MojeWidelo_WebApi.Controllers
 
             var returnedUser = await _repository.UsersRepository.FindUserByEmail(user.Email);
             if (returnedUser == null) return NotFound();
-            string password = _mapper.Map<UserDTO>(returnedUser).Password;
+            string password = returnedUser.Password;
 
-
-            // string userpassword = HashHelper.HashPassword(user.Password);
-
-            // BREAKPOINT THERE TO CHECK IF PASSWORD == USERPASSWORD
-
-            // TODO: use HashHelper.ValidatePassword there, when it starts working
-            if (password == user.Password)
+            if (HashHelper.ValidatePassword(user.Password, password))
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"));
                 var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -147,7 +141,7 @@ namespace MojeWidelo_WebApi.Controllers
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                return Ok(new { Token = tokenString });
+                return Ok(new LoginResponseDTO(tokenString));
             }
 
             return Unauthorized();
