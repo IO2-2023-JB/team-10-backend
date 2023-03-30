@@ -19,8 +19,13 @@ namespace MojeWidelo_WebApi.Controllers
 
         protected async Task<User> GetUserFromToken()
         {
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserIdFromToken();
             return await _repository.UsersRepository.GetById(userId);
+        }
+
+        protected string GetUserIdFromToken()
+        {
+            return HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
     }
 }

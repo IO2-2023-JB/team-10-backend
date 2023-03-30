@@ -39,17 +39,17 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <summary>
 		/// Users data retrieval
 		/// </summary>
-		/// <param name="id"></param>
 		/// <returns>User data</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
 		/// <response code="404">Not found</response>
-		[HttpGet("user/{id}", Name = "getUserById")]
-		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[HttpGet("user/{id?}", Name = "getUserById")]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
-		public async Task<IActionResult> GetUserById(string id)
+		public async Task<IActionResult> GetUserById(string? id = null)
 		{
+			id ??= GetUserIdFromToken();
+
 			var user = await _repository.UsersRepository.GetById(id);
 			if (user == null)
 				return NotFound();
