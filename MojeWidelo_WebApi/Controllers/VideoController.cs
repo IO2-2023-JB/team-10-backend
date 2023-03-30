@@ -72,5 +72,26 @@ namespace MojeWidelo_WebApi.Controllers
             var result = _mapper.Map<VideoMetadataDTO>(video);
             return Ok(result);
         }
+
+
+        /// <summary>
+        /// Video metadata retrieval
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <response code="200">Ok</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="401">Unauthorised</response>
+        /// <response code="404">Not found</response>
+        [HttpGet("video-metadata")]
+        [ServiceFilter(typeof(ObjectIdValidationFilter))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDTO))]
+        public async Task<IActionResult> GetVideoMetadataById(string id)
+        {
+            var video = await _repository.VideoRepository.GetById(id);
+            if (video == null) return NotFound();
+            var result = _mapper.Map<VideoMetadataDTO>(video);
+            return Ok(result);
+        }
     }
 }
