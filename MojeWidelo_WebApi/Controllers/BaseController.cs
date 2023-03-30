@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Entities.Models;
 
 namespace MojeWidelo_WebApi.Controllers
 {
