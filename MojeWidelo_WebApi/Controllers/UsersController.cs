@@ -3,12 +3,15 @@ using Contracts;
 using Entities.Data;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
+using MojeWidelo_WebApi.Helpers;
 using MojeWidelo_WebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -113,14 +116,24 @@ namespace MojeWidelo_WebApi.Controllers
 
         [HttpPost, Route("login")]
         [AllowAnonymous]
-        public IActionResult Login([FromBody] LoginModel user)
+        public async Task<IActionResult> Login([FromBody] LoginModel user)
         {
             if (user == null)
             {
                 return BadRequest("Invalid client request!");
             }
 
-            if (user.Username == "NIE@MOGE" && user.Password == "ODDYCHAC")
+            var returnedUser = await _repository.UsersRepository.FindUserByEmail(user.Email);
+            if (returnedUser == null) return NotFound();
+            string password = _mapper.Map<UserDTO>(returnedUser).Password;
+
+
+            // string userpassword = HashHelper.HashPassword(user.Password);
+
+            // BREAKPOINT THERE TO CHECK IF PASSWORD == USERPASSWORD
+
+            // TODO: use HashHelper.ValidatePassword there, when it starts working
+            if (password == user.Password)
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"));
                 var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
