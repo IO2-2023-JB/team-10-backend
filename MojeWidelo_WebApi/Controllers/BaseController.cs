@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Entities.Models;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -13,6 +15,12 @@ namespace MojeWidelo_WebApi.Controllers
         {
             _repository = repository;
             _mapper = mapper;
+        }
+
+        protected async Task<User> GetUserFromToken()
+        {
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await _repository.UsersRepository.GetById(userId);
         }
     }
 }
