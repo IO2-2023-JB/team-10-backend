@@ -88,9 +88,9 @@ namespace MojeWidelo_WebApi.Controllers
         /// </summary>
         /// <param name="registerDto">User data</param>
         /// <returns></returns>
-        /// <response code="200">OK</response>
         /// <response code="201">Created</response>
         /// <response code="400">Bad request</response>
+        /// <response code="409">Conflict</response>
         [HttpPost("register", Name = "registerUser")]
         [AllowAnonymous]
         [ServiceFilter(typeof(ModelValidationFilter))]
@@ -98,7 +98,10 @@ namespace MojeWidelo_WebApi.Controllers
         {
             var existingUser = await _repository.UsersRepository.FindUserByEmail(registerDto.Email);
             if (existingUser != null)
-                return Ok(new RegisterResponseDTO("Account already exists."));
+                return StatusCode(
+                    StatusCodes.Status409Conflict,
+                    new RegisterResponseDTO("Account already exists.")
+                );
 
             var user = await _repository.UsersRepository.Create(_mapper.Map<User>(registerDto));
             return StatusCode(
