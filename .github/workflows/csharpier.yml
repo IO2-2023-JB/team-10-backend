@@ -1,13 +1,22 @@
 name: Validate PR
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ "master" ]
+
 jobs:
   check_formatting:
+
     runs-on: ubuntu-latest
-    name: Check Formatting
+
     steps:
-      - uses: actions/checkout@v2
-      - run: |
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Check code formatting
+      run: |
         dotnet tool restore
         dotnet csharpier --check .
