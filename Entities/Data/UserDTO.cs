@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data
 {
-    public abstract class UserBaseDTO
+    public abstract class UserBaseDto
     {
         /// <summary>
         ///     Email address
@@ -58,7 +58,7 @@ namespace Entities.Data
         }
     }
 
-    public class UserDTO : UserBaseDTO
+    public class UserDto : UserBaseDto
     {
         /// <summary>
         ///     Unique identifier
@@ -89,11 +89,11 @@ namespace Entities.Data
         }
     }
 
-    public class UpdateUserDTO : UserDTO
+    public class UpdateUserDto : UserDto
     {
     }
 
-    public class RegisterDTO : UserBaseDTO
+    public class RegisterDto : UserBaseDto
     {
         /// <summary>
         ///     Password

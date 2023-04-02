@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entities.Data
 {
-    public class LoginDTO
+    public class LoginDto
     {
         [EmailAddress]
         public string Email { get; set; }
@@ -14,11 +14,11 @@ namespace Entities.Data
 
     }
 
-    public class LoginResponseDTO
+    public class LoginResponseDto
     {
-        public LoginResponseDTO(string token)
+        public LoginResponseDto(string token)
         {
-            Token  = token;
+            Token = token;
         }
 
         public string Token { get; set; }
