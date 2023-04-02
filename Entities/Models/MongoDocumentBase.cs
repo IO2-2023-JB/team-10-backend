@@ -3,13 +3,10 @@ using MongoDB.Bson;
 
 namespace Entities.Models
 {
-    public abstract class MongoDocumentBase
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id
-        {
-            get; set;
-        }
-    }
+	public abstract class MongoDocumentBase
+	{
+		[BsonId]
+		[BsonRepresentation(BsonType.ObjectId)]
+		public string Id { get; set; }
+	}
 }

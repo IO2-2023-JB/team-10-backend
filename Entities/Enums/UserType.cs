@@ -1,9 +1,9 @@
 ﻿namespace Entities.Enums
 {
-    public enum UserType
-    {
-        Simple,
-        Creator,
-        Administrator,
-    }
+	public enum UserType
+	{
+		Simple,
+		Creator,
+		Administrator,
+	}
 }
