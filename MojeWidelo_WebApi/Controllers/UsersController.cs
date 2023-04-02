@@ -91,15 +91,15 @@ namespace MojeWidelo_WebApi.Controllers
 		[HttpPost("register", Name = "registerUser")]
 		[AllowAnonymous]
 		[ServiceFilter(typeof(ModelValidationFilter))]
-		[Produces(MediaTypeNames.Application.Json, Type = typeof(RegisterResponseDTO))]
-		public async Task<IActionResult> RegisterUser([FromBody] RegisterRequestDTO registerDto)
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(RegisterResponseDto))]
+		public async Task<IActionResult> RegisterUser([FromBody] RegisterRequestDto registerDto)
 		{
 			var existingUser = await _repository.UsersRepository.FindUserByEmail(registerDto.Email);
 			if (existingUser != null)
-				return StatusCode(StatusCodes.Status409Conflict, new RegisterResponseDTO("Account already exists."));
+				return StatusCode(StatusCodes.Status409Conflict, new RegisterResponseDto("Account already exists."));
 
 			var user = await _repository.UsersRepository.Create(_mapper.Map<User>(registerDto));
-			return StatusCode(StatusCodes.Status201Created, new RegisterResponseDTO("Account created successfully."));
+			return StatusCode(StatusCodes.Status201Created, new RegisterResponseDto("Account created successfully."));
 		}
 
 		/// <summary>

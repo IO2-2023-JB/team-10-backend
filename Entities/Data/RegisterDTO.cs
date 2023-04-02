@@ -2,7 +2,7 @@
 
 namespace Entities.Data
 {
-	public class RegisterRequestDTO : UserBaseDto
+	public class RegisterRequestDto : UserBaseDto
 	{
 		/// <summary>
 		///     Password
@@ -12,9 +12,9 @@ namespace Entities.Data
 		public string Password { get; set; }
 	}
 
-	public class RegisterResponseDTO
+	public class RegisterResponseDto
 	{
-		public RegisterResponseDTO(string message)
+		public RegisterResponseDto(string message)
 		{
 			Message = message;
 		}

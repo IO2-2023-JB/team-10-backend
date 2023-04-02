@@ -1,4 +1,4 @@
 ﻿namespace Entities.Data
 {
-    public class UpdateUserDto : UserDto { }
+	public class UpdateUserDto : UserDto { }
 }
