@@ -1,22 +1,14 @@
 ﻿using Entities.Enums;
-using Microsoft.AspNetCore.Http;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Entities.Models
+namespace Entities.Data.Video
 {
-	public class VideoMetadata : MongoDocumentBase
+	public class VideoMetadataDto : VideoUpdateDto
 	{
-		public string Title { get; set; }
-
-		public string Description { get; set; }
-
-		public IFormFile? Thumbnail { get; set; }
-
-		public IEnumerable<string> Tags { get; set; }
-
-		[EnumDataType(typeof(VideoVisibility))]
-		public VideoVisibility Visibility { get; set; }
+		[BsonId]
+		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+		public string Id { get; set; }
 
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
 		public string AuthorId { get; set; }

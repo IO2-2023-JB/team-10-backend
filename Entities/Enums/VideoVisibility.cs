@@ -1,8 +1,8 @@
 ﻿namespace Entities.Enums
 {
-    public enum VideoVisibility
-    {
-        Private,
-        Public
-    }
+	public enum VideoVisibility
+	{
+		Private,
+		Public
+	}
 }

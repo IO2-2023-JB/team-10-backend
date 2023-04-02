@@ -1,8 +1,8 @@
 ﻿namespace Contracts
 {
-    public interface IRepositoryWrapper
-    {
-        IUsersRepository UsersRepository { get; }
-        IVideoRepository VideoRepository { get; }
-    }
+	public interface IRepositoryWrapper
+	{
+		IUsersRepository UsersRepository { get; }
+		IVideoRepository VideoRepository { get; }
+	}
 }

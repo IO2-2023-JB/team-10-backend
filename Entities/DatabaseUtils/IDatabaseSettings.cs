@@ -1,16 +1,15 @@
 ﻿namespace Entities.DatabaseUtils
 {
-    public interface IDatabaseSettings
+	public interface IDatabaseSettings
 	{
 		string DatabaseName { get; set; }
 		string ConnectionString { get; set; }
 
+		#region Collections
 
-        #region Collections
-        
-        string UsersCollectionName { get; set; }
-        string VideoCollectionName { get; set; }
-        
-        #endregion
-    }
+		string UsersCollectionName { get; set; }
+		string VideoCollectionName { get; set; }
+
+		#endregion
+	}
 }
