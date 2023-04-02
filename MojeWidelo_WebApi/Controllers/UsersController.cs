@@ -64,7 +64,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// Users data editing
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="userDTO"></param>
+		/// <param name="userDto"></param>
 		/// <returns>User data</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
@@ -72,9 +72,9 @@ namespace MojeWidelo_WebApi.Controllers
 		[HttpPut("user/{id}", Name = "updateUser")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
-		public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto userDTO)
+		public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto userDto)
 		{
-			var user = await _repository.UsersRepository.Update(id, _mapper.Map<User>(userDTO));
+			var user = await _repository.UsersRepository.Update(id, _mapper.Map<User>(userDto));
 			var result = _mapper.Map<UserDto>(user);
 			return Ok(result);
 		}
