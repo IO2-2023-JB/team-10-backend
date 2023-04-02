@@ -15,6 +15,8 @@ namespace MojeWidelo_WebApi.Mapper
 					user => user.Password,
 					opt => opt.MapFrom(register => HashHelper.HashPassword(register.Password))
 				);
+			CreateMap<VideoUploadDTO, VideoMetadata>();
+			CreateMap<VideoMetadata, VideoMetadataDTO>();
 		}
 	}
 }

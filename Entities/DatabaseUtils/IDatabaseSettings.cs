@@ -8,6 +8,7 @@
 		#region Collections
 
 		string UsersCollectionName { get; set; }
+		string VideoCollectionName { get; set; }
 
 		#endregion
 	}

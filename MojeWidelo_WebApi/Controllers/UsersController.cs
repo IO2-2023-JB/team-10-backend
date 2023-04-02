@@ -15,16 +15,10 @@ using System.Text;
 namespace MojeWidelo_WebApi.Controllers
 {
 	[ApiController]
-	public class UsersController : ControllerBase
+	public class UsersController : BaseController
 	{
-		private readonly IRepositoryWrapper _repository;
-		private readonly IMapper _mapper;
-
 		public UsersController(IRepositoryWrapper repository, IMapper mapper)
-		{
-			_repository = repository;
-			_mapper = mapper;
-		}
+			: base(repository, mapper) { }
 
 		/// <summary>
 		/// *Endpoint for testing*
@@ -45,37 +39,42 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <summary>
 		/// Users data retrieval
 		/// </summary>
-		/// <param name="id"></param>
 		/// <returns>User data</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
 		/// <response code="404">Not found</response>
-		[HttpGet("user/{id}", Name = "getUserById")]
-		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[HttpGet("user/{id?}", Name = "getUserById")]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
-		public async Task<IActionResult> GetUserById(string id)
+		public async Task<IActionResult> GetUserById(string? id = null)
 		{
+			id ??= GetUserIdFromToken();
+
 			var user = await _repository.UsersRepository.GetById(id);
 			if (user == null)
 				return NotFound();
 			var result = _mapper.Map<UserDto>(user);
+
+			result = _repository.UsersRepository.CheckPermissionToGetAccountBalance(GetUserIdFromToken(), result);
+
 			return Ok(result);
 		}
 
 		/// <summary>
 		/// Users data editing
 		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="userDto"></param>
 		/// <returns>User data</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
-		[HttpPut("user", Name = "updateUser")]
+		[HttpPut("user/{id}", Name = "updateUser")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
-		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto userDto)
+		public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto userDto)
 		{
-			var user = await _repository.UsersRepository.Update(userDto.Id, _mapper.Map<User>(userDto));
+			var user = await _repository.UsersRepository.Update(id, _mapper.Map<User>(userDto));
 			var result = _mapper.Map<UserDto>(user);
 			return Ok(result);
 		}
@@ -131,6 +130,13 @@ namespace MojeWidelo_WebApi.Controllers
 				return NotFound();
 			string password = returnedUser.Password;
 
+			var claims = new List<Claim>()
+			{
+				new Claim(ClaimTypes.Role, returnedUser.UserType.ToString()),
+				new Claim(ClaimTypes.NameIdentifier, returnedUser.Id),
+				new Claim(ClaimTypes.Name, returnedUser.Nickname),
+			};
+
 			if (HashHelper.ValidatePassword(user.Password, password))
 			{
 				var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"));
@@ -139,7 +145,7 @@ namespace MojeWidelo_WebApi.Controllers
 				var tokenOptions = new JwtSecurityToken(
 					issuer: "https://localhost:5001",
 					audience: "https://localhost:5001",
-					claims: new List<Claim>(),
+					claims: claims,
 					signingCredentials: signingCredentials
 				);
 

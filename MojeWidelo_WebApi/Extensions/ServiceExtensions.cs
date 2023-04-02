@@ -8,6 +8,7 @@ using MojeWidelo_WebApi.Filters;
 using Repository;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MojeWidelo_WebApi.Extensions
 {
@@ -25,6 +26,7 @@ namespace MojeWidelo_WebApi.Extensions
 		{
 			services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 			services.AddScoped<IUsersRepository, UsersRepository>();
+			services.AddScoped<IVideoRepository, VideoRepository>();
 		}
 
 		public static void ConfigureSwagger(this IServiceCollection services)
@@ -98,7 +100,12 @@ namespace MojeWidelo_WebApi.Extensions
 					};
 				});
 
-			services.AddControllers();
+			services
+				.AddControllers()
+				.AddJsonOptions(x =>
+				{
+					x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+				});
 		}
 
 		public static void ConfigureFilters(this IServiceCollection services)

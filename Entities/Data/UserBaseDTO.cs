@@ -6,14 +6,6 @@ namespace Entities.Data
 	public abstract class UserBaseDto
 	{
 		/// <summary>
-		///     Email address
-		/// </summary>
-		/// <example>john.doe@mail.com</example>
-		[Required]
-		[EmailAddress]
-		public string Email { get; set; }
-
-		/// <summary>
 		///     Nickname
 		/// </summary>
 		/// <example>johnny123</example>
