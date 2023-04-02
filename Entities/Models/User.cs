@@ -33,5 +33,15 @@ namespace Entities.Models
         {
             get; set;
         }
+
+        public string Password
+        {
+            get; set;
+        }
+
+        public int SubscriptionsCount
+        {
+            get; set;
+        }
     }
 }

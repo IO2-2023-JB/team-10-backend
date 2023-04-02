@@ -3,12 +3,14 @@ using Contracts;
 using Entities.Data;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
-using MojeWidelo_WebApi.Models;
+using MojeWidelo_WebApi.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -34,11 +36,11 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpGet("getAll", Name = "GetAll")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<UserDTO>))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<UserDto>))]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _repository.UsersRepository.GetAll();
-            var result = _mapper.Map<IEnumerable<UserDTO>>(users);
+            var result = _mapper.Map<IEnumerable<UserDto>>(users);
             return Ok(result);
         }
 
@@ -53,12 +55,12 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="404">Not found</response>
         [HttpGet("user/{id}", Name = "getUserById")]
         [ServiceFilter(typeof(ObjectIdValidationFilter))]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _repository.UsersRepository.GetById(id);
             if(user == null) return NotFound();
-            var result = _mapper.Map<UserDTO>(user);
+            var result = _mapper.Map<UserDto>(user);
             return Ok(result);
         }
 
@@ -71,11 +73,11 @@ namespace MojeWidelo_WebApi.Controllers
         /// <response code="401">Unauthorized</response>
         [HttpPut("user", Name = "updateUser")]
         [ServiceFilter(typeof(ModelValidationFilter))]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDTO userDTO)
+        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto userDto)
         {
-            var user = await _repository.UsersRepository.Update(userDTO.Id, _mapper.Map<User>(userDTO));
-            var result = _mapper.Map<UserDTO>(user);
+            var user = await _repository.UsersRepository.Update(userDto.Id, _mapper.Map<User>(userDto));
+            var result = _mapper.Map<UserDto>(user);
             return Ok(result);
         }
 
@@ -90,12 +92,11 @@ namespace MojeWidelo_WebApi.Controllers
         [HttpPost("register", Name = "registerUser")]
         [AllowAnonymous]
         [ServiceFilter(typeof(ModelValidationFilter))]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(UserDTO))]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterDTO registerDto)
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
         {
             var user = await _repository.UsersRepository.Create(_mapper.Map<User>(registerDto));
             var result = _mapper.Map<User>(user);
-            return Ok(result);
+            return Ok();
         }
 
         /// <summary>
@@ -114,14 +115,19 @@ namespace MojeWidelo_WebApi.Controllers
 
         [HttpPost, Route("login")]
         [AllowAnonymous]
-        public IActionResult Login([FromBody] LoginModel user)
+        [ServiceFilter(typeof(ModelValidationFilter))]
+        public async Task<IActionResult> Login([FromBody] LoginDto user)
         {
             if (user == null)
             {
                 return BadRequest("Invalid client request!");
             }
 
-            if (user.Username == "NIE@MOGE" && user.Password == "ODDYCHAC")
+            var returnedUser = await _repository.UsersRepository.FindUserByEmail(user.Email);
+            if (returnedUser == null) return NotFound();
+            string password = returnedUser.Password;
+
+            if (HashHelper.ValidatePassword(user.Password, password))
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"));
                 var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -130,12 +136,11 @@ namespace MojeWidelo_WebApi.Controllers
                     issuer: "https://localhost:5001",
                     audience: "https://localhost:5001",
                     claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: signingCredentials
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                return Ok(new { Token = tokenString });
+                return Ok(new LoginResponseDto(tokenString));
             }
 
             return Unauthorized();

@@ -1,15 +1,17 @@
 ﻿using Entities.Enums;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data
 {
-    public abstract class UserBaseDTO
+    public abstract class UserBaseDto
     {
         /// <summary>
         ///     Email address
         /// </summary>
         /// <example>john.doe@mail.com</example>
-        [Required(ErrorMessage = "Email is required")]
+        [Required]
+        [EmailAddress]
         public string Email
         {
             get; set;
@@ -19,7 +21,7 @@ namespace Entities.Data
         ///     Nickname
         /// </summary>
         /// <example>johnny123</example>
-        [Required(ErrorMessage = "Nickname is required")]
+        [Required]
         public string Nickname
         {
             get; set;
@@ -29,7 +31,7 @@ namespace Entities.Data
         ///     Name
         /// </summary>
         /// <example>John</example>
-        [Required(ErrorMessage = "Name is required")]
+        [Required]
         public string Name
         {
             get; set;
@@ -39,7 +41,7 @@ namespace Entities.Data
         ///     Surname
         /// </summary>
         /// <example>Doe</example>
-        [Required(ErrorMessage = "Surname is required")]
+        [Required]
         public string Surname
         {
             get; set;
@@ -49,20 +51,20 @@ namespace Entities.Data
         ///     User type: Simple, Creator, Administrator
         /// </summary>
         /// <example>Creator</example>
-        [Required(ErrorMessage = "UserType is required")]
+        [EnumDataType(typeof(UserType))]
         public UserType UserType
         {
             get; set;
         }
     }
 
-    public class UserDTO : UserBaseDTO
+    public class UserDto : UserBaseDto
     {
         /// <summary>
         ///     Unique identifier
         /// </summary>
         /// <example>640df935f1afe5d21b891805</example>
-        [Required(ErrorMessage = "Id is required")]
+        [Required]
         public string Id
         {
             get; set;
@@ -76,14 +78,31 @@ namespace Entities.Data
         {
             get; set;
         }
+
+        /// <summary>
+        ///     Subscriptions counter
+        /// </summary>
+        /// <example>12000</example>
+        public int SubscriptionsCount
+        {
+            get; set;
+        }
     }
 
-
-    public class UpdateUserDTO : UserDTO
+    public class UpdateUserDto : UserDto
     {
     }
 
-    public class RegisterDTO : UserBaseDTO
+    public class RegisterDto : UserBaseDto
     {
+        /// <summary>
+        ///     Password
+        /// </summary>
+        /// <example>password123</example>
+        [Required]
+        public string Password
+        {
+            get; set;
+        }
     }
 }

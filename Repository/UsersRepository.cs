@@ -11,5 +11,12 @@ namespace Repository
             : base(databaseSettings, databaseSettings.UsersCollectionName)
         {
         }
+
+        public async Task<User> FindUserByEmail(string email)
+        {
+            var result = await _collection.Find(x => x.Email == email).FirstOrDefaultAsync();
+
+            return result;
+        }
     }
 }
