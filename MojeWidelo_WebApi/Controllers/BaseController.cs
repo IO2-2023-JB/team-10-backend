@@ -6,26 +6,26 @@ using Entities.Models;
 
 namespace MojeWidelo_WebApi.Controllers
 {
-    public class BaseController : ControllerBase
-    {
-        protected readonly IRepositoryWrapper _repository;
-        protected readonly IMapper _mapper;
+	public class BaseController : ControllerBase
+	{
+		protected readonly IRepositoryWrapper _repository;
+		protected readonly IMapper _mapper;
 
-        public BaseController(IRepositoryWrapper repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+		public BaseController(IRepositoryWrapper repository, IMapper mapper)
+		{
+			_repository = repository;
+			_mapper = mapper;
+		}
 
-        protected async Task<User> GetUserFromToken()
-        {
-            var userId = GetUserIdFromToken();
-            return await _repository.UsersRepository.GetById(userId);
-        }
+		protected async Task<User> GetUserFromToken()
+		{
+			var userId = GetUserIdFromToken();
+			return await _repository.UsersRepository.GetById(userId);
+		}
 
-        protected string GetUserIdFromToken()
-        {
-            return HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        }
-    }
+		protected string GetUserIdFromToken()
+		{
+			return HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+		}
+	}
 }

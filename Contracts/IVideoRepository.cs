@@ -2,7 +2,5 @@
 
 namespace Contracts
 {
-    public interface IVideoRepository : IRepositoryBase<VideoMetadata>
-    {
-    }
+	public interface IVideoRepository : IRepositoryBase<VideoMetadata> { }
 }
