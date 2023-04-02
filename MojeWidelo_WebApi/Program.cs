@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MojeWidelo_WebApi.Extensions;
-using Microsoft.IdentityModel.Tokens;
-using Amazon.SecurityToken.Model.Internal.MarshallTransformations;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,16 +10,12 @@ builder.Services.ConfigureDatabase(builder.Configuration);
 builder.Services.ConfigureRepository();
 builder.Services.ConfigureFilters();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.ConfigureSwagger();
+builder.Services.ConfigureServices();
 
 #endregion
 
-
-builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.ConfigureSwagger();
-builder.Services.ConfigureServices();
 
 var app = builder.Build();
 

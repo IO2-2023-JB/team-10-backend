@@ -12,15 +12,23 @@ namespace Entities.Data
 		public string Id { get; set; }
 
 		/// <summary>
+		///     Email address
+		/// </summary>
+		/// <example>john.doe@mail.com</example>
+		[Required]
+		[EmailAddress]
+		public string Email { get; set; }
+
+		/// <summary>
 		///     Account balance
 		/// </summary>
 		/// <example>132</example>
-		public double AccountBalance { get; set; }
+		public double? AccountBalance { get; set; }
 
 		/// <summary>
 		///     Subscriptions counter
 		/// </summary>
 		/// <example>12000</example>
-		public int SubscriptionsCount { get; set; }
+		public int? SubscriptionsCount { get; set; }
 	}
 }

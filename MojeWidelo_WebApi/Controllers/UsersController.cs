@@ -54,22 +54,27 @@ namespace MojeWidelo_WebApi.Controllers
 			if (user == null)
 				return NotFound();
 			var result = _mapper.Map<UserDto>(user);
+
+			result = _repository.UsersRepository.CheckPermissionToGetAccountBalance(GetUserIdFromToken(), result);
+
 			return Ok(result);
 		}
 
 		/// <summary>
 		/// Users data editing
 		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="userDTO"></param>
 		/// <returns>User data</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
-		[HttpPut("user", Name = "updateUser")]
+		[HttpPut("user/{id}", Name = "updateUser")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
-		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto userDto)
+		public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto userDTO)
 		{
-			var user = await _repository.UsersRepository.Update(userDto.Id, _mapper.Map<User>(userDto));
+			var user = await _repository.UsersRepository.Update(id, _mapper.Map<User>(userDTO));
 			var result = _mapper.Map<UserDto>(user);
 			return Ok(result);
 		}

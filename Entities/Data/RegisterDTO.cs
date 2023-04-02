@@ -5,6 +5,14 @@ namespace Entities.Data
 	public class RegisterRequestDto : UserBaseDto
 	{
 		/// <summary>
+		///     Email address
+		/// </summary>
+		/// <example>john.doe@mail.com</example>
+		[Required]
+		[EmailAddress]
+		public string Email { get; set; }
+
+		/// <summary>
 		///     Password
 		/// </summary>
 		/// <example>password123</example>

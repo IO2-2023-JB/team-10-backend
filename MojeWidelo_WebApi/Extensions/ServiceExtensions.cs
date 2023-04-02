@@ -1,5 +1,14 @@
-﻿using System.Reflection;
+﻿using Contracts;
+using Entities.DatabaseUtils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using MojeWidelo_WebApi.Filters;
+using Repository;
+using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MojeWidelo_WebApi.Extensions
 {
@@ -13,12 +22,12 @@ namespace MojeWidelo_WebApi.Extensions
 			);
 		}
 
-        public static void ConfigureRepository(this IServiceCollection services)
-        {
-            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
-            services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IVideoRepository, VideoRepository>();
-        }
+		public static void ConfigureRepository(this IServiceCollection services)
+		{
+			services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+			services.AddScoped<IUsersRepository, UsersRepository>();
+			services.AddScoped<IVideoRepository, VideoRepository>();
+		}
 
 		public static void ConfigureSwagger(this IServiceCollection services)
 		{
@@ -91,7 +100,12 @@ namespace MojeWidelo_WebApi.Extensions
 					};
 				});
 
-			services.AddControllers();
+			services
+				.AddControllers()
+				.AddJsonOptions(x =>
+				{
+					x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+				});
 		}
 
 		public static void ConfigureFilters(this IServiceCollection services)
