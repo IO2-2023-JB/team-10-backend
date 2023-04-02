@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Entities.Data
+namespace Entities.Data.User
 {
 	public class UserDto : UserBaseDto
 	{

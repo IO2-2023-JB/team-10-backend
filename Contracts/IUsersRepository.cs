@@ -1,4 +1,4 @@
-﻿using Entities.Data;
+﻿using Entities.Data.User;
 using Entities.Models;
 
 namespace Contracts
