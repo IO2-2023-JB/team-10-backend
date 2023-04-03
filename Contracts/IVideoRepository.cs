@@ -1,6 +1,11 @@
-﻿using Entities.Models;
+﻿using Entities.Enums;
+using Entities.Models;
 
 namespace Contracts
 {
-	public interface IVideoRepository : IRepositoryBase<VideoMetadata> { }
+	public interface IVideoRepository : IRepositoryBase<VideoMetadata>
+	{
+		void ChangeVideoProcessingProgress(IRepositoryWrapper repository, string id, ProcessingProgress uploading);
+		string? CreateNewPath(string id, string fileName);
+	}
 }

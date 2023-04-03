@@ -32,13 +32,12 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var user = await GetUserFromToken();
 
-#warning dodać logikę ProcessingProgress
-
 			// mapowanie i uzupełnienie danych
 			var video = _mapper.Map<VideoMetadata>(videoUploadDto);
 			video.UploadDate = video.EditDate = DateTime.Now;
 			video.AuthorId = user.Id;
 			video.AuthorNickname = user.Nickname;
+			video.ProcessingProgress = ProcessingProgress.MetadataRecordCreated;
 
 			video = await _repository.VideoRepository.Create(video);
 			var result = _mapper.Map<VideoMetadataDto>(video);
@@ -116,7 +115,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// </summary>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
-		/// <response code="401">Unauthorized</response>
+		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
 		/// <response code="500">Internal server error</response>
 		/// <response code="501">Not implemented</response>
@@ -133,7 +132,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return NotFound("No video under provided ID");
 
 			if (GetUserIdFromToken() != video.AuthorId)
-				return Unauthorized();
+				return Forbid();
 
 			if (
 				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
@@ -141,45 +140,33 @@ namespace MojeWidelo_WebApi.Controllers
 			)
 				return BadRequest();
 
-			string? location;
-
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				location = Environment.GetEnvironmentVariable("MojeWideloStorage", EnvironmentVariableTarget.Machine);
-
-				if (string.IsNullOrEmpty(location))
-					return StatusCode(StatusCodes.Status501NotImplemented);
-			}
-			else
-			{
-				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
-				location = "/home/ubuntu/video-storage";
-			}
-
-			string extension = Path.GetExtension(videoFile.FileName);
-			string path = Path.Combine(location, id + "_original" + extension);
+			string? path = _repository.VideoRepository.CreateNewPath(id, videoFile.FileName);
+			if (path == null)
+				return StatusCode(StatusCodes.Status501NotImplemented);
 
 			try
 			{
-				video.ProcessingProgress = ProcessingProgress.Uploading;
-				video.EditDate = DateTime.Now;
-				await _repository.VideoRepository.Update(id, video);
+				_repository.VideoRepository.ChangeVideoProcessingProgress(
+					_repository,
+					id,
+					ProcessingProgress.Uploading
+				);
 
 				using var stream = new FileStream(path, FileMode.Create);
 				await videoFile.CopyToAsync(stream);
 			}
 			catch (Exception)
 			{
-				video.ProcessingProgress = ProcessingProgress.FailedToUpload;
-				video.EditDate = DateTime.Now;
-				await _repository.VideoRepository.Update(id, video);
+				_repository.VideoRepository.ChangeVideoProcessingProgress(
+					_repository,
+					id,
+					ProcessingProgress.FailedToUpload
+				);
 
 				return StatusCode(StatusCodes.Status500InternalServerError);
 			}
 
-			video.ProcessingProgress = ProcessingProgress.Uploaded;
-			video.EditDate = DateTime.Now;
-			await _repository.VideoRepository.Update(id, video);
+			_repository.VideoRepository.ChangeVideoProcessingProgress(_repository, id, ProcessingProgress.Uploaded);
 
 			return Ok("Upload completed successfully");
 		}
