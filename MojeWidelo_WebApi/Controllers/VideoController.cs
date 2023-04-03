@@ -116,26 +116,63 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
+		/// <response code="404">Not found</response>
 		/// <response code="500">Internal server error</response>
+		/// <response code="501">Not implemented</response>
 		[HttpPost("video/{id}", Name = "uploadVideo")]
-		//[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		[DisableRequestSizeLimit]
-		[RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+		[RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = long.MaxValue)]
 		[AllowAnonymous]
 		public async Task<IActionResult> UploadVideo(string id, [FromForm] IFormFile videoFile)
 		{
+			//TODO: implement extension check
+
+			var video = await _repository.VideoRepository.GetById(id);
+
+			if (video == null)
+				return NotFound("No video under provided ID");
+
+			if (GetUserIdFromToken() != video.AuthorId)
+				return Unauthorized();
+
+			if (
+				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
+				&& video.ProcessingProgress != ProcessingProgress.FailedToUpload
+			)
+				return BadRequest();
+
 			string? location = Environment.GetEnvironmentVariable(
 				"MojeWideloStorage",
 				EnvironmentVariableTarget.Machine
 			);
 			if (string.IsNullOrEmpty(location))
-				return StatusCode(StatusCodes.Status500InternalServerError);
+				return StatusCode(StatusCodes.Status501NotImplemented);
 
 			string[] parts = videoFile.FileName.Split('.');
 			string path = Path.Combine(location, id + '.' + parts[parts.Length - 1]);
 
-			using (var stream = new FileStream(path, FileMode.Create))
+			try
+			{
+				video.ProcessingProgress = ProcessingProgress.Uploading;
+				video.EditDate = DateTime.Now;
+				await _repository.VideoRepository.Update(id, video);
+
+				using var stream = new FileStream(path, FileMode.Create);
 				await videoFile.CopyToAsync(stream);
+			}
+			catch (Exception)
+			{
+				video.ProcessingProgress = ProcessingProgress.FailedToUpload;
+				video.EditDate = DateTime.Now;
+				await _repository.VideoRepository.Update(id, video);
+
+				return StatusCode(StatusCodes.Status500InternalServerError);
+			}
+
+			video.ProcessingProgress = ProcessingProgress.Uploaded;
+			video.EditDate = DateTime.Now;
+			await _repository.VideoRepository.Update(id, video);
 
 			return Ok("Upload completed successfully");
 		}
