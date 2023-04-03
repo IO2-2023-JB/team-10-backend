@@ -3,6 +3,7 @@ using Contracts;
 using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
 using System.Net.Mime;
@@ -107,6 +108,36 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
 			return Ok(result);
+		}
+
+		/// <summary>
+		/// Video upload
+		/// </summary>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		/// <response code="500">Internal server error</response>
+		[HttpPost("video/{id}", Name = "uploadVideo")]
+		//[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[DisableRequestSizeLimit]
+		[RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+		[AllowAnonymous]
+		public async Task<IActionResult> UploadVideo(string id, [FromForm] IFormFile videoFile)
+		{
+			string? location = Environment.GetEnvironmentVariable(
+				"MojeWideloStorage",
+				EnvironmentVariableTarget.Machine
+			);
+			if (string.IsNullOrEmpty(location))
+				return StatusCode(StatusCodes.Status500InternalServerError);
+
+			string[] parts = videoFile.FileName.Split('.');
+			string path = Path.Combine(location, id + '.' + parts[parts.Length - 1]);
+
+			using (var stream = new FileStream(path, FileMode.Create))
+				await videoFile.CopyToAsync(stream);
+
+			return Ok("Upload completed successfully");
 		}
 	}
 }
