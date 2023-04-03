@@ -112,6 +112,7 @@ namespace MojeWidelo_WebApi.Extensions
 		{
 			services.AddScoped<ModelValidationFilter>();
 			services.AddScoped<ObjectIdValidationFilter>();
+			services.AddScoped<VideoExtensionValidationFilter>();
 		}
 	}
 }

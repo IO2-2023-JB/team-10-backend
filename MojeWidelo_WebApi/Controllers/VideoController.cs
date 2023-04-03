@@ -121,13 +121,11 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="501">Not implemented</response>
 		[HttpPost("video/{id}", Name = "uploadVideo")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[ServiceFilter(typeof(VideoExtensionValidationFilter))]
 		[DisableRequestSizeLimit]
 		[RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = long.MaxValue)]
-		[AllowAnonymous]
 		public async Task<IActionResult> UploadVideo(string id, [FromForm] IFormFile videoFile)
 		{
-			//TODO: implement extension check
-
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
@@ -149,8 +147,8 @@ namespace MojeWidelo_WebApi.Controllers
 			if (string.IsNullOrEmpty(location))
 				return StatusCode(StatusCodes.Status501NotImplemented);
 
-			string[] parts = videoFile.FileName.Split('.');
-			string path = Path.Combine(location, id + '.' + parts[parts.Length - 1]);
+			string extension = Path.GetExtension(location);
+			string path = Path.Combine(location, id + "_original" + extension);
 
 			try
 			{
