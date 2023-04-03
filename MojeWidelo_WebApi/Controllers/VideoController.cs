@@ -3,11 +3,9 @@ using Contracts;
 using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
 using System.Net.Mime;
-using System.Runtime.InteropServices;
 
 namespace MojeWidelo_WebApi.Controllers
 {
