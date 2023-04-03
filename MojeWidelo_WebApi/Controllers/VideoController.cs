@@ -29,6 +29,11 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> UploadVideoMetadata([FromBody] VideoUploadDto videoUploadDto)
 		{
 			var user = await GetUserFromToken();
+			if (user.UserType != UserType.Creator)
+				return StatusCode(
+					StatusCodes.Status403Forbidden,
+					"Brak uprawnień do przesyłania filmów. Użytkownik nie jest twórcą."
+				);
 
 			// mapowanie i uzupełnienie danych
 			var video = _mapper.Map<VideoMetadata>(videoUploadDto);
@@ -58,7 +63,7 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDto))]
 		public async Task<IActionResult> UpdateVideoMetadata(string id, [FromBody] VideoUpdateDto videoUpdateDto)
 		{
-			// pobieram stare dane, potem mapuje te pola które nie są nullami + omijam te immutable (patrz MappingProfile.cs)
+			// pobieram stare dane, omijam te immutable (patrz MappingProfile.cs)
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
@@ -68,7 +73,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (GetUserIdFromToken() != video.AuthorId)
 			{
-				return Forbid("No permissions to edit video metadata");
+				return StatusCode(StatusCodes.Status403Forbidden, "No permissions to edit video metadata");
 			}
 
 			video = _mapper.Map<VideoUpdateDto, VideoMetadata>(videoUpdateDto, video);
@@ -101,7 +106,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
 			{
-				return Forbid("No permissions to get video metadata");
+				return StatusCode(StatusCodes.Status403Forbidden, "No permissions to get video metadata");
 			}
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
@@ -130,7 +135,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return NotFound("No video under provided ID");
 
 			if (GetUserIdFromToken() != video.AuthorId)
-				return Forbid();
+				return StatusCode(StatusCodes.Status403Forbidden);
 
 			if (
 				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
