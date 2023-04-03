@@ -48,3 +48,16 @@ WebAPI runs as service io2_api.service on our VM.
 ### Config file for io2_api.service:
 
     /etc/systemd/system/io2_api.service
+	
+## Video storage
+
+For video upload/download to function properly, user must first configure environment variable called MojeWideloStorage, which shall be an absolute path to the directory that is designated to be storage place for video
+
+### Command Line code (for Windows users)
+
+	setx MojeWideloStorage {path} /m
+	(command must be executed with administrator privileges)
+	
+### Bash command 
+
+	soon

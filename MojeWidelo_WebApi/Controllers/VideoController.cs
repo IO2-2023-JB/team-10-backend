@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -140,14 +141,22 @@ namespace MojeWidelo_WebApi.Controllers
 			)
 				return BadRequest();
 
-			string? location = Environment.GetEnvironmentVariable(
-				"MojeWideloStorage",
-				EnvironmentVariableTarget.Machine
-			);
-			if (string.IsNullOrEmpty(location))
-				return StatusCode(StatusCodes.Status501NotImplemented);
+			string? location;
 
-			string extension = Path.GetExtension(location);
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				location = Environment.GetEnvironmentVariable("MojeWideloStorage", EnvironmentVariableTarget.Machine);
+
+				if (string.IsNullOrEmpty(location))
+					return StatusCode(StatusCodes.Status501NotImplemented);
+			}
+			else
+			{
+				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
+				location = "/home/ubuntu/video-storage";
+			}
+
+			string extension = Path.GetExtension(videoFile.FileName);
 			string path = Path.Combine(location, id + "_original" + extension);
 
 			try
