@@ -92,7 +92,7 @@ namespace MojeWidelo_WebApi.Extensions
 					{
 						ValidateIssuer = true,
 						ValidateAudience = true,
-						ValidateLifetime = true,
+						ValidateLifetime = false,
 						ValidateIssuerSigningKey = true,
 						ValidIssuer = "https://localhost:5001",
 						ValidAudience = "https://localhost:5001",
@@ -112,6 +112,7 @@ namespace MojeWidelo_WebApi.Extensions
 		{
 			services.AddScoped<ModelValidationFilter>();
 			services.AddScoped<ObjectIdValidationFilter>();
+			services.AddScoped<VideoExtensionValidationFilter>();
 		}
 	}
 }

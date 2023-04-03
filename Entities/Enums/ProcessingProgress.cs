@@ -2,8 +2,11 @@
 {
 	public enum ProcessingProgress
 	{
-		Queued,
+		MetadataRecordCreated,
+		Uploading,
+		Uploaded,
+		FailedToUpload,
 		Processing,
-		Done
+		Ready
 	}
 }
