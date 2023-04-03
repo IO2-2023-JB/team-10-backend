@@ -146,27 +146,19 @@ namespace MojeWidelo_WebApi.Controllers
 
 			try
 			{
-				_repository.VideoRepository.ChangeVideoProcessingProgress(
-					_repository,
-					id,
-					ProcessingProgress.Uploading
-				);
+				_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploading);
 
 				using var stream = new FileStream(path, FileMode.Create);
 				await videoFile.CopyToAsync(stream);
 			}
 			catch (Exception)
 			{
-				_repository.VideoRepository.ChangeVideoProcessingProgress(
-					_repository,
-					id,
-					ProcessingProgress.FailedToUpload
-				);
+				_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.FailedToUpload);
 
 				return StatusCode(StatusCodes.Status500InternalServerError);
 			}
 
-			_repository.VideoRepository.ChangeVideoProcessingProgress(_repository, id, ProcessingProgress.Uploaded);
+			_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploaded);
 
 			return Ok("Upload completed successfully");
 		}

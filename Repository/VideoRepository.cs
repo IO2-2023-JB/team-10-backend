@@ -33,16 +33,12 @@ namespace Repository
 			return Path.Combine(location, id + "_original" + extension);
 		}
 
-		public async void ChangeVideoProcessingProgress(
-			IRepositoryWrapper _repository,
-			string id,
-			ProcessingProgress progress
-		)
+		public async void ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
 		{
-			VideoMetadata video = await _repository.VideoRepository.GetById(id);
+			VideoMetadata video = await GetById(id);
 			video.ProcessingProgress = progress;
 			video.EditDate = DateTime.Now;
-			await _repository.VideoRepository.Update(id, video);
+			await Update(id, video);
 		}
 	}
 }
