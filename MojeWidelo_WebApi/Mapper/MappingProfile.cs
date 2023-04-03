@@ -9,13 +9,21 @@ namespace MojeWidelo_WebApi.Mapper
 	{
 		public MappingProfile()
 		{
-			CreateMap<User, UserDto>();
+			CreateMap<User, UserDto>()
+				.ForMember(
+					user => user.SubscriptionsCount,
+					opt =>
+						opt.MapFrom(
+							user => user.UserType == Entities.Enums.UserType.Creator ? user.SubscriptionsCount : null
+						)
+				);
 			CreateMap<UpdateUserDto, User>();
 			CreateMap<RegisterRequestDto, User>()
 				.ForMember(
 					user => user.Password,
 					opt => opt.MapFrom(register => HashHelper.HashPassword(register.Password))
 				);
+
 			CreateMap<VideoUploadDto, VideoMetadata>();
 			CreateMap<VideoMetadata, VideoMetadataDto>();
 
