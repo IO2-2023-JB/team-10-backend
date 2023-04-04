@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -229,6 +230,70 @@ namespace MojeWidelo_WebApi.Controllers
 			var videos = await _repository.VideoRepository.GetAll();
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			return Ok(result);
+		}
+
+		[HttpDelete("video", Name = "deleteVideo")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> DeleteVideo([Required] string id)
+		{
+			var userId = GetUserIdFromToken();
+			var video = await _repository.VideoRepository.GetById(id);
+
+			if (video == null)
+			{
+				return NotFound("Nie znaleziono wideo o podanym ID.");
+			}
+
+			// dodać logikę że jak jest administratorem to może nawet jak nie jego wideo??
+			if (video.AuthorId != userId)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Nie jesteś autorem filmu.");
+			}
+
+			if (video.ProcessingProgress == ProcessingProgress.Uploading)
+			{
+				return BadRequest("Nie można usunąć wideo będącego w trakcie wysyłania.");
+			}
+			if (video.ProcessingProgress == ProcessingProgress.Processing)
+			{
+				return BadRequest("Nie można usunąć wideo będącego w trakcie przetwarzania.");
+			}
+
+			string location;
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				location = Environment.GetEnvironmentVariable("MojeWideloStorage", EnvironmentVariableTarget.Machine)!;
+
+				if (string.IsNullOrEmpty(location))
+					return BadRequest(NotFound("Zmienna środowiskowa dla MojeWideloStorage nie jest ustawiona"));
+			}
+			else
+			{
+				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
+				location = "/home/ubuntu/video-storage";
+			}
+
+			string[] filesToDelete = Directory.GetFiles(location, id + "*");
+
+			foreach (var file in filesToDelete)
+			{
+				if (System.IO.File.Exists(file))
+				{
+					try
+					{
+						System.IO.File.Delete(file);
+					}
+					catch (IOException)
+					{
+						return BadRequest("Wskazany plik jest aktualnie używany.");
+					}
+				}
+			}
+
+			await _repository.VideoRepository.Delete(id);
+
+			return Ok("Wideo usunięte pomyślnie.");
 		}
 	}
 }
