@@ -2,7 +2,6 @@
 using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace MojeWidelo_WebApi.Controllers
