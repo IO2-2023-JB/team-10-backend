@@ -69,12 +69,24 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
-		[HttpPut("user/{id}", Name = "updateUser")]
+		/// <response code="403">Forbidden</response>
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
-		public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto userDto)
+		public async Task<IActionResult> UpdateUser(string? id, [FromBody] UpdateUserDto userDto)
 		{
+			id ??= GetUserIdFromToken();
 			var user = await _repository.UsersRepository.GetById(id);
+
+			if (user == null)
+			{
+				return NotFound("Użytkownik o podanym id nie istnieje.");
+			}
+
+			if (GetUserIdFromToken() != id)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do edycji danych użytkownika.");
+			}
+
 			user = _mapper.Map<UpdateUserDto, User>(userDto, user);
 			var newUser = await _repository.UsersRepository.Update(id, user);
 			var result = _mapper.Map<UserDto>(newUser);
