@@ -17,7 +17,14 @@ namespace MojeWidelo_WebApi.Mapper
 							user => user.UserType == Entities.Enums.UserType.Creator ? user.SubscriptionsCount : null
 						)
 				);
-			CreateMap<UpdateUserDto, User>();
+			CreateMap<UpdateUserDto, User>()
+				.ForMember(user => user.Id, opt => opt.Ignore())
+				.ForMember(user => user.Email, opt => opt.Ignore())
+				.ForMember(user => user.AccountBalance, opt => opt.Ignore())
+				.ForMember(user => user.Password, opt => opt.Ignore())
+				.ForMember(user => user.SubscriptionsCount, opt => opt.Ignore());
+
+
 			CreateMap<RegisterRequestDto, User>()
 				.ForMember(
 					user => user.Password,

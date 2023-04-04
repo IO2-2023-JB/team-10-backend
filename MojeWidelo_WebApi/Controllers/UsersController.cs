@@ -74,8 +74,10 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
 		public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto userDto)
 		{
-			var user = await _repository.UsersRepository.Update(id, _mapper.Map<User>(userDto));
-			var result = _mapper.Map<UserDto>(user);
+			var user = await _repository.UsersRepository.GetById(id);
+			user = _mapper.Map<UpdateUserDto, User>(userDto, user);
+			var newUser = await _repository.UsersRepository.Update(id, user);
+			var result = _mapper.Map<UserDto>(newUser);
 			return Ok(result);
 		}
 
