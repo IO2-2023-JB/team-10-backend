@@ -12,12 +12,12 @@ namespace Entities.Models
 
 		public string Surname { get; set; }
 
-		public double? AccountBalance { get; set; }
+		public double AccountBalance { get; set; }
 
 		public UserType UserType { get; set; }
 
 		public string Password { get; set; }
 
-		public int? SubscriptionsCount { get; set; }
+		public int SubscriptionsCount { get; set; }
 	}
 }

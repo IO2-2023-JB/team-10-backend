@@ -14,7 +14,8 @@ namespace MojeWidelo_WebApi.Mapper
 					user => user.SubscriptionsCount,
 					opt =>
 						opt.MapFrom(
-							user => user.UserType == Entities.Enums.UserType.Creator ? user.SubscriptionsCount : null
+							user =>
+								user.UserType == Entities.Enums.UserType.Creator ? (int?)user.SubscriptionsCount : null
 						)
 				);
 			CreateMap<UpdateUserDto, User>();
