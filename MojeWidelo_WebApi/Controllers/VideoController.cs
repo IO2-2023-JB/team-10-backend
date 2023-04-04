@@ -3,8 +3,10 @@ using Contracts;
 using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 
 namespace MojeWidelo_WebApi.Controllers
@@ -187,7 +189,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="501">Not implemented</response>
 		[HttpGet("video/{id}", Name = "streamVideo")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
-		public async Task<IActionResult> StreamVideo(string id)
+		public async Task<IActionResult> StreamVideo([Required] string access_token, string id)
 		{
 			var video = await _repository.VideoRepository.GetById(id);
 

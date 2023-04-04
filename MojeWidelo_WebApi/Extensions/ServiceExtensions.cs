@@ -3,9 +3,11 @@ using Entities.DatabaseUtils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using Repository;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -97,6 +99,47 @@ namespace MojeWidelo_WebApi.Extensions
 						ValidIssuer = "https://localhost:5001",
 						ValidAudience = "https://localhost:5001",
 						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("hasloooo1234$#@!"))
+					};
+
+					options.Events = new JwtBearerEvents
+					{
+						OnMessageReceived = (context) =>
+						{
+							StringValues values;
+
+							if (!context.Request.Query.TryGetValue("access_token", out values))
+							{
+								return Task.CompletedTask;
+							}
+
+							if (values.Count > 1)
+							{
+								context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+								context.Fail(
+									"Only one 'access_token' query string parameter can be defined. "
+										+ $"However, {values.Count:N0} were included in the request."
+								);
+
+								return Task.CompletedTask;
+							}
+
+							var token = values.Single();
+
+							if (String.IsNullOrWhiteSpace(token))
+							{
+								context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+								context.Fail(
+									"The 'access_token' query string parameter was defined, "
+										+ "but a value to represent the token was not included."
+								);
+
+								return Task.CompletedTask;
+							}
+
+							context.Token = token;
+
+							return Task.CompletedTask;
+						}
 					};
 				});
 
