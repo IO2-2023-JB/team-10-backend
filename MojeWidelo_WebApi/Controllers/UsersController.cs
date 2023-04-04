@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using MojeWidelo_WebApi.Helpers;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -44,7 +45,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
 		/// <response code="404">Not found</response>
-		[HttpGet("user/{id?}", Name = "getUserById")]
+		[HttpGet("user", Name = "getUserById")]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
 		public async Task<IActionResult> GetUserById(string? id = null)
 		{
@@ -70,6 +71,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
 		/// <response code="403">Forbidden</response>
+		[HttpPut("user", Name = "updateUser")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
 		public async Task<IActionResult> UpdateUser(string? id, [FromBody] UpdateUserDto userDto)
@@ -121,9 +123,9 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
-		[HttpDelete("user/{id}", Name = "deleteUser")]
+		[HttpDelete("user", Name = "deleteUser")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
-		public async Task<IActionResult> DeleteUser(string id)
+		public async Task<IActionResult> DeleteUser([Required] string id)
 		{
 			await _repository.UsersRepository.Delete(id);
 			return Ok();

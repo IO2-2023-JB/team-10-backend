@@ -24,7 +24,6 @@ namespace MojeWidelo_WebApi.Mapper
 				.ForMember(user => user.Password, opt => opt.Ignore())
 				.ForMember(user => user.SubscriptionsCount, opt => opt.Ignore());
 
-
 			CreateMap<RegisterRequestDto, User>()
 				.ForMember(
 					user => user.Password,
