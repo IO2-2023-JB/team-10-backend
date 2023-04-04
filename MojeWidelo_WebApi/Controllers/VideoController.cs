@@ -145,7 +145,7 @@ namespace MojeWidelo_WebApi.Controllers
 				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
 				&& video.ProcessingProgress != ProcessingProgress.FailedToUpload
 			)
-				return BadRequest();
+				return BadRequest("Video is in state that doesn't allow for upload");
 
 			string? path = _repository.VideoRepository.CreateNewPath(id, videoFile.FileName);
 			if (path == null)
@@ -167,7 +167,68 @@ namespace MojeWidelo_WebApi.Controllers
 
 			_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploaded);
 
+			// PROCESSING PATCH
+
+			if (!System.IO.File.Exists(path))
+				return StatusCode(StatusCodes.Status500InternalServerError);
+			System.IO.File.Move(path, _repository.VideoRepository.GetReadyFilePath(id)!);
+
+			_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Ready);
+
+			// END OF PROCESSING PATCH
+
 			return Ok("Upload completed successfully");
+		}
+
+		/// <summary>
+		/// Video straming
+		/// </summary>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="403">Forbidden</response>
+		/// <response code="404">Not found</response>
+		/// <response code="500">Internal server error</response>
+		/// <response code="501">Not implemented</response>
+		[HttpGet("video/{id}", Name = "streamVideo")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> StreamVideo([Required] string access_token, string id)
+		{
+			var video = await _repository.VideoRepository.GetById(id);
+
+			if (video == null)
+				return NotFound("No video under provided ID");
+
+			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
+				return StatusCode(StatusCodes.Status403Forbidden);
+
+			if (video.ProcessingProgress != ProcessingProgress.Ready)
+				return BadRequest("Video is in state that doesn't allow for streaming");
+
+			string? path = _repository.VideoRepository.GetReadyFilePath(id);
+			if (path == null)
+				return StatusCode(StatusCodes.Status501NotImplemented);
+
+			if (!System.IO.File.Exists(path))
+				return StatusCode(StatusCodes.Status500InternalServerError);
+
+			var res = File(System.IO.File.OpenRead(path), "video/mp4", true);
+			return res;
+		}
+
+		/// <summary>
+		/// *Endpoint for testing*
+		/// </summary>
+		/// <returns>List of all videos</returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		[HttpGet("getAllVideos", Name = "GetAllVideos")]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<VideoMetadataDto>))]
+		public async Task<IActionResult> GetAllVideos()
+		{
+			var videos = await _repository.VideoRepository.GetAll();
+			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			return Ok(result);
 		}
 	}
 }
