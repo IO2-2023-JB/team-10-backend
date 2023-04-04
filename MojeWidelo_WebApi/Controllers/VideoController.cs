@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Contracts;
-using Entities.Data.User;
 using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
@@ -168,7 +167,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (!System.IO.File.Exists(path))
 				return StatusCode(StatusCodes.Status500InternalServerError);
-			System.IO.File.Move(path, _repository.VideoRepository.GetReadyFilePath(id));
+			System.IO.File.Move(path, _repository.VideoRepository.GetReadyFilePath(id)!);
 
 			_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Ready);
 
@@ -201,7 +200,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress != ProcessingProgress.Ready)
 				return BadRequest("Video is in state that doesn't allow for streaming");
 
-			string path = _repository.VideoRepository.GetReadyFilePath(id);
+			string? path = _repository.VideoRepository.GetReadyFilePath(id);
 			if (path == null)
 				return StatusCode(StatusCodes.Status501NotImplemented);
 
