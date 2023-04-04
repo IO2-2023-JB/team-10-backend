@@ -7,5 +7,6 @@ namespace Contracts
 	{
 		void ChangeVideoProcessingProgress(string id, ProcessingProgress uploading);
 		string? CreateNewPath(string id, string fileName);
+		string? GetReadyFilePath(string id);
 	}
 }

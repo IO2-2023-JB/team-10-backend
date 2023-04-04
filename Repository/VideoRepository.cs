@@ -40,5 +40,25 @@ namespace Repository
 			video.EditDate = DateTime.Now;
 			await Update(id, video);
 		}
+
+		public string? GetReadyFilePath(string id)
+		{
+			string location;
+
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				location = Environment.GetEnvironmentVariable("MojeWideloStorage", EnvironmentVariableTarget.Machine)!;
+
+				if (string.IsNullOrEmpty(location))
+					return null;
+			}
+			else
+			{
+				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
+				location = "/home/ubuntu/video-storage";
+			}
+
+			return Path.Combine(location, id + ".mp4");
+		}
 	}
 }
