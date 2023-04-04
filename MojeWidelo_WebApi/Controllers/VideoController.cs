@@ -212,20 +212,20 @@ namespace MojeWidelo_WebApi.Controllers
 			return res;
 		}
 
-        /// <summary>
-        /// *Endpoint for testing*
-        /// </summary>
-        /// <returns>List of all videos</returns>
-        /// <response code="200">OK</response>
-        /// <response code="400">Bad request</response>
-        /// <response code="401">Unauthorized</response>
-        [HttpGet("getAllVideos", Name = "GetAllVideos")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<VideoMetadataDto>))]
-        public async Task<IActionResult> GetAllVideos()
-        {
-            var videos = await _repository.VideoRepository.GetAll();
-            var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
-            return Ok(result);
-        }
-    }
+		/// <summary>
+		/// *Endpoint for testing*
+		/// </summary>
+		/// <returns>List of all videos</returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		[HttpGet("getAllVideos", Name = "GetAllVideos")]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<VideoMetadataDto>))]
+		public async Task<IActionResult> GetAllVideos()
+		{
+			var videos = await _repository.VideoRepository.GetAll();
+			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			return Ok(result);
+		}
+	}
 }
