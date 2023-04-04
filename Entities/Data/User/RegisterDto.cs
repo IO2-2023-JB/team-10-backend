@@ -18,7 +18,7 @@ namespace Entities.Data.User
 		/// <example>password123</example>
 		[Required]
 		public string Password { get; set; }
-	}
+    }
 
 	public class RegisterResponseDto
 	{

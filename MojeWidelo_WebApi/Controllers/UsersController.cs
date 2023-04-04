@@ -75,7 +75,7 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(UserDto))]
 		public async Task<IActionResult> UpdateUser(string? id, [FromBody] UpdateUserDto userDto)
-	{
+		{
 			id ??= GetUserIdFromToken();
 			var user = await _repository.UsersRepository.GetById(id);
 
@@ -91,11 +91,10 @@ namespace MojeWidelo_WebApi.Controllers
 
 			user = _mapper.Map<UpdateUserDto, User>(userDto, user);
 
-			 if (userDTO.AvatarImage != null)
-            {
-                user.AvatarImage = await _repository.UsersRepository.UploadAvatar(user, userDTO.AvatarImage);
-            }
-
+			if (userDto.AvatarImage != null)
+			{
+				user.AvatarImage = await _repository.UsersRepository.UploadAvatar(user, userDto.AvatarImage);
+			}
 
 			var newUser = await _repository.UsersRepository.Update(id, user);
 			var result = _mapper.Map<UserDto>(newUser);
@@ -120,19 +119,16 @@ namespace MojeWidelo_WebApi.Controllers
 			if (existingUser != null)
 				return StatusCode(StatusCodes.Status409Conflict, new RegisterResponseDto("Account already exists."));
 
-			
-
-			var user = await _repository.UsersRepository.Create(_mapper.Map<User>(registerDto));
+			var user = _mapper.Map<User>(registerDto);
 			
 			if (registerDto.AvatarImage != null)
-            {
-                // upload avatara, uzupełnienie info w userze, update usera
+			{
                 user.AvatarImage = await _repository.UsersRepository.UploadAvatar(user, registerDto.AvatarImage);
-                user = await _repository.UsersRepository.Update(user.Id, user);
-            }
+			}
 
+            user = await _repository.UsersRepository.Create(user);
 
-			return StatusCode(StatusCodes.Status201Created, new RegisterResponseDto("Account created successfully."));
+            return StatusCode(StatusCodes.Status201Created, new RegisterResponseDto("Account created successfully."));
 		}
 
 		/// <summary>

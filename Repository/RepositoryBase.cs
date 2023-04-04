@@ -11,16 +11,16 @@ namespace Repository
 	{
 		public IMongoCollection<T> _collection { get; }
 
-        public IGridFSBucket _bucket { get; }
+		public IGridFSBucket _bucket { get; }
 
-        public RepositoryBase(IDatabaseSettings databaseSettings, string collectionName)
-        {
-            var client = new MongoClient(databaseSettings.ConnectionString);
-            var database = client.GetDatabase(databaseSettings.DatabaseName);
+		public RepositoryBase(IDatabaseSettings databaseSettings, string collectionName)
+		{
+			var client = new MongoClient(databaseSettings.ConnectionString);
+			var database = client.GetDatabase(databaseSettings.DatabaseName);
 
-            _bucket = new GridFSBucket(database); 
-            _collection = database.GetCollection<T>(collectionName);
-        }
+			_bucket = new GridFSBucket(database);
+			_collection = database.GetCollection<T>(collectionName);
+		}
 
 		public async Task<IEnumerable<T>> GetAll()
 		{

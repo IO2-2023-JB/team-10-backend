@@ -30,5 +30,5 @@ namespace Entities.Data.User
 		/// </summary>
 		/// <example>12000</example>
 		public int? SubscriptionsCount { get; set; }
-	}
+    }
 }

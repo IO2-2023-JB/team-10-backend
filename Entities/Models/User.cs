@@ -22,10 +22,6 @@ namespace Entities.Models
 
 		public int SubscriptionsCount { get; set; }
 
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string AvatarImage
-        {
-            get; set;
-        }
-    }
+		public string AvatarImage { get; set; }
+	}
 }
