@@ -25,7 +25,8 @@ namespace MojeWidelo_WebApi.Mapper
 					opt => opt.MapFrom(register => HashHelper.HashPassword(register.Password))
 				);
 
-			CreateMap<VideoUploadDto, VideoMetadata>();
+			CreateMap<VideoUploadDto, VideoMetadata>()
+				.ForMember(video => video.Tags, opt => opt.MapFrom(video => video.Tags.Distinct()));
 			CreateMap<VideoMetadata, VideoMetadataDto>();
 
 			// ignoruję pola które nie mogą być zmieniane (w PUT video-metadata)
@@ -35,7 +36,8 @@ namespace MojeWidelo_WebApi.Mapper
 				.ForMember(video => video.ProcessingProgress, opt => opt.Ignore())
 				.ForMember(video => video.ViewCount, opt => opt.Ignore())
 				.ForMember(video => video.Duration, opt => opt.Ignore())
-				.ForMember(video => video.UploadDate, opt => opt.Ignore());
+				.ForMember(video => video.UploadDate, opt => opt.Ignore())
+				.ForMember(video => video.Tags, opt => opt.MapFrom(video => video.Tags.Distinct()));
 		}
 	}
 }
