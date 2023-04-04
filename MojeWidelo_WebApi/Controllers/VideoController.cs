@@ -5,6 +5,7 @@ using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 
 namespace MojeWidelo_WebApi.Controllers
@@ -58,10 +59,13 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="401">Unauthorised</response>
 		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
-		[HttpPut("video-metadata/{id}")]
+		[HttpPut("video-metadata")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDto))]
-		public async Task<IActionResult> UpdateVideoMetadata(string id, [FromBody] VideoUpdateDto videoUpdateDto)
+		public async Task<IActionResult> UpdateVideoMetadata(
+			[Required] string id,
+			[FromBody] VideoUpdateDto videoUpdateDto
+		)
 		{
 			// pobieram stare dane, omijam te immutable (patrz MappingProfile.cs)
 			var video = await _repository.VideoRepository.GetById(id);
@@ -94,10 +98,10 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="401">Unauthorised</response>
 		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
-		[HttpGet("video-metadata/{id}")]
+		[HttpGet("video-metadata")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDto))]
-		public async Task<IActionResult> GetVideoMetadataById(string id)
+		public async Task<IActionResult> GetVideoMetadataById([Required] string id)
 		{
 			var video = await _repository.VideoRepository.GetById(id);
 

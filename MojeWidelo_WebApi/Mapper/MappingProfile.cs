@@ -18,6 +18,7 @@ namespace MojeWidelo_WebApi.Mapper
 						)
 				);
 			CreateMap<UpdateUserDto, User>();
+
 			CreateMap<RegisterRequestDto, User>()
 				.ForMember(
 					user => user.Password,
