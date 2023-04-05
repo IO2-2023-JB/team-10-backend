@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Re
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7D88946D-24C0-4ABF-8453-048476A6795C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MojeWidelo_WebApi.UnitTests", "MojeWidelo_WebApi.UnitTests\MojeWidelo_WebApi.UnitTests.csproj", "{BB20AA62-B886-4256-A47F-E9A457C293A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MojeWidelo_WebApi.UnitTests", "MojeWidelo_WebApi.UnitTests\MojeWidelo_WebApi.UnitTests.csproj", "{BB20AA62-B886-4256-A47F-E9A457C293A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
