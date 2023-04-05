@@ -33,6 +33,6 @@ namespace Entities.Data.User
 		[EnumDataType(typeof(UserType))]
 		public UserType UserType { get; set; }
 
-		public string AvatarImage { get; set; }
+		public string? AvatarImage { get; set; }
 	}
 }
