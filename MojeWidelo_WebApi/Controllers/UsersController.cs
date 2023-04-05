@@ -120,15 +120,16 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status409Conflict, new RegisterResponseDto("Account already exists."));
 
 			var user = _mapper.Map<User>(registerDto);
-			
+
 			if (registerDto.AvatarImage != null)
 			{
-                user.AvatarImage = await _repository.UsersRepository.UploadAvatar(user, registerDto.AvatarImage);
+				user.AvatarImage = "/api/avatar/";
+				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, registerDto.AvatarImage);
 			}
 
-            user = await _repository.UsersRepository.Create(user);
+			user = await _repository.UsersRepository.Create(user);
 
-            return StatusCode(StatusCodes.Status201Created, new RegisterResponseDto("Account created successfully."));
+			return StatusCode(StatusCodes.Status201Created, new RegisterResponseDto("Account created successfully."));
 		}
 
 		/// <summary>

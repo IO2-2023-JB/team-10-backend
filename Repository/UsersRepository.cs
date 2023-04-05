@@ -2,7 +2,7 @@
 using Entities.Data.User;
 using Entities.DatabaseUtils;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Repository
@@ -30,16 +30,20 @@ namespace Repository
 
 		public async Task<string> UploadAvatar(User user, string file)
 		{
-
+			// potrzebna nam ta nazwa wgl? nic z nią nie robimy
 			var fileName = "temp";
 			byte[] imgByteArray = Convert.FromBase64String(file);
 
-			 var id = await _bucket.UploadFromBytesAsync(
-				fileName,
-				imgByteArray
-			);
+			var id = await _bucket.UploadFromBytesAsync(fileName, imgByteArray);
 
 			return id.ToString();
+		}
+
+		public async Task<byte[]> GetAvatarBytes(string id)
+		{
+			var bytes = await _bucket.DownloadAsBytesAsync(ObjectId.Parse(id));
+
+			return bytes;
 		}
 	}
 }

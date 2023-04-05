@@ -10,5 +10,7 @@ namespace Contracts
 
 		UserDto CheckPermissionToGetAccountBalance(string requesterId, UserDto userDto);
 		Task<string> UploadAvatar(User user, string avatarImage);
+
+		Task<byte[]> GetAvatarBytes(string id);
 	}
 }
