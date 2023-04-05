@@ -93,7 +93,10 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (userDto.AvatarImage != null)
 			{
-				user.AvatarImage = await _repository.UsersRepository.UploadAvatar(user, userDto.AvatarImage);
+				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
+				string url = location.AbsoluteUri;
+				user.AvatarImage = url + "api/avatar/";
+				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, userDto.AvatarImage);
 			}
 
 			var newUser = await _repository.UsersRepository.Update(id, user);
@@ -123,7 +126,9 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (registerDto.AvatarImage != null)
 			{
-				user.AvatarImage = "/api/avatar/";
+				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
+				string url = location.AbsoluteUri;
+				user.AvatarImage = url + "api/avatar/";
 				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, registerDto.AvatarImage);
 			}
 
