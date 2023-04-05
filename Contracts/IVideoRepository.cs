@@ -9,5 +9,6 @@ namespace Contracts
 		string? CreateNewPath(string id, string fileName);
 		string? GetReadyFilePath(string id);
 		void ProccessVideoFile(string id, string path);
+		public string? GetStorageDirectory();
 	}
 }
