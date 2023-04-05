@@ -64,7 +64,7 @@ For video upload/download to function properly, user must first configure enviro
 	
 ## Video processing
 
-Software called FFmpeg is used to convert uploaded video files to desired format. It is necessary to have FFmpeg instal in order to use POST /video/{id} endpoint.
+Software called FFmpeg is used to convert uploaded video files to desired format. It is necessary to have FFmpeg installed in order to use POST /video/{id} endpoint.
 
 ### FFmpeg instalation
 

@@ -23,7 +23,7 @@ namespace Repository
 			return Path.Combine(location, id + "_original" + extension);
 		}
 
-		public async Task<bool> ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
+		public async Task ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
 		{
 			VideoMetadata video = await GetById(id);
 			ProcessingProgress pastProgress = video.ProcessingProgress;
@@ -39,7 +39,6 @@ namespace Repository
 					+ " => "
 					+ progress.ToString()
 			);
-			return true;
 		}
 
 		public string? GetStorageDirectory()
