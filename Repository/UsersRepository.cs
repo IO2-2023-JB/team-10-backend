@@ -32,7 +32,8 @@ namespace Repository
 		{
 			// potrzebna nam ta nazwa wgl? nic z nią nie robimy
 			var fileName = "temp";
-			byte[] imgByteArray = Convert.FromBase64String(file);
+			int startIdx = file.IndexOf(',');
+			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
 
 			var id = await _bucket.UploadFromBytesAsync(fileName, imgByteArray);
 
