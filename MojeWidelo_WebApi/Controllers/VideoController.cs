@@ -157,29 +157,22 @@ namespace MojeWidelo_WebApi.Controllers
 
 			try
 			{
-				_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploading);
+				await _repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploading);
 
 				using var stream = new FileStream(path, FileMode.Create);
 				await videoFile.CopyToAsync(stream);
 			}
 			catch (Exception)
 			{
-				_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.FailedToUpload);
+				await _repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.FailedToUpload);
 
 				return StatusCode(StatusCodes.Status500InternalServerError);
 			}
 
-			_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploaded);
+			await _repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploaded);
 
-			// PROCESSING PATCH
-
-			if (!System.IO.File.Exists(path))
-				return StatusCode(StatusCodes.Status500InternalServerError);
-			System.IO.File.Move(path, _repository.VideoRepository.GetReadyFilePath(id)!);
-
-			_repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Ready);
-
-			// END OF PROCESSING PATCH
+			Thread t = new Thread(() => _repository.VideoRepository.ProccessVideoFile(id, path));
+			t.Start();
 
 			return Ok("Upload completed successfully");
 		}

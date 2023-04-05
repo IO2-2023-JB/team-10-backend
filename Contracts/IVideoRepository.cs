@@ -5,8 +5,10 @@ namespace Contracts
 {
 	public interface IVideoRepository : IRepositoryBase<VideoMetadata>
 	{
-		void ChangeVideoProcessingProgress(string id, ProcessingProgress uploading);
+		Task ChangeVideoProcessingProgress(string id, ProcessingProgress uploading);
 		string? CreateNewPath(string id, string fileName);
 		string? GetReadyFilePath(string id);
+		void ProccessVideoFile(string id, string path);
+		public string? GetStorageDirectory();
 	}
 }

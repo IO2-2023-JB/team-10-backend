@@ -51,7 +51,7 @@ WebAPI runs as service io2_api.service on our VM.
 	
 ## Video storage
 
-For video upload/download to function properly, user must first configure environment variable called MojeWideloStorage, which shall be an absolute path to the directory that is designated to be storage place for video
+For video upload/download to function properly, user must first configure environment variable called MojeWideloStorage, which shall be an absolute path to the directory that is designated to be storage place for video.
 
 ### Command Line code (for Windows users)
 
@@ -61,3 +61,12 @@ For video upload/download to function properly, user must first configure enviro
 ### Bash command 
 
 	soon
+	
+## Video processing
+
+Software called FFmpeg is used to convert uploaded video files to desired format. It is necessary to have FFmpeg installed in order to use POST /video/{id} endpoint.
+
+### FFmpeg instalation
+
+	https://www.wikihow.com/Install-FFmpeg-on-Windows
+	Installing FFmpeg is simply matter of following instructions from link below.
