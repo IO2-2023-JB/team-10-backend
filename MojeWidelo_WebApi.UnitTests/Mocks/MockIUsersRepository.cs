@@ -21,7 +21,7 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 					Nickname = "Unit Test User",
 					AccountBalance = 123042,
 					Email = "unit@test.com",
-					Password = "password123",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
 					SubscriptionsCount = 42,
 					UserType = Entities.Enums.UserType.Creator
 				},
@@ -33,7 +33,7 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 					Nickname = "nick",
 					AccountBalance = 10,
 					Email = "user2@test.com",
-					Password = "password123",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
 					SubscriptionsCount = 0,
 					UserType = Entities.Enums.UserType.Simple
 				}
@@ -42,7 +42,7 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 			mock.Setup(m => m.GetAll()).ReturnsAsync(() => collection);
 
 			mock.Setup(m => m.GetById(It.IsAny<string>()))
-				.ReturnsAsync((string id) => collection.FirstOrDefault(o => o.Id == id));
+				.ReturnsAsync((string id) => collection.FirstOrDefault(o => o.Id == id)!);
 
 			mock.Setup(m => m.Create(It.IsAny<User>())).ReturnsAsync((User user) => user);
 
@@ -56,7 +56,19 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 				.ReturnsAsync((string id, User user) => user);
 
 			mock.Setup(m => m.CheckPermissionToGetAccountBalance(It.IsAny<string>(), It.IsAny<UserDto>()))
-				.Returns((string requesterId, UserDto user) => user);
+				.Returns(
+					(string requesterId, UserDto user) =>
+					{
+						if (requesterId != user.Id)
+						{
+							user.AccountBalance = null;
+						}
+						return user;
+					}
+				);
+
+			mock.Setup(m => m.FindUserByEmail(It.IsAny<string>()))
+				.ReturnsAsync((string email) => collection.FirstOrDefault(o => o.Email == email)!);
 
 			return mock;
 		}
