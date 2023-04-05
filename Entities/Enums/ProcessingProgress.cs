@@ -7,6 +7,7 @@
 		Uploaded,
 		FailedToUpload,
 		Processing,
+		FailedToProcess,
 		Ready
 	}
 }
