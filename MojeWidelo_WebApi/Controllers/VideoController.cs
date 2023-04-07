@@ -255,20 +255,9 @@ namespace MojeWidelo_WebApi.Controllers
 				return BadRequest("Nie można usunąć wideo będącego w trakcie przetwarzania.");
 			}
 
-			string location;
-
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				location = Environment.GetEnvironmentVariable("MojeWideloStorage", EnvironmentVariableTarget.Machine)!;
-
-				if (string.IsNullOrEmpty(location))
-					return BadRequest(NotFound("Zmienna środowiskowa dla MojeWideloStorage nie jest ustawiona"));
-			}
-			else
-			{
-				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
-				location = "/home/ubuntu/video-storage";
-			}
+			string? location = _repository.VideoRepository.GetStorageDirectory();
+			if (location == null)
+				return BadRequest(NotFound("Zmienna środowiskowa dla MojeWideloStorage nie jest ustawiona"));
 
 			string[] filesToDelete = Directory.GetFiles(location, id + "*");
 
