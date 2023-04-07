@@ -30,8 +30,7 @@ namespace Repository
 
 		public async Task<string> UploadAvatar(User user, string file)
 		{
-			// potrzebna nam ta nazwa wgl? nic z nią nie robimy
-			var fileName = "temp";
+			string fileName = "temp";
 			int startIdx = file.IndexOf(',');
 			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
 
