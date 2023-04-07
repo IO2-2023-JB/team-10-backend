@@ -32,5 +32,7 @@ namespace Entities.Data.User
 		/// <example>Creator</example>
 		[EnumDataType(typeof(UserType))]
 		public UserType UserType { get; set; }
+
+		public string? AvatarImage { get; set; }
 	}
 }

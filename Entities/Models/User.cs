@@ -1,4 +1,6 @@
 ﻿using Entities.Enums;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Entities.Models
 {
@@ -19,5 +21,7 @@ namespace Entities.Models
 		public string Password { get; set; }
 
 		public int SubscriptionsCount { get; set; }
+
+		public string AvatarImage { get; set; }
 	}
 }

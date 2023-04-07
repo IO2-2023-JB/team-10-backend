@@ -90,6 +90,15 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			user = _mapper.Map<UpdateUserDto, User>(userDto, user);
+
+			if (userDto.AvatarImage != null)
+			{
+				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
+				string url = location.AbsoluteUri;
+				user.AvatarImage = url + "api/avatar/";
+				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, userDto.AvatarImage);
+			}
+
 			var newUser = await _repository.UsersRepository.Update(id, user);
 			var result = _mapper.Map<UserDto>(newUser);
 			return Ok(result);
@@ -113,7 +122,18 @@ namespace MojeWidelo_WebApi.Controllers
 			if (existingUser != null)
 				return StatusCode(StatusCodes.Status409Conflict, new RegisterResponseDto("Account already exists."));
 
-			var user = await _repository.UsersRepository.Create(_mapper.Map<User>(registerDto));
+			var user = _mapper.Map<User>(registerDto);
+
+			if (registerDto.AvatarImage != null)
+			{
+				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
+				string url = location.AbsoluteUri;
+				user.AvatarImage = url + "api/avatar/";
+				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, registerDto.AvatarImage);
+			}
+
+			user = await _repository.UsersRepository.Create(user);
+
 			return StatusCode(StatusCodes.Status201Created, new RegisterResponseDto("Account created successfully."));
 		}
 

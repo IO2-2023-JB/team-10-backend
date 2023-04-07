@@ -2,6 +2,7 @@
 using Entities.DatabaseUtils;
 using Entities.Models;
 using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace Repository
 {
@@ -10,10 +11,14 @@ namespace Repository
 	{
 		public IMongoCollection<T> _collection { get; }
 
+		public IGridFSBucket _bucket { get; }
+
 		public RepositoryBase(IDatabaseSettings databaseSettings, string collectionName)
 		{
 			var client = new MongoClient(databaseSettings.ConnectionString);
 			var database = client.GetDatabase(databaseSettings.DatabaseName);
+
+			_bucket = new GridFSBucket(database);
 			_collection = database.GetCollection<T>(collectionName);
 		}
 
