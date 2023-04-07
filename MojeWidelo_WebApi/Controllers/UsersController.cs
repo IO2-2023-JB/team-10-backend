@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using MojeWidelo_WebApi.Helpers;
+using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mime;
@@ -18,8 +19,13 @@ namespace MojeWidelo_WebApi.Controllers
 	[ApiController]
 	public class UsersController : BaseController
 	{
-		public UsersController(IRepositoryWrapper repository, IMapper mapper)
-			: base(repository, mapper) { }
+		private readonly UsersManager _usersManager;
+
+		public UsersController(IRepositoryWrapper repository, IMapper mapper, UsersManager usersManager)
+			: base(repository, mapper)
+		{
+			_usersManager = usersManager;
+		}
 
 		/// <summary>
 		/// *Endpoint for testing*
@@ -56,7 +62,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return NotFound();
 			var result = _mapper.Map<UserDto>(user);
 
-			result = _repository.UsersRepository.CheckPermissionToGetAccountBalance(GetUserIdFromToken(), result);
+			result = _usersManager.CheckPermissionToGetAccountBalance(GetUserIdFromToken(), result);
 
 			return Ok(result);
 		}

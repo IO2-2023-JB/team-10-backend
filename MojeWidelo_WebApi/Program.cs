@@ -12,6 +12,7 @@ builder.Services.ConfigureFilters();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.ConfigureSwagger();
 builder.Services.ConfigureServices();
+builder.Services.ConfigureManagers();
 
 #endregion
 

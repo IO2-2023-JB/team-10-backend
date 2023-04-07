@@ -1,43 +1,27 @@
-﻿using AutoMapper;
-using Entities.Data.User;
+﻿using Entities.Data.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Controllers;
-using MojeWidelo_WebApi.Mapper;
-using MojeWidelo_WebApi.UnitTests.Mocks;
-using System.Security.Claims;
+using MojeWidelo_WebApi.UnitTests.Tests.Controllers;
+using Repository.Managers;
 
-namespace MojeWidelo_WebApi.UnitTests
+namespace MojeWidelo_WebApi.UnitTests.ControllersTests
 {
-	public class UsersControllerTests
+	public class UsersControllerTests : BaseControllerTests<UsersController>
 	{
-		//private readonly string _bearerToken = MockJwtToken.GenerateJwtToken();
-
-		private static UsersController GetController()
+		protected override UsersController GetController()
 		{
-			var repositoryWrapperMock = MockIRepositoryWrapper.GetMock();
+			var repositoryWrapperMock = GetRepositoryWrapperMock();
 			var mapper = GetMapper();
+			var usersManager = new UsersManager();
+			var controllerContext = GetControllerContext();
 
-			var httpContext = new DefaultHttpContext()
+			var usersController = new UsersController(repositoryWrapperMock.Object, mapper, usersManager)
 			{
-				User = new System.Security.Claims.ClaimsPrincipal(
-					new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.NameIdentifier, MockUser.Id), })
-				)
-			};
-
-			var usersController = new UsersController(repositoryWrapperMock.Object, mapper)
-			{
-				ControllerContext = new ControllerContext() { HttpContext = httpContext }
+				ControllerContext = controllerContext
 			};
 
 			return usersController;
-		}
-
-		public static IMapper GetMapper()
-		{
-			var mappingProfile = new MappingProfile();
-			var configuration = new MapperConfiguration(cfs => cfs.AddProfile(mappingProfile));
-			return new AutoMapper.Mapper(configuration);
 		}
 
 		[Fact]
@@ -45,7 +29,7 @@ namespace MojeWidelo_WebApi.UnitTests
 		{
 			var usersController = GetController();
 
-			var result = (await usersController.GetUserById()) as ObjectResult;
+			var result = await usersController.GetUserById() as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
@@ -58,7 +42,7 @@ namespace MojeWidelo_WebApi.UnitTests
 		{
 			var usersController = GetController();
 
-			var result = (await usersController.GetUserById("6429a1ee0d48bf254e17eaf7")) as ObjectResult;
+			var result = await usersController.GetUserById("6429a1ee0d48bf254e17eaf7") as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
@@ -71,7 +55,7 @@ namespace MojeWidelo_WebApi.UnitTests
 		{
 			var usersController = GetController();
 
-			var result = (await usersController.GetUserById("1429a1ee0d48bf254e17eaf7")) as NotFoundResult;
+			var result = await usersController.GetUserById("1429a1ee0d48bf254e17eaf7") as NotFoundResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -92,7 +76,7 @@ namespace MojeWidelo_WebApi.UnitTests
 				UserType = Entities.Enums.UserType.Simple
 			};
 
-			var result = (await usersController.RegisterUser(user)) as ObjectResult;
+			var result = await usersController.RegisterUser(user) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status201Created, result?.StatusCode);
@@ -113,7 +97,7 @@ namespace MojeWidelo_WebApi.UnitTests
 				UserType = Entities.Enums.UserType.Simple
 			};
 
-			var result = (await usersController.RegisterUser(user)) as ObjectResult;
+			var result = await usersController.RegisterUser(user) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status409Conflict, result?.StatusCode);
@@ -125,7 +109,7 @@ namespace MojeWidelo_WebApi.UnitTests
 			var userController = GetController();
 			var loginDto = new LoginDto() { Email = "unit@test.com", Password = "test_password123" };
 
-			var result = (await userController.Login(loginDto)) as ObjectResult;
+			var result = await userController.Login(loginDto) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
@@ -139,7 +123,7 @@ namespace MojeWidelo_WebApi.UnitTests
 			var userController = GetController();
 			var loginDto = new LoginDto() { Email = "notFound@test.com", Password = "test_password123" };
 
-			var result = (await userController.Login(loginDto)) as NotFoundResult;
+			var result = await userController.Login(loginDto) as NotFoundResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -151,7 +135,7 @@ namespace MojeWidelo_WebApi.UnitTests
 			var userController = GetController();
 			var loginDto = new LoginDto() { Email = "unit@test.com", Password = "password123" };
 
-			var result = (await userController.Login(loginDto)) as UnauthorizedResult;
+			var result = await userController.Login(loginDto) as UnauthorizedResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status401Unauthorized, result?.StatusCode);

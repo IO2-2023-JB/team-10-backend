@@ -7,6 +7,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using MojeWidelo_WebApi.Filters;
 using Repository;
+using Repository.Managers;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -156,6 +157,12 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<ModelValidationFilter>();
 			services.AddScoped<ObjectIdValidationFilter>();
 			services.AddScoped<VideoExtensionValidationFilter>();
+		}
+
+		public static void ConfigureManagers(this IServiceCollection services)
+		{
+			services.AddScoped<UsersManager>();
+			services.AddScoped<VideoManager>();
 		}
 	}
 }

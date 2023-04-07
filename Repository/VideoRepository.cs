@@ -1,10 +1,10 @@
 ﻿using CliWrap;
+using CliWrap.Buffered;
 using Contracts;
 using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
-using System.Runtime.InteropServices;
-using CliWrap.Buffered;
+using Repository.Managers;
 
 namespace Repository
 {
@@ -12,16 +12,6 @@ namespace Repository
 	{
 		public VideoRepository(IDatabaseSettings databaseSettings)
 			: base(databaseSettings, databaseSettings.VideoCollectionName) { }
-
-		public string? CreateNewPath(string id, string fileName)
-		{
-			string? location = GetStorageDirectory();
-			if (location == null)
-				return null;
-
-			string extension = Path.GetExtension(fileName);
-			return Path.Combine(location, id + "_original" + extension);
-		}
 
 		public async Task ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
 		{
@@ -41,37 +31,9 @@ namespace Repository
 			);
 		}
 
-		public string? GetStorageDirectory()
-		{
-			string location;
-
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				location = Environment.GetEnvironmentVariable("MojeWideloStorage", EnvironmentVariableTarget.Machine)!;
-
-				if (string.IsNullOrEmpty(location))
-					return null;
-			}
-			else
-			{
-				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
-				location = "/home/ubuntu/video-storage";
-			}
-
-			return location;
-		}
-
-		public string? GetReadyFilePath(string id)
-		{
-			string? location = GetStorageDirectory();
-			if (location == null)
-				return null;
-
-			return Path.Combine(location, id + ".mp4");
-		}
-
 		public async void ProccessVideoFile(string id, string path)
 		{
+			var videoManager = new VideoManager();
 			try
 			{
 				VideoMetadata video = await GetById(id);
@@ -85,7 +47,7 @@ namespace Repository
 				if (!System.IO.File.Exists(path))
 					throw new Exception("Original video file does not exist!");
 
-				string? newPath = GetReadyFilePath(id);
+				string? newPath = videoManager.GetReadyFilePath(id);
 				if (newPath == null)
 					throw new Exception("Unable to create path for converted video file!");
 
@@ -109,7 +71,7 @@ namespace Repository
 				String errorMessage = DateTime.Now.ToString() + "   " + id + "   " + e.Message;
 				Console.WriteLine(errorMessage);
 
-				string? location = GetStorageDirectory();
+				string? location = videoManager.GetStorageDirectory();
 				if (location == null)
 					return;
 

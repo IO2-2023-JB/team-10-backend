@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities.Data.User;
 using Entities.Models;
 using Moq;
 
@@ -54,18 +53,6 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 
 			mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<User>()))
 				.ReturnsAsync((string id, User user) => user);
-
-			mock.Setup(m => m.CheckPermissionToGetAccountBalance(It.IsAny<string>(), It.IsAny<UserDto>()))
-				.Returns(
-					(string requesterId, UserDto user) =>
-					{
-						if (requesterId != user.Id)
-						{
-							user.AccountBalance = null;
-						}
-						return user;
-					}
-				);
 
 			mock.Setup(m => m.FindUserByEmail(It.IsAny<string>()))
 				.ReturnsAsync((string email) => collection.FirstOrDefault(o => o.Email == email)!);

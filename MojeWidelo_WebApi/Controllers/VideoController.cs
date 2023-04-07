@@ -5,17 +5,22 @@ using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
+using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Runtime.InteropServices;
 
 namespace MojeWidelo_WebApi.Controllers
 {
 	[ApiController]
 	public class VideoController : BaseController
 	{
-		public VideoController(IRepositoryWrapper repository, IMapper mapper)
-			: base(repository, mapper) { }
+		private readonly VideoManager _videoManager;
+
+		public VideoController(IRepositoryWrapper repository, IMapper mapper, VideoManager videoManager)
+			: base(repository, mapper)
+		{
+			_videoManager = videoManager;
+		}
 
 		/// <summary>
 		/// Video metadata upload
@@ -151,7 +156,7 @@ namespace MojeWidelo_WebApi.Controllers
 			)
 				return BadRequest("Video is in state that doesn't allow for upload");
 
-			string? path = _repository.VideoRepository.CreateNewPath(id, videoFile.FileName);
+			string? path = _videoManager.CreateNewPath(id, videoFile.FileName);
 			if (path == null)
 				return StatusCode(StatusCodes.Status501NotImplemented);
 
@@ -201,7 +206,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress != ProcessingProgress.Ready)
 				return BadRequest("Video is in state that doesn't allow for streaming");
 
-			string? path = _repository.VideoRepository.GetReadyFilePath(id);
+			string? path = _videoManager.GetReadyFilePath(id);
 			if (path == null)
 				return StatusCode(StatusCodes.Status501NotImplemented);
 
@@ -255,7 +260,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return BadRequest("Nie można usunąć wideo będącego w trakcie przetwarzania.");
 			}
 
-			string? location = _repository.VideoRepository.GetStorageDirectory();
+			string? location = _videoManager.GetStorageDirectory();
 			if (location == null)
 				return BadRequest(NotFound("Zmienna środowiskowa dla MojeWideloStorage nie jest ustawiona"));
 

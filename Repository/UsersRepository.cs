@@ -1,5 +1,4 @@
 ﻿using Contracts;
-using Entities.Data.User;
 using Entities.DatabaseUtils;
 using Entities.Models;
 using MongoDB.Bson;
@@ -17,15 +16,6 @@ namespace Repository
 			var result = await _collection.Find(x => x.Email == email).FirstOrDefaultAsync();
 
 			return result;
-		}
-
-		public UserDto CheckPermissionToGetAccountBalance(string requesterId, UserDto user)
-		{
-			if (requesterId != user.Id)
-			{
-				user.AccountBalance = null;
-			}
-			return user;
 		}
 
 		public async Task<string> UploadAvatar(User user, string file)
