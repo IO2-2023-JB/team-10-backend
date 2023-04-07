@@ -30,9 +30,10 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 			services.AddScoped<IUsersRepository, UsersRepository>();
 			services.AddScoped<IVideoRepository, VideoRepository>();
-		}
+            services.AddScoped<IReactionRepository, ReactionRepository>();
+        }
 
-		public static void ConfigureSwagger(this IServiceCollection services)
+        public static void ConfigureSwagger(this IServiceCollection services)
 		{
 			services.AddSwaggerGen(c =>
 			{
