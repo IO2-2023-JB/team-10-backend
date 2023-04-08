@@ -285,5 +285,27 @@ namespace MojeWidelo_WebApi.Controllers
 
 			return Ok("Wideo usunięte pomyślnie.");
 		}
-	}
+
+        [HttpPost("video-reaction", Name = "addReaction")]
+        [ServiceFilter(typeof(ModelValidationFilter))]
+        public async Task<IActionResult> AddReaction([FromBody] ReactionDto dto)
+        {
+            var userId = GetUserIdFromToken();
+			var reaction = _mapper.Map<ReactionDto, Reaction>(dto);
+			reaction.UserId = userId;
+			await _repository.ReactionRepository.Create(reaction);
+
+            return Ok("Reakcja dodana pomyślnie.");
+        }
+
+        [HttpGet("video-reaction", Name = "getReaction")]
+        [ServiceFilter(typeof(ObjectIdValidationFilter))]
+        public async Task<IActionResult> GetReaction([Required] string id)
+		{
+			var result = await _repository.ReactionRepository.GetReactionsCount(id);
+			System.Diagnostics.Debug.WriteLine(result);
+
+			return Ok(result);
+        }
+    }
 }
