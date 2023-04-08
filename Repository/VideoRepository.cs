@@ -1,10 +1,14 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
 using Contracts;
+using Entities.Data.Video;
 using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Repository.Managers;
+using System.Runtime.CompilerServices;
 
 namespace Repository
 {
@@ -77,6 +81,30 @@ namespace Repository
 
 				using (StreamWriter sw = File.AppendText(Path.Combine(location, id + "_error_log.txt")))
 					sw.WriteLine(errorMessage);
+			}
+		}
+
+		// W SUMIE TO TA FUNKCJA JEST TAKA SAMA JAK UPLOADAVATAR (MOŻE BY COŚ Z TYM ZROBIĆ - GDZIE TO WRZUCIĆ??)
+		public async Task<string> UploadThumbnail(string file)
+		{
+			// tak jak w userze - tutaj wymyślić jakiś sensowną nazwę
+			string fileName = "temp";
+			int startIdx = file.IndexOf(',');
+			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
+
+			var id = await _bucket.UploadFromBytesAsync(fileName, imgByteArray);
+
+			return id.ToString();
+		}
+
+		public async Task SetThumbnail(HttpContext context, VideoMetadata video, VideoBaseDto videoDto)
+		{
+			if (videoDto.Thumbnail != null)
+			{
+				Uri location = new Uri($"{context.Request.Scheme}://{context.Request.Host}");
+				string url = location.AbsoluteUri;
+				video.Thumbnail = url + "api/thumbnail/";
+				video.Thumbnail += await UploadThumbnail(videoDto.Thumbnail);
 			}
 		}
 	}

@@ -44,6 +44,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			// mapowanie i uzupełnienie danych
 			var video = _mapper.Map<VideoMetadata>(videoUploadDto);
+			await _repository.VideoRepository.SetThumbnail(HttpContext, video, videoUploadDto);
 			video.UploadDate = video.EditDate = DateTime.Now;
 			video.AuthorId = user.Id;
 			video.AuthorNickname = user.Nickname;
@@ -95,6 +96,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			video = _mapper.Map<VideoUpdateDto, VideoMetadata>(videoUpdateDto, video);
 
+			await _repository.VideoRepository.SetThumbnail(HttpContext, video, videoUpdateDto);
 			video.EditDate = DateTime.Now;
 			video = await _repository.VideoRepository.Update(id, video);
 			var result = _mapper.Map<VideoMetadataDto>(video);

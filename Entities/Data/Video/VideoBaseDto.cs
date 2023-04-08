@@ -10,7 +10,7 @@ namespace Entities.Data.Video
 
 		public string Description { get; set; }
 
-		public IFormFile? Thumbnail { get; set; }
+		public string? Thumbnail { get; set; }
 
 		public IEnumerable<string> Tags { get; set; }
 
