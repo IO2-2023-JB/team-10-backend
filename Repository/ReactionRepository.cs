@@ -19,5 +19,14 @@ namespace Repository
             ret.negativeCount = reactions.Count((x) => x.ReactionType == ReactionType.Negative);
             return ret;
         }
+
+        public async Task<(ReactionType reactionType, string id)> GetCurrentUserReaction(string videoId, string userId)
+        {
+            var item = (await GetAll()).FirstOrDefault((x) => x.VideoId == videoId && x.UserId == userId);
+            if (item == null)
+                return (ReactionType.None, "");
+            return (item.ReactionType, item.Id);
+        }
+
     }
 }

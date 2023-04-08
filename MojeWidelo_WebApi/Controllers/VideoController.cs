@@ -291,11 +291,26 @@ namespace MojeWidelo_WebApi.Controllers
         public async Task<IActionResult> AddReaction([FromBody] ReactionDto dto)
         {
             var userId = GetUserIdFromToken();
-			var reaction = _mapper.Map<ReactionDto, Reaction>(dto);
-			reaction.UserId = userId;
-			await _repository.ReactionRepository.Create(reaction);
 
-            return Ok("Reakcja dodana pomyślnie.");
+			var currentReaction = await _repository.ReactionRepository.GetCurrentUserReaction(dto.VideoId, userId);
+			if (currentReaction.reactionType == ReactionType.None && dto.ReactionType != ReactionType.None)
+			{
+				var reaction = _mapper.Map<ReactionDto, Reaction>(dto);
+				reaction.UserId = userId;
+				await _repository.ReactionRepository.Create(reaction);
+			}
+			else
+			{
+				var reaction = await _repository.ReactionRepository.GetById(currentReaction.id);
+				if (dto.ReactionType == ReactionType.None)
+					await _repository.ReactionRepository.Delete(currentReaction.id);
+				else
+				{
+					reaction.ReactionType = dto.ReactionType;
+					await _repository.ReactionRepository.Update(currentReaction.id, reaction);
+				}
+			}
+			return Ok("Reakcja dodana pomyślnie.");
         }
 
         [HttpGet("video-reaction", Name = "getReaction")]
@@ -303,7 +318,6 @@ namespace MojeWidelo_WebApi.Controllers
         public async Task<IActionResult> GetReaction([Required] string id)
 		{
 			var result = await _repository.ReactionRepository.GetReactionsCount(id);
-			System.Diagnostics.Debug.WriteLine(result);
 
 			return Ok(result);
         }
