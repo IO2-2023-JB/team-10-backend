@@ -287,16 +287,16 @@ namespace MojeWidelo_WebApi.Controllers
 		}
 
         [HttpPost("video-reaction", Name = "addReaction")]
-        [ServiceFilter(typeof(ModelValidationFilter))]
-        public async Task<IActionResult> AddReaction([FromBody] ReactionDto dto)
+        [ServiceFilter(typeof(ObjectIdValidationFilter))]
+        public async Task<IActionResult> AddReaction([Required] string id, [FromBody] ReactionDto dto)
         {
             var userId = GetUserIdFromToken();
 
-			var currentReaction = await _repository.ReactionRepository.GetCurrentUserReaction(dto.VideoId, userId);
+			var currentReaction = await _repository.ReactionRepository.GetCurrentUserReaction(id, userId);
 			if (currentReaction.reactionType == ReactionType.None && dto.ReactionType != ReactionType.None)
 			{
 				var reaction = _mapper.Map<ReactionDto, Reaction>(dto);
-				reaction.UserId = userId;
+				(reaction.VideoId, reaction.UserId) = (id, userId);
 				await _repository.ReactionRepository.Create(reaction);
 			}
 			else
