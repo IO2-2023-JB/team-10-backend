@@ -9,9 +9,8 @@ namespace Contracts
 	{
 		Task ChangeVideoProcessingProgress(string id, ProcessingProgress uploading);
 		void ProccessVideoFile(string id, string path);
-
 		Task<string> UploadThumbnail(string file);
-
 		Task SetThumbnail(HttpContext httpContext, VideoMetadata video, VideoBaseDto videoDto);
+		Task<byte[]> GetThumbnailBytes(string id);
 	}
 }

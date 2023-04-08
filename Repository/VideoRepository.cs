@@ -7,6 +7,7 @@ using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using Repository.Managers;
 using System.Runtime.CompilerServices;
 
@@ -106,6 +107,13 @@ namespace Repository
 				video.Thumbnail = url + "api/thumbnail/";
 				video.Thumbnail += await UploadThumbnail(videoDto.Thumbnail);
 			}
+		}
+
+		public async Task<byte[]> GetThumbnailBytes(string id)
+		{
+			var bytes = await _bucket.DownloadAsBytesAsync(ObjectId.Parse(id));
+
+			return bytes;
 		}
 	}
 }
