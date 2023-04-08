@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data.Video
 {
-    public class ReactionResponseDto
-    {
-        public int positiveCount { get; set; }
+	public class ReactionResponseDto
+	{
+		public int positiveCount { get; set; }
 
-        public int negativeCount { get; set; }
-    }
+		public int negativeCount { get; set; }
+
+		public ReactionType currentUserReaction { get; set; }
+	}
 }

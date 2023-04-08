@@ -286,11 +286,11 @@ namespace MojeWidelo_WebApi.Controllers
 			return Ok("Wideo usunięte pomyślnie.");
 		}
 
-        [HttpPost("video-reaction", Name = "addReaction")]
-        [ServiceFilter(typeof(ObjectIdValidationFilter))]
-        public async Task<IActionResult> AddReaction([Required] string id, [FromBody] ReactionDto dto)
-        {
-            var userId = GetUserIdFromToken();
+		[HttpPost("video-reaction", Name = "addReaction")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> AddReaction([Required] string id, [FromBody] ReactionDto dto)
+		{
+			var userId = GetUserIdFromToken();
 
 			var currentReaction = await _repository.ReactionRepository.GetCurrentUserReaction(id, userId);
 			if (currentReaction.reactionType == ReactionType.None && dto.ReactionType != ReactionType.None)
@@ -299,7 +299,7 @@ namespace MojeWidelo_WebApi.Controllers
 				(reaction.VideoId, reaction.UserId) = (id, userId);
 				await _repository.ReactionRepository.Create(reaction);
 			}
-			else
+			else if (currentReaction.reactionType != ReactionType.None)
 			{
 				var reaction = await _repository.ReactionRepository.GetById(currentReaction.id);
 				if (dto.ReactionType == ReactionType.None)
@@ -310,16 +310,22 @@ namespace MojeWidelo_WebApi.Controllers
 					await _repository.ReactionRepository.Update(currentReaction.id, reaction);
 				}
 			}
-			return Ok("Reakcja dodana pomyślnie.");
-        }
 
-        [HttpGet("video-reaction", Name = "getReaction")]
-        [ServiceFilter(typeof(ObjectIdValidationFilter))]
-        public async Task<IActionResult> GetReaction([Required] string id)
+			return Ok("Reakcja dodana pomyślnie.");
+		}
+
+		[HttpGet("video-reaction", Name = "getReaction")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> GetReaction([Required] string id)
 		{
+			var userId = GetUserIdFromToken();
+
 			var result = await _repository.ReactionRepository.GetReactionsCount(id);
+			result.currentUserReaction = (
+				await _repository.ReactionRepository.GetCurrentUserReaction(id, userId)
+			).reactionType;
 
 			return Ok(result);
-        }
-    }
+		}
+	}
 }

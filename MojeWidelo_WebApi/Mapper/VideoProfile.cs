@@ -22,6 +22,6 @@ namespace MojeWidelo_WebApi.Mapper
 				.ForMember(video => video.Tags, opt => opt.MapFrom(video => video.Tags.Distinct()));
 
 			CreateMap<ReactionDto, Reaction>();
-        }
-    }
+		}
+	}
 }

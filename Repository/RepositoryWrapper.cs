@@ -6,9 +6,13 @@ namespace Repository
 	{
 		public IUsersRepository UsersRepository { get; }
 		public IVideoRepository VideoRepository { get; }
-        public IReactionRepository ReactionRepository{ get; }
+		public IReactionRepository ReactionRepository { get; }
 
-        public RepositoryWrapper(IUsersRepository usersRepository, IVideoRepository videoRepository, IReactionRepository reactionRepository)
+		public RepositoryWrapper(
+			IUsersRepository usersRepository,
+			IVideoRepository videoRepository,
+			IReactionRepository reactionRepository
+		)
 		{
 			UsersRepository = usersRepository;
 			VideoRepository = videoRepository;
