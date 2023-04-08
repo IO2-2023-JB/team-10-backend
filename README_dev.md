@@ -27,11 +27,11 @@ Solucja składa się z 5 projektów:
 - MojeWidelo_WebApi - projekt główny zawierący:
 
   - kontrolery w folderze Controllers
-  - klasę rozszerzającą interfejs IServiceCollection - tutaj znajduje się jest głównie konfiguracja i wstrzykiwanie zależności, które potem łatwo wywołać w Program.cs i zachować tam porządek i czytelność:
+  - klasę rozszerzającą interfejs IServiceCollection - tutaj znajduje się głównie konfiguracja i wstrzykiwanie zależności. Metody rozszerzające potem łatwo wywołać w Program.cs zachowując tam porządek i czytelność:
 
     ![image](https://user-images.githubusercontent.com/102852926/230637556-7f4bdbb7-c81a-41a8-99f9-bbec0411b432.png)
 
-  - Filters - folder zawierający filtry, czyli klasy implementujące dwie metody z interfejsu IActionFilter: OnActionExecuting i OnActionExecuted. Zaaplikowanie filtru odbywa się poprzez dodanie dekoratora `[ServiceFilter(typeof(ObjectIdValidationFilter))]` do metody, my używamy tego w metodach endpointowych w kontrolerach. OnActionExecuting wywoła się przed wykonaniem faktycznego ciała metody, a OnActionExecuting po jej wykonaniu. OnActionExecuting może też od razu zwrócić kod błędu (np. gdy id jest w niepoprawnym formacie - ObjectIdValidationFilter.cs) i wtedy metoda udekorowana nie wywołuje się.
+  - Filters - folder zawierający filtry, czyli klasy implementujące dwie metody z interfejsu IActionFilter: OnActionExecuting i OnActionExecuted. Zaaplikowanie filtru odbywa się poprzez dodanie dekoratora `[ServiceFilter(typeof(ObjectIdValidationFilter))]` do metody, my używamy tego w metodach endpointowych w kontrolerach. OnActionExecuting wywoła się przed wykonaniem faktycznego ciała metody, a OnActionExecuted po jej wykonaniu. OnActionExecuting może też od razu zwrócić kod błędu (np. gdy id jest w niepoprawnym formacie - ObjectIdValidationFilter.cs) i wtedy metoda udekorowana nie wywołuje się.
 
     Po utworzeniu nowego filtru trzeba go wstrzyknąć w metodzie `ConfigureFilters` w `ServiceExtensions.cs`.
 
@@ -47,7 +47,7 @@ Jeden kontroler powinien być odpowiedzialny za jedno repozytorium (ale ma wstrz
 
 Jedno repozytorium przeprowadza operacje na jednej kolekcji w bazie danych. Nie powinien mieć żadnych metod, które nie korzystają z kolekcji w bazie danych - utrudnia to testowanie.
 
-Każdy kontroller ma też swojego managera, który zawiera metody pomocnicze, które nie potrzebują dostępu do bazy danych.
+Każdy kontroler ma też swojego managera, który zawiera metody pomocnicze, które nie potrzebują dostępu do bazy danych.
 
 A więc by dodać np. VideoController wykonać trzeba było następujące kroki:
 
@@ -73,7 +73,7 @@ A więc by dodać np. VideoController wykonać trzeba było następujące kroki:
 
    ![image](https://user-images.githubusercontent.com/102852926/230642005-66594d6e-ca8f-4778-b5f2-9772061b73c0.png)
 
-6. W `IRepositoryWrapper` i `RepositoryWrapper` dodać uchwyt do `IVideoRepository`.
+6. W `IRepositoryWrapper` i `RepositoryWrapper` dodać property `IVideoRepository`.
 7. Wstrzyknąć zależność w metodzie `ConfigureRepository` w `ServiceExtensions.cs`:
 
    ![image](https://user-images.githubusercontent.com/102852926/230642542-e75e8f63-07c1-4b47-9abc-08850ffe933d.png)
@@ -93,6 +93,91 @@ Mam nadzieję, że o niczym nie zapomniałem. W razie co są już 2 w pełni fun
 
 <br/>
 
-## Pisanie testów
+## Testy jednostkowe
 
-**_TO DO_**
+**UWAGA: od teraz każdy pisze testy do swojego kodu na bieżąco!!!**
+
+### Mockowanie
+
+W folderze `Tests` znajduje się projekt do unit testów, potem może będą projekty z innymi testami.
+
+W unit testach będziemy mockować wszystkie `Repository`, bo w trakcie testów nie mamy połączenia z bazą danych, działamy na jakiejś statycznej kolekcji elementów.
+Korzystamy z nugeta `Moq`.
+
+W folderze `Mocks` znajdują się zamockowane:
+
+- Repozytoria - na przykładzie `UsersRepository`
+
+  `GetMock()` tworzy nam zmockowaną instancję `IUsersRepository`.
+
+  ![image](https://user-images.githubusercontent.com/102852926/230714144-118faae2-2a1f-470c-867d-269442503a9f.png)
+
+  Najpierw tworzymy statyczną kolekcję która będzie imitować kolekcję z bazy danych - wklepane z palca jakieś poprawne dane.
+
+  Następnie trzeba zdefiniować zachowanie dla każdego pola i każdej metody mockowanej klasy za pomocą `Setup`:
+
+  ![image](https://user-images.githubusercontent.com/102852926/230714228-ea768569-1add-49ee-a975-230720919030.png)
+
+  Czyli tak naprawdę na nowo piszemy uproszczoną wersję oryginalnej metody, która tylko z grubsza imituje zachowanie metod korzystających z bazy danych. Testy te zatem nie sprawdzą czy te metody oryginalne działają bo to nie jest zadaniem unit testów. Więc np. `Update` zwróci od razu obiekt który chcemy update'ować.
+
+  Syntax:
+
+  - `It.IsAny<T>()` to wskazanie że parametrem funkcji jest zmienna typu `T`.
+  - `Callback` - do mockowania metod nic nie zwracających, np. `Delete`. Wsadzamy tu wyrażenie lambda, które będzie się wykonywać przy każdym wywołaniu funkcji wskazanej w `Setup()`.
+  - `Returns` - do metod synchronicznych, i tak samo jak wyżej wsadzamy tu wyrażenie lambda...
+  - `ReturnsAsync` - do metod asynchronicznych, tak samo jak wyżej wsadzamy tu wyrażenie lambda...
+
+  Na sam koniec `GetMock()` zwracamy całego mocka, będziemy go używać w zamockowanym RepositoryWrapperze.
+
+- RepositoryWrapper - tutaj wykorzystujemy to co zrobiliśmy wyżej i wskazujemy, że pole UsersRepository zwraca zamockowaną instancję (`mock.Object` zwraca instancję zamockowanego obiektu).
+
+  ![image](https://user-images.githubusercontent.com/102852926/230717965-e5a1215d-0f31-4915-bd42-2652134a56ab.png)
+
+- MockUser - to jest zamockowany user wykorzystywany tylko do tego, by z `HttpContext` móc wyciągać Claimsy usera, tak jak to robimy normalnie za pomocą tokena. Są to statyczne pola, pewnie dałoby się tego usera zamockować jakoś ładniej to zrobić jakoś ładniej, jeśli ktoś ma na to pomysł to z chęcią wysłucham.
+
+  ![image](https://user-images.githubusercontent.com/102852926/230718133-f66f2433-a25b-49b6-ae56-0cf9698b9f31.png)
+
+### Pisanie testów
+
+Testy są uporządkowane w folderach ze względu na typ obiektu jaki testujemy, controllers osobno, managers osobno, repositories osobno.
+
+Można stosować dwa (a może istnieje więcej, nie wiem) sposoby pisania testów:
+
+- używając dekoratora `[Fact]`
+
+  Test nie przyjmuje żadnych parametrów, dane przygotowywujemy ręcznie (tzn. żeby powtórzyć ten sam test dla różnych danych trzeba go skopiować i pozmieniać dane).
+  W teście przygotowujemy dane, wywołujemy metodę, którą testujemy i na koniec sprawdzamy to co chcemy uzyskać za pomocą `Assert`. Test przechodzi gdy wszystkie Asserty przejdą.
+
+  ![image](https://user-images.githubusercontent.com/102852926/230719643-0a366fe7-838c-4fcf-bd6f-b1e05a056406.png)
+
+- używając dekoratora `[Theory]` i `[InlineData] `
+
+  Test przyjmuje parametry wejściowe, które wskazujemy w parametrach `[InlineData]`. Czyli umieszczając przed testem `[InlineData]` 2 razy napisaliśmy tak naprawdę 2 testy. Poniżej na przykład fajnie jest używać tego `[InlineData]` bo testujemy funkcję przyjmującą stringa, więc można go łatwo wrzucić do `[InlineData]` i nie kopiować kodu.
+
+  ![image](https://user-images.githubusercontent.com/102852926/230718704-7965a2c2-155d-4aaf-aad6-4a6748460b3f.png)
+
+1. Testowanie managerów:
+
+   - tworzenie managera zwykłym konstruktorem (przypomnienie - nie mockowaliśmy go wcześniej, bo mockujemy tylko klasy i metody korzystające z bazy danych)
+   - przygotowanie danych
+   - wywołanie metody z managera, którą testujemy
+   - sprawdzenie Assertami
+
+     ![image](https://user-images.githubusercontent.com/102852926/230718997-b8c9a856-13bc-49c6-8b03-f915ad28cbc6.png)
+
+2. Testowanie repozytoriów:
+
+   - to samo co wyżej tylko `Repository` bierzemy z mocka
+
+     ![image](https://user-images.githubusercontent.com/102852926/230719061-67732f29-9f60-4645-85d2-9ea434ea909d.png)
+
+3. Testowanie kontrolerów - tutaj jest więcej logiki, więc stworzyłem bazową klasę `BaseControllerTests<T>`, gdzie T jest kontrolerem, który chcemy testować. Trzeba pamiętać, by przy dodawaniu nowego profilu do mapowanie dodać go też tutaj w `GetMapper()`.
+   `GetControllerContext()` zwraca nam context z zapisanymi Claimsami usera, by móc je odczytać tak jak byśmy odczytywali je z tokena.
+
+   ![image](https://user-images.githubusercontent.com/102852926/230719220-0ebfabfb-8ea0-4125-ae24-695a9e3ff09b.png)
+
+   W klasie pochodnej, w której będziemy pisać testy trzeba zaimplementować metodę `GetController()`, w której przygotowujemy wszystko co jest potrzebne w teście, żeby nie powtarzać 10 linijek kodu za każdym razem.
+
+   ![image](https://user-images.githubusercontent.com/102852926/230719462-bdcc7f13-1394-4912-80ec-b4494a8b3b8e.png)
+
+   Samo pisanie testów dla kontrolera analogiczne do tego co wyżej.

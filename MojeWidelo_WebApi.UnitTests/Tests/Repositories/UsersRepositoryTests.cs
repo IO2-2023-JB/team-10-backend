@@ -10,8 +10,8 @@ namespace MojeWidelo_WebApi.UnitTests.RepositoriesTests
 		[InlineData("user2@test.com")]
 		public async void FindUserByEmailTest(string email)
 		{
-			var repositoryWrapperMock = MockIRepositoryWrapper.GetMock();
-			var result = await repositoryWrapperMock.Object.UsersRepository.FindUserByEmail(email);
+			var usersRepoMock = MockIUsersRepository.GetMock();
+			var result = await usersRepoMock.Object.FindUserByEmail(email);
 
 			Assert.NotNull(result);
 			Assert.Equal(email, result.Email);
@@ -23,8 +23,8 @@ namespace MojeWidelo_WebApi.UnitTests.RepositoriesTests
 		[InlineData("halohalo@halo.com")]
 		public async void FindUserByNonExistingEmailTest(string email)
 		{
-			var repositoryWrapperMock = MockIRepositoryWrapper.GetMock();
-			var result = await repositoryWrapperMock.Object.UsersRepository.FindUserByEmail(email);
+			var usersRepoMock = MockIUsersRepository.GetMock();
+			var result = await usersRepoMock.Object.FindUserByEmail(email);
 
 			Assert.Null(result);
 		}

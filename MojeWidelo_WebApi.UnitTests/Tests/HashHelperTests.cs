@@ -1,6 +1,6 @@
 ﻿using MojeWidelo_WebApi.Helpers;
 
-namespace MojeWidelo_WebApi.UnitTests
+namespace MojeWidelo_WebApi.UnitTests.Tests
 {
 	public class HashHelperTests
 	{
