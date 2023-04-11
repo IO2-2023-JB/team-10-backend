@@ -12,5 +12,6 @@ namespace Contracts
 		Task<string> UploadThumbnail(string file);
 		Task SetThumbnail(HttpContext httpContext, VideoMetadata video, VideoBaseDto videoDto);
 		Task<byte[]> GetThumbnailBytes(string id);
+		string GetThumbnailContentType(string id);
 	}
 }

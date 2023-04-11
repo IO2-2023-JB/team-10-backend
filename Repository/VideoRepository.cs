@@ -8,6 +8,8 @@ using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 using Repository.Managers;
 using System.Runtime.CompilerServices;
 
@@ -93,7 +95,20 @@ namespace Repository
 			int startIdx = file.IndexOf(',');
 			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
 
-			var id = await _bucket.UploadFromBytesAsync(fileName, imgByteArray);
+			startIdx = file.IndexOf(':');
+			int endIdx = file.IndexOf(';');
+
+			var id = await _bucket.UploadFromBytesAsync(
+				fileName,
+				imgByteArray,
+				new MongoDB.Driver.GridFS.GridFSUploadOptions
+				{
+					Metadata = new BsonDocument
+					{
+						{ "ContentType", file.Substring(startIdx + 1, endIdx - startIdx - 1) }
+					}
+				}
+			);
 
 			return id.ToString();
 		}
@@ -114,6 +129,17 @@ namespace Repository
 			var bytes = await _bucket.DownloadAsBytesAsync(ObjectId.Parse(id));
 
 			return bytes;
+		}
+
+		public string GetThumbnailContentType(string id)
+		{
+			var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.Eq(x => x.Id, ObjectId.Parse(id));
+
+			using var cursor = _bucket.Find(filter);
+			var fileInfo = cursor.ToList().FirstOrDefault();
+			var contentType = fileInfo.Metadata.GetValue("ContentType").AsString;
+
+			return contentType;
 		}
 	}
 }
