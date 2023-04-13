@@ -15,8 +15,8 @@ namespace Repository
 		{
 			var reactions = await GetAll();
 			var ret = new ReactionResponseDto();
-			ret.positiveCount = reactions.Count((x) => x.ReactionType == ReactionType.Positive);
-			ret.negativeCount = reactions.Count((x) => x.ReactionType == ReactionType.Negative);
+			ret.PositiveCount = reactions.Count((x) => x.ReactionType == ReactionType.Positive);
+			ret.NegativeCount = reactions.Count((x) => x.ReactionType == ReactionType.Negative);
 			return ret;
 		}
 

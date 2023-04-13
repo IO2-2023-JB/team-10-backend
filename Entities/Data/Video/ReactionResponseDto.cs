@@ -6,10 +6,10 @@ namespace Entities.Data.Video
 {
 	public class ReactionResponseDto
 	{
-		public int positiveCount { get; set; }
+		public int PositiveCount { get; set; }
 
-		public int negativeCount { get; set; }
+		public int NegativeCount { get; set; }
 
-		public ReactionType currentUserReaction { get; set; }
+		public ReactionType CurrentUserReaction { get; set; }
 	}
 }

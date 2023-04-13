@@ -220,7 +220,6 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <summary>
 		/// *Endpoint for testing*
 		/// </summary>
-		/// <returns>List of all videos</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
@@ -286,8 +285,16 @@ namespace MojeWidelo_WebApi.Controllers
 			return Ok("Wideo usunięte pomyślnie.");
 		}
 
+		/// <summary>
+		/// Reaction posting
+		/// </summary>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		/// <response code="404">Not found</response>
 		[HttpPost("video-reaction", Name = "addReaction")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[ServiceFilter(typeof(ModelValidationFilter))]
 		public async Task<IActionResult> AddReaction([Required] string id, [FromBody] ReactionDto dto)
 		{
 			var userId = GetUserIdFromToken();
@@ -301,11 +308,11 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 			else if (currentReaction.reactionType != ReactionType.None)
 			{
-				var reaction = await _repository.ReactionRepository.GetById(currentReaction.id);
 				if (dto.ReactionType == ReactionType.None)
 					await _repository.ReactionRepository.Delete(currentReaction.id);
 				else
 				{
+					var reaction = await _repository.ReactionRepository.GetById(currentReaction.id);
 					reaction.ReactionType = dto.ReactionType;
 					await _repository.ReactionRepository.Update(currentReaction.id, reaction);
 				}
@@ -314,6 +321,13 @@ namespace MojeWidelo_WebApi.Controllers
 			return Ok("Reakcja dodana pomyślnie.");
 		}
 
+		/// <summary>
+		/// Reaction retrieval
+		/// </summary>
+		/// <returns>Video reaction counts, requesting user reaction</returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="404">Not found</response>
 		[HttpGet("video-reaction", Name = "getReaction")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> GetReaction([Required] string id)
@@ -321,7 +335,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var userId = GetUserIdFromToken();
 
 			var result = await _repository.ReactionRepository.GetReactionsCount(id);
-			result.currentUserReaction = (
+			result.CurrentUserReaction = (
 				await _repository.ReactionRepository.GetCurrentUserReaction(id, userId)
 			).reactionType;
 
