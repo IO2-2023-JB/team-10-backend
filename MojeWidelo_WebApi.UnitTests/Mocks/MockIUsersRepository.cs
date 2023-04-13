@@ -4,7 +4,7 @@ using Moq;
 
 namespace MojeWidelo_WebApi.UnitTests.Mocks
 {
-	public class MockIUsersRepository
+	public class MockIUsersRepository : MockIRepositoryBase<IUsersRepository, User>
 	{
 		public static Mock<IUsersRepository> GetMock()
 		{
@@ -36,19 +36,7 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 				}
 			};
 
-			var mock = new Mock<IUsersRepository>();
-
-			mock.Setup(m => m.GetAll()).ReturnsAsync(() => collection);
-
-			mock.Setup(m => m.GetById(It.IsAny<string>()))
-				.ReturnsAsync((string id) => collection.FirstOrDefault(o => o.Id == id)!);
-
-			mock.Setup(m => m.Create(It.IsAny<User>())).ReturnsAsync((User user) => user);
-
-			mock.Setup(m => m.Delete(It.IsAny<string>())).Callback(() => { });
-
-			mock.Setup(m => m.Update(It.IsAny<string>(), It.IsAny<User>()))
-				.ReturnsAsync((string id, User user) => user);
+			var mock = GetBaseMock(collection);
 
 			mock.Setup(m => m.FindUserByEmail(It.IsAny<string>()))
 				.ReturnsAsync((string email) => collection.FirstOrDefault(o => o.Email == email)!);

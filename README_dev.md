@@ -97,6 +97,11 @@ Mam nadzieję, że o niczym nie zapomniałem. W razie co są już 2 w pełni fun
 
 **UWAGA: od teraz każdy pisze testy do swojego kodu na bieżąco!!!**
 
+### Przydatne linki
+
+- [Testy ASP.NET](https://code-maze.com/asp-net-core-testing/)
+- [Testowanie Repository Pattern](https://code-maze.com/testing-repository-pattern-entity-framework/)
+
 ### Mockowanie
 
 W folderze `Tests` znajduje się projekt do unit testów, potem może będą projekty z innymi testami.
@@ -108,15 +113,19 @@ W folderze `Mocks` znajdują się zamockowane:
 
 - Repozytoria - na przykładzie `UsersRepository`
 
+  W `MockIRepositoryBase<T, U>` mamy zamockowane wszystkie operacje CRUD, które prawdopodobnie będą takie same dla wszystkich mocków repozytoriów. Dlatego IUserRepository dziedziczy po `MockIRepositoryBase<IUsersRepository, User>`.
+
+  ![image](https://user-images.githubusercontent.com/102852926/231672350-0004c434-3dae-4e90-879e-1d1f7788e4bd.png)
+
   `GetMock()` tworzy nam zmockowaną instancję `IUsersRepository`.
 
-  ![image](https://user-images.githubusercontent.com/102852926/230714144-118faae2-2a1f-470c-867d-269442503a9f.png)
+  ![image](https://user-images.githubusercontent.com/102852926/231671333-d31a480f-9f54-402e-a90d-4de26215102b.png)
 
   Najpierw tworzymy statyczną kolekcję która będzie imitować kolekcję z bazy danych - wklepane z palca jakieś poprawne dane.
 
-  Następnie trzeba zdefiniować zachowanie dla każdego pola i każdej metody mockowanej klasy za pomocą `Setup`:
+  Następnie trzeba zdefiniować zachowanie dla każdego pola i każdej metody mockowanej klasy za pomocą `Setup`. Najpierw bierzemy mocka bazowego, potem domockowujemy do niego metody z interfejsu `IUsersRepository`, w tym przypadku jest tylko jedna.
 
-  ![image](https://user-images.githubusercontent.com/102852926/230714228-ea768569-1add-49ee-a975-230720919030.png)
+  ![image](https://user-images.githubusercontent.com/102852926/231672177-a6bc5e24-fafb-4bea-954c-094c8704fef4.png)
 
   Czyli tak naprawdę na nowo piszemy uproszczoną wersję oryginalnej metody, która tylko z grubsza imituje zachowanie metod korzystających z bazy danych. Testy te zatem nie sprawdzą czy te metody oryginalne działają bo to nie jest zadaniem unit testów. Więc np. `Update` zwróci od razu obiekt który chcemy update'ować.
 
