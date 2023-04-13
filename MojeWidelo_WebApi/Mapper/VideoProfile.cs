@@ -20,6 +20,8 @@ namespace MojeWidelo_WebApi.Mapper
 				.ForMember(video => video.Duration, opt => opt.Ignore())
 				.ForMember(video => video.UploadDate, opt => opt.Ignore())
 				.ForMember(video => video.Tags, opt => opt.MapFrom(video => video.Tags.Distinct()));
+
+			CreateMap<ReactionDto, Reaction>();
 		}
 	}
 }

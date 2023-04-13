@@ -9,7 +9,7 @@
 
 		string UsersCollectionName { get; set; }
 		string VideoCollectionName { get; set; }
-
+		string ReactionCollectionName { get; set; }
 		#endregion
 	}
 }

@@ -220,7 +220,6 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <summary>
 		/// *Endpoint for testing*
 		/// </summary>
-		/// <returns>List of all videos</returns>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
@@ -284,6 +283,63 @@ namespace MojeWidelo_WebApi.Controllers
 			await _repository.VideoRepository.Delete(id);
 
 			return Ok("Wideo usunięte pomyślnie.");
+		}
+
+		/// <summary>
+		/// Reaction posting
+		/// </summary>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		/// <response code="404">Not found</response>
+		[HttpPost("video-reaction", Name = "addReaction")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[ServiceFilter(typeof(ModelValidationFilter))]
+		public async Task<IActionResult> AddReaction([Required] string id, [FromBody] ReactionDto dto)
+		{
+			var userId = GetUserIdFromToken();
+
+			var currentReaction = await _repository.ReactionRepository.GetCurrentUserReaction(id, userId);
+			if (currentReaction.reactionType == ReactionType.None && dto.ReactionType != ReactionType.None)
+			{
+				var reaction = _mapper.Map<ReactionDto, Reaction>(dto);
+				(reaction.VideoId, reaction.UserId) = (id, userId);
+				await _repository.ReactionRepository.Create(reaction);
+			}
+			else if (currentReaction.reactionType != ReactionType.None)
+			{
+				if (dto.ReactionType == ReactionType.None)
+					await _repository.ReactionRepository.Delete(currentReaction.id);
+				else
+				{
+					var reaction = await _repository.ReactionRepository.GetById(currentReaction.id);
+					reaction.ReactionType = dto.ReactionType;
+					await _repository.ReactionRepository.Update(currentReaction.id, reaction);
+				}
+			}
+
+			return Ok("Reakcja dodana pomyślnie.");
+		}
+
+		/// <summary>
+		/// Reaction retrieval
+		/// </summary>
+		/// <returns>Video reaction counts, requesting user reaction</returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="404">Not found</response>
+		[HttpGet("video-reaction", Name = "getReaction")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> GetReaction([Required] string id)
+		{
+			var userId = GetUserIdFromToken();
+
+			var result = await _repository.ReactionRepository.GetReactionsCount(id);
+			result.CurrentUserReaction = (
+				await _repository.ReactionRepository.GetCurrentUserReaction(id, userId)
+			).reactionType;
+
+			return Ok(result);
 		}
 	}
 }

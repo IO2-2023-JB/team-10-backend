@@ -6,5 +6,6 @@
 		public string ConnectionString { get; set; }
 		public string UsersCollectionName { get; set; }
 		public string VideoCollectionName { get; set; }
+		public string ReactionCollectionName { get; set; }
 	}
 }
