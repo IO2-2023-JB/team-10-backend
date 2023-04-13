@@ -71,7 +71,7 @@ namespace Repository
 				String errorMessage = DateTime.Now.ToString() + "   " + id + "   " + e.Message;
 				Console.WriteLine(errorMessage);
 
-				string? location = videoManager.GetStorageDirectory();
+				string? location = videoManager.GetStorageDirectory().Result;
 				if (location == null)
 					return;
 

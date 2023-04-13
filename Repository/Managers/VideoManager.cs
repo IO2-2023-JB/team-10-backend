@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using CliWrap.Buffered;
+using CliWrap;
+using System.Runtime.InteropServices;
 
 namespace Repository.Managers
 {
@@ -6,7 +8,7 @@ namespace Repository.Managers
 	{
 		public string? CreateNewPath(string id, string fileName)
 		{
-			string? location = GetStorageDirectory();
+			string? location = GetStorageDirectory().Result;
 			if (location == null)
 				return null;
 
@@ -14,7 +16,7 @@ namespace Repository.Managers
 			return Path.Combine(location, id + "_original" + extension);
 		}
 
-		public string? GetStorageDirectory()
+		public async Task<string?> GetStorageDirectory()
 		{
 			string location;
 
@@ -27,8 +29,18 @@ namespace Repository.Managers
 			}
 			else
 			{
-				//WILL BE IMPLEMENTED PROPERLY IN SPRINT 3
-				location = "/home/ubuntu/video-storage";
+				BufferedCommandResult result;
+
+				try
+				{
+					result = await Cli.Wrap("printenv").WithArguments(@"MojeWideloStorage").ExecuteBufferedAsync();
+				}
+				catch
+				{
+					return null;
+				}
+
+				location = result.StandardOutput.Substring(0, result.StandardOutput.Length - 1);
 			}
 
 			return location;
@@ -36,7 +48,7 @@ namespace Repository.Managers
 
 		public string? GetReadyFilePath(string id)
 		{
-			string? location = GetStorageDirectory();
+			string? location = GetStorageDirectory().Result;
 			if (location == null)
 				return null;
 
