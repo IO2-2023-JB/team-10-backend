@@ -15,10 +15,12 @@ Solucja składa się z 5 projektów:
 
 - Contracts - zawiera interfejsy repozytoriów i ich wrapera
 - Entities - zawiera klasy używane w wymianie danych z bazą i frontem. Zawiera foldery:
-  - _Data_ z klasami DTO
+
+  - Data z klasami DTO
   - DatabaseUtils z klasą zawierająca info o strukturze naszej bazy danych
   - Enums
   - Models - klasy modelowe, identyczne jak struktury przechowywane w bazie danych
+
 - Repository - zawiera:
 
   - implementację wszystkich interfejsów z projektu Contracts
@@ -45,7 +47,7 @@ Solucja składa się z 5 projektów:
 
 Jeden kontroler powinien być odpowiedzialny za jedno repozytorium (ale ma wstrzyknięty RepositoryWrapper, by w szczególnych przypadkach móc wykonywać operacje na kilku repozytoriach jeśli logika tego wymaga).
 
-Jedno repozytorium przeprowadza operacje na jednej kolekcji w bazie danych. Nie powinien mieć żadnych metod, które nie korzystają z kolekcji w bazie danych - utrudnia to testowanie.
+Jedno repozytorium przeprowadza operacje na jednej kolekcji w bazie danych. Nie powinno mieć żadnych metod, które nie korzystają z kolekcji w bazie danych - utrudnia to testowanie.
 
 Każdy kontroler ma też swojego managera, który zawiera metody pomocnicze, które nie potrzebują dostępu do bazy danych.
 
@@ -142,7 +144,7 @@ W folderze `Mocks` znajdują się zamockowane:
 
   ![image](https://user-images.githubusercontent.com/102852926/230717965-e5a1215d-0f31-4915-bd42-2652134a56ab.png)
 
-- MockUser - to jest zamockowany user wykorzystywany tylko do tego, by z `HttpContext` móc wyciągać Claimsy usera, tak jak to robimy normalnie za pomocą tokena. Są to statyczne pola, pewnie dałoby się tego usera zamockować jakoś ładniej to zrobić jakoś ładniej, jeśli ktoś ma na to pomysł to z chęcią wysłucham.
+- MockUser - to jest zamockowany user wykorzystywany tylko do tego, by z `HttpContext` móc wyciągać Claimsy usera, tak jak to robimy normalnie za pomocą tokena. Są to statyczne pola, pewnie dałoby się tego usera zamockować jakoś ładniej, jeśli ktoś ma na to pomysł to z chęcią wysłucham.
 
   ![image](https://user-images.githubusercontent.com/102852926/230718133-f66f2433-a25b-49b6-ae56-0cf9698b9f31.png)
 
@@ -159,9 +161,9 @@ Można stosować dwa (a może istnieje więcej, nie wiem) sposoby pisania testó
 
   ![image](https://user-images.githubusercontent.com/102852926/230719643-0a366fe7-838c-4fcf-bd6f-b1e05a056406.png)
 
-- używając dekoratora `[Theory]` i `[InlineData] `
+- używając dekoratorów `[Theory]` i `[InlineData] `
 
-  Test przyjmuje parametry wejściowe, które wskazujemy w parametrach `[InlineData]`. Czyli umieszczając przed testem `[InlineData]` 2 razy napisaliśmy tak naprawdę 2 testy. Poniżej na przykład fajnie jest używać tego `[InlineData]` bo testujemy funkcję przyjmującą stringa, więc można go łatwo wrzucić do `[InlineData]` i nie kopiować kodu.
+  Test przyjmuje parametry wejściowe, które wskazujemy w parametrach `[InlineData]`. Czyli umieszczając przed testem `[InlineData]` 2 razy napisaliśmy tak naprawdę 2 testy. Poniżej na przykład widać, że fajnie jest używać tego `[InlineData]` bo testujemy funkcję przyjmującą stringa, więc można go łatwo wrzucić do `[InlineData]` i nie kopiować kodu.
 
   ![image](https://user-images.githubusercontent.com/102852926/230718704-7965a2c2-155d-4aaf-aad6-4a6748460b3f.png)
 

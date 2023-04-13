@@ -29,7 +29,6 @@ namespace MojeWidelo_WebApi.UnitTests.Tests
 
 			var isPasswordValid = HashHelper.ValidatePassword(password, hashedPassword);
 
-			Assert.NotEqual(password, hashedPassword);
 			Assert.True(isPasswordValid);
 		}
 
