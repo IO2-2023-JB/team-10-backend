@@ -1,6 +1,4 @@
-﻿using Entities.Data.User;
-using Entities.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Entities.Models;
 
 namespace Contracts
 {
@@ -8,7 +6,6 @@ namespace Contracts
 	{
 		Task<User> FindUserByEmail(string email);
 
-		UserDto CheckPermissionToGetAccountBalance(string requesterId, UserDto userDto);
 		Task<string> UploadAvatar(User user, string avatarImage);
 
 		Task<byte[]> GetAvatarBytes(string id);
