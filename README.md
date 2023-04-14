@@ -58,15 +58,23 @@ For video upload/download to function properly, user must first configure enviro
 	setx MojeWideloStorage {path} /m
 	(command must be executed with administrator privileges)
 	
-### Bash command 
+### Bash command (for Linux users)
 
-	soon
+1. Launch 
+	sudo vim /etc/environment
+2. Add in new line 
+	MojeWideloStorage="{path}"
+3. Restart machine 
 	
 ## Video processing
 
 Software called FFmpeg is used to convert uploaded video files to desired format. It is necessary to have FFmpeg installed in order to use POST /video/{id} endpoint.
 
-### FFmpeg instalation
+### FFmpeg instalation (for Windows users)
 
+Installing FFmpeg is simply matter of following instructions from link below:
 	https://www.wikihow.com/Install-FFmpeg-on-Windows
-	Installing FFmpeg is simply matter of following instructions from link below.
+	
+### FFmpeg instalation (for Linux users)
+	
+	sudo apt install ffmpeg
