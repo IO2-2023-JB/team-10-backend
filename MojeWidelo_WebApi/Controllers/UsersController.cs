@@ -161,11 +161,6 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		public async Task<IActionResult> Login([FromBody] LoginDto user)
 		{
-			if (user == null)
-			{
-				return StatusCode(StatusCodes.Status400BadRequest, "Pole 'user' jest wymagane.");
-			}
-
 			var returnedUser = await _repository.UsersRepository.FindUserByEmail(user.Email);
 			if (returnedUser == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Taki użytkownik nie istnieje.");
