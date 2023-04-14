@@ -40,7 +40,7 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var users = await _repository.UsersRepository.GetAll();
 			var result = _mapper.Map<IEnumerable<UserDto>>(users);
-			return Ok(result);
+			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
 		/// <summary>
@@ -59,12 +59,12 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var user = await _repository.UsersRepository.GetById(id);
 			if (user == null)
-				return StatusCode(StatusCodes.Status404NotFound,"Użytkownik o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
 			var result = _mapper.Map<UserDto>(user);
 
 			result = _usersManager.CheckPermissionToGetAccountBalance(GetUserIdFromToken(), result);
 
-			return Ok(result);
+			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
 		/// <summary>
@@ -87,8 +87,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (user == null)
 			{
-                return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
-            }
+				return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
+			}
 
 			if (GetUserIdFromToken() != id)
 			{
@@ -107,7 +107,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var newUser = await _repository.UsersRepository.Update(id, user);
 			var result = _mapper.Map<UserDto>(newUser);
-			return Ok(result);
+			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
 		/// <summary>
@@ -139,7 +139,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			user = await _repository.UsersRepository.Create(user);
 
-			return StatusCode(StatusCodes.Status201Created, "Konto zostało utworzone.");
+			return StatusCode(StatusCodes.Status201Created, "Konto zostało utworzone pomyślnie.");
 		}
 
 		/// <summary>
@@ -153,7 +153,7 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> DeleteUser([Required] string id)
 		{
 			await _repository.UsersRepository.Delete(id);
-			return Ok();
+			return StatusCode(StatusCodes.Status200OK, "Użytkownik został usunięty pomyślnie.");
 		}
 
 		[HttpPost, Route("login")]
@@ -191,7 +191,7 @@ namespace MojeWidelo_WebApi.Controllers
 				);
 
 				var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-				return Ok(new LoginResponseDto(tokenString));
+				return StatusCode(StatusCodes.Status200OK, new LoginResponseDto(tokenString));
 			}
 
 			return StatusCode(StatusCodes.Status401Unauthorized, "Podane dane nie są poprawne.");
