@@ -1,7 +1,7 @@
 ﻿using Entities.Models;
 using MojeWidelo_WebApi.UnitTests.Mocks;
 
-namespace MojeWidelo_WebApi.UnitTests.RepositoriesTests
+namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 {
 	public class UsersRepositoryTests
 	{

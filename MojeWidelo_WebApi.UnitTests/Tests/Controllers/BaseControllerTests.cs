@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Controllers;
@@ -26,11 +27,16 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			{
 				cfs.AddProfile(new UserProfile());
 				cfs.AddProfile(new VideoProfile());
+				cfs.AddProfile(new SubscriptionProfile());
 			});
 			return new AutoMapper.Mapper(configuration);
 		}
 
-		protected ControllerContext GetControllerContext()
+		protected ControllerContext GetControllerContext(
+			string? id = null,
+			UserType? userType = null,
+			string? nickname = null
+		)
 		{
 			var httpContext = new DefaultHttpContext()
 			{
@@ -38,9 +44,9 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 					new ClaimsIdentity(
 						new Claim[]
 						{
-							new Claim(ClaimTypes.NameIdentifier, MockUser.Id),
-							new Claim(ClaimTypes.Role, MockUser.UserType.ToString()),
-							new Claim(ClaimTypes.Name, MockUser.Nickname),
+							new Claim(ClaimTypes.NameIdentifier, id ?? MockUser.Id),
+							new Claim(ClaimTypes.Role, (userType ?? MockUser.UserType).ToString()),
+							new Claim(ClaimTypes.Name, nickname ?? MockUser.Nickname),
 						}
 					)
 				)
