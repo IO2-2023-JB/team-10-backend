@@ -32,7 +32,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="401">Unauthorised</response>
 		[HttpPost("video-metadata")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
-		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDto))]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoUploadResponseDto))]
 		public async Task<IActionResult> UploadVideoMetadata([FromBody] VideoUploadDto videoUploadDto)
 		{
 			var user = await GetUserFromToken();
@@ -50,7 +50,14 @@ namespace MojeWidelo_WebApi.Controllers
 			video.ProcessingProgress = ProcessingProgress.MetadataRecordCreated;
 
 			video = await _repository.VideoRepository.Create(video);
-			var result = _mapper.Map<VideoMetadataDto>(video);
+			var createdVideo = _mapper.Map<VideoMetadataDto>(video);
+
+			var result = new VideoUploadResponseDto()
+			{
+				Id = createdVideo.Id,
+				ProcessingProgress = createdVideo.ProcessingProgress
+			};
+
 			return StatusCode(StatusCodes.Status201Created, result);
 		}
 
