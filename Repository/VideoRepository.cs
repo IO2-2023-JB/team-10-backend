@@ -1,7 +1,7 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
 using Contracts;
-using Entities.DatabaseUtils;
+using Entities.Utils;
 using Entities.Enums;
 using Entities.Models;
 using Repository.Managers;
@@ -10,8 +10,13 @@ namespace Repository
 {
 	public class VideoRepository : RepositoryBase<VideoMetadata>, IVideoRepository
 	{
-		public VideoRepository(IDatabaseSettings databaseSettings)
-			: base(databaseSettings, databaseSettings.VideoCollectionName) { }
+		readonly VideoManager videoManager;
+
+		public VideoRepository(IDatabaseSettings databaseSettings, VideoManager videoManager)
+			: base(databaseSettings, databaseSettings.VideoCollectionName)
+		{
+			this.videoManager = videoManager;
+		}
 
 		public async Task ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
 		{
@@ -33,7 +38,6 @@ namespace Repository
 
 		public async void ProccessVideoFile(string id, string path)
 		{
-			var videoManager = new VideoManager();
 			try
 			{
 				VideoMetadata video = await GetById(id);
@@ -71,7 +75,7 @@ namespace Repository
 				String errorMessage = DateTime.Now.ToString() + "   " + id + "   " + e.Message;
 				Console.WriteLine(errorMessage);
 
-				string? location = videoManager.GetStorageDirectory().Result;
+				string? location = videoManager.GetStorageDirectory();
 				if (location == null)
 					return;
 

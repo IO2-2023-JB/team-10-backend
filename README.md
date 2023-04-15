@@ -76,20 +76,7 @@ where `X` is one of
 
 ## Video storage
 
-For video upload/download to function properly, user must first configure environment variable called MojeWideloStorage, which shall be an absolute path to the directory that is designated to be storage place for video.
-
-### Command Line code (for Windows users)
-
-    setx MojeWideloStorage {path} /m
-    (command must be executed with administrator privileges)
-
-### Bash command (for Linux users)
-
-1. Launch
-   sudo vim /etc/environment
-2. Add in new line
-   MojeWideloStorage="{path}"
-3. Restart machine
+The location of video storage should be set in the `appsettings.json` file (`appsettings.Production.json` for production).
 
 ## Video processing
 

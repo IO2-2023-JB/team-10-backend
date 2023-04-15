@@ -1,4 +1,4 @@
-﻿namespace Entities.DatabaseUtils
+﻿namespace Entities.Utils
 {
 	public class DatabaseSettings : IDatabaseSettings
 	{

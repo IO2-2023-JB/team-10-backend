@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts;
 using Entities.Data.Video;
 using Entities.Enums;
@@ -269,7 +269,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return BadRequest("Nie można usunąć wideo będącego w trakcie przetwarzania.");
 			}
 
-			string? location = _videoManager.GetStorageDirectory().Result;
+			string? location = _videoManager.GetStorageDirectory();
 			if (location == null)
 				return BadRequest(NotFound("Zmienna środowiskowa dla MojeWideloStorage nie jest ustawiona"));
 

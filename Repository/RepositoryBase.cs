@@ -1,5 +1,5 @@
 ﻿using Contracts;
-using Entities.DatabaseUtils;
+using Entities.Utils;
 using Entities.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
