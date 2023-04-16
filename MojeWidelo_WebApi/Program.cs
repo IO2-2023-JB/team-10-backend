@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Rewrite;
 using MojeWidelo_WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,24 +22,27 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-app.UsePathBase(new PathString("/api"));
-app.UseRouting();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
+	app.UseCors("EnableCORS");
 }
 
-app.UseHttpsRedirection();
+// serve static files (frontend assets)
+app.UseStaticFiles();
 
-app.UseCors("EnableCORS");
+// serve React app
+RewriteOptions rewrite = new RewriteOptions().AddRewrite("^(?!api).+", "/", true);
+app.UseRewriter(rewrite);
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
+// handle API routes
+app.UsePathBase(new PathString("/api"));
+app.UseRouting();
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
