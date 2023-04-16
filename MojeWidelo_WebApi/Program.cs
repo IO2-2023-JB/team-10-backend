@@ -25,6 +25,7 @@ if (builder.Environment.IsProduction())
 {
 	builder.WebHost.ConfigureKestrel(options =>
 	{
+		options.ListenAnyIP(80);
 		options.ListenAnyIP(443, configure => configure.UseHttps());
 	});
 }
@@ -38,6 +39,9 @@ if (app.Environment.IsDevelopment())
 	app.UseCors("EnableCORS");
 }
 
+RewriteOptions rewriteHttps = new RewriteOptions().AddRedirectToHttpsPermanent();
+app.UseRewriter(rewriteHttps);
+
 var frontendPath = builder.Configuration.GetValue<string>("Variables:FrontendPath");
 var frontendAbsolutePath = Path.GetFullPath(frontendPath);
 var fileProvider = new PhysicalFileProvider(frontendAbsolutePath);
@@ -48,8 +52,8 @@ var defaultFilesOptions = new DefaultFilesOptions { FileProvider = fileProvider 
 app.UseStaticFiles(staticFileOptions);
 
 // serve React app
-RewriteOptions rewrite = new RewriteOptions().AddRewrite("^(?!api).+", "/", true);
-app.UseRewriter(rewrite);
+RewriteOptions rewriteReact = new RewriteOptions().AddRewrite("^(?!api).+", "/", true);
+app.UseRewriter(rewriteReact);
 app.UseDefaultFiles(defaultFilesOptions);
 app.UseStaticFiles(staticFileOptions);
 
