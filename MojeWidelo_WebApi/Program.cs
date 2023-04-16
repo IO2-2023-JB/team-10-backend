@@ -37,8 +37,9 @@ if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
-	app.UseCors("EnableCORS");
 }
+
+app.UseCors("EnableCORS");
 
 RewriteOptions rewriteHttps = new RewriteOptions().AddRedirectToHttpsPermanent();
 app.UseRewriter(rewriteHttps);
