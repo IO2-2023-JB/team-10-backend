@@ -23,6 +23,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 if (builder.Environment.IsProduction())
 {
+	builder.Services.AddLettuceEncrypt();
 	builder.WebHost.ConfigureKestrel(options =>
 	{
 		options.ListenAnyIP(80);
