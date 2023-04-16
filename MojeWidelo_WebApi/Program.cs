@@ -21,6 +21,14 @@ builder.Services.ConfigureVariables(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
+if (builder.Environment.IsProduction())
+{
+	builder.WebHost.ConfigureKestrel(options =>
+	{
+		options.ListenAnyIP(443, configure => configure.UseHttps());
+	});
+}
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
