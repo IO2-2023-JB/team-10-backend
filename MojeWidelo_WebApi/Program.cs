@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.FileProviders;
 using MojeWidelo_WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,14 +30,20 @@ if (app.Environment.IsDevelopment())
 	app.UseCors("EnableCORS");
 }
 
+var frontendPath = builder.Configuration.GetValue<string>("Variables:FrontendPath");
+var frontendAbsolutePath = Path.GetFullPath(frontendPath);
+var fileProvider = new PhysicalFileProvider(frontendAbsolutePath);
+var staticFileOptions = new StaticFileOptions { FileProvider = fileProvider };
+var defaultFilesOptions = new DefaultFilesOptions { FileProvider = fileProvider };
+
 // serve static files (frontend assets)
-app.UseStaticFiles();
+app.UseStaticFiles(staticFileOptions);
 
 // serve React app
 RewriteOptions rewrite = new RewriteOptions().AddRewrite("^(?!api).+", "/", true);
 app.UseRewriter(rewrite);
-app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseDefaultFiles(defaultFilesOptions);
+app.UseStaticFiles(staticFileOptions);
 
 // handle API routes
 app.UsePathBase(new PathString("/api"));
