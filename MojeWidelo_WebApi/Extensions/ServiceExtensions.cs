@@ -165,6 +165,7 @@ namespace MojeWidelo_WebApi.Extensions
 		{
 			services.AddScoped<UsersManager>();
 			services.AddScoped<VideoManager>();
+			services.AddScoped<CommentManager>();
 		}
 	}
 }

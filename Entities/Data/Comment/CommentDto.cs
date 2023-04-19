@@ -15,6 +15,6 @@ namespace Entities.Data.Comment
 
 		public string Nickname { get; set; }
 
-		public bool hasResponses { get; set; }
+		public bool HasResponses { get; set; }
 	}
 }

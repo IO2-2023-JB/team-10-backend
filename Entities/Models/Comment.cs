@@ -13,20 +13,20 @@ namespace Entities.Models
 
 		public string Content { get; set; }
 
-		public bool hasResponses { get; set; }
+		public bool HasResponses { get; set; }
 
-		public DateTime creationDate { get; set; }
+		public DateTime CreationDate { get; set; }
 
-		public DateTime lastModificationDate { get; set; }
+		public DateTime LastModificationDate { get; set; }
 
 		public Comment(string videoId, string authorId, string content, bool hasResponses = false)
 		{
 			VideoId = videoId;
 			AuthorId = authorId;
 			Content = content;
-			this.hasResponses = hasResponses;
-			creationDate = DateTime.Now;
-			lastModificationDate = DateTime.Now;
+			HasResponses = hasResponses;
+			CreationDate = DateTime.Now;
+			LastModificationDate = DateTime.Now;
 		}
 	}
 }
