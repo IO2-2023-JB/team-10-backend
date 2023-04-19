@@ -122,6 +122,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
 				video.ViewCount++;
+				video.AuthorNickname = (await _repository.UsersRepository.GetById(video.AuthorId)).Nickname;
 				video = await _repository.VideoRepository.Update(video.Id, video);
 			}
 
