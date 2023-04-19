@@ -5,23 +5,6 @@ namespace Entities.Models
 {
 	public class Comment : MongoDocumentBase
 	{
-		public Comment(
-			string videoId,
-			string authorId,
-			string content,
-			string avatarImage,
-			string nickname,
-			bool hasResponses = false
-		)
-		{
-			VideoId = videoId;
-			AuthorId = authorId;
-			Content = content;
-			AvatarImage = avatarImage;
-			Nickname = nickname;
-			this.hasResponses = hasResponses;
-		}
-
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string VideoId { get; set; }
 
@@ -30,10 +13,20 @@ namespace Entities.Models
 
 		public string Content { get; set; }
 
-		public string AvatarImage { get; set; }
-
-		public string Nickname { get; set; }
-
 		public bool hasResponses { get; set; }
+
+		public DateTime creationDate { get; set; }
+
+		public DateTime lastModificationDate { get; set; }
+
+		public Comment(string videoId, string authorId, string content, bool hasResponses = false)
+		{
+			VideoId = videoId;
+			AuthorId = authorId;
+			Content = content;
+			this.hasResponses = hasResponses;
+			creationDate = DateTime.Now;
+			lastModificationDate = DateTime.Now;
+		}
 	}
 }

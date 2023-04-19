@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Data.Comment;
+using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
@@ -23,19 +24,39 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">Ok</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorised</response>
+		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
 		[HttpGet("comment", Name = "getComment")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> GetComment([Required] string id)
 		{
-			if (await _repository.VideoRepository.GetById(id) == null)
+			var video = await _repository.VideoRepository.GetById(id);
+			if (video == null)
 				return NotFound();
+			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
+				return StatusCode(StatusCodes.Status403Forbidden, "No permission to access video comments.");
+
+			var comments = await _repository.CommentRepository.GetVideoComments(id);
+			var users = (await _repository.UsersRepository.GetUsersByIds(comments.Select(x => x.AuthorId))).ToHashSet();
 
 			var commentsDto = new List<CommentDto>();
-			(await _repository.CommentRepository.GetAll())
-				.Where((x) => x.VideoId == id)
-				.ToList()
-				.ForEach(x => commentsDto.Add(_mapper.Map<Comment, CommentDto>(x)));
+			comments.ForEach(x =>
+			{
+				commentsDto.Add(
+					_mapper.Map<Comment, CommentDto>(
+						x,
+						opt =>
+							opt.AfterMap(
+								(src, dest) =>
+								{
+									var user = users.TakeWhile((y) => x.AuthorId == y.Id).First();
+									dest.Nickname = user.Nickname;
+									dest.AvatarImage = user.AvatarImage;
+								}
+							)
+					)
+				);
+			});
 
 			return Ok(commentsDto);
 		}
@@ -59,9 +80,7 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			var user = await GetUserFromToken();
-			await _repository.CommentRepository.Create(
-				new Comment(id, user.Id, content, user.AvatarImage, user.Nickname)
-			);
+			await _repository.CommentRepository.Create(new Comment(id, user.Id, content));
 
 			return Ok("Komentarz dodany pomyślnie.");
 		}
@@ -78,8 +97,13 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> DeleteComment([Required] string id)
 		{
-			if (await _repository.CommentRepository.GetById(id) == null)
+			var comment = await _repository.CommentRepository.GetById(id);
+			if (comment == null)
 				return BadRequest();
+
+			var user = await GetUserFromToken();
+			if (comment.AuthorId != user.Id || user.UserType != UserType.Administrator)
+				return Unauthorized();
 
 			await _repository.CommentRepository.Delete(id);
 

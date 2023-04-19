@@ -1,5 +1,8 @@
 ﻿using Contracts;
+using Entities.Data.Comment;
+using Entities.Data.Video;
 using Entities.DatabaseUtils;
+using Entities.Enums;
 using Entities.Models;
 
 namespace Repository
@@ -8,5 +11,10 @@ namespace Repository
 	{
 		public CommentRepository(IDatabaseSettings databaseSettings)
 			: base(databaseSettings, databaseSettings.CommentCollectionName) { }
+
+		public async Task<List<Comment>> GetVideoComments(string id)
+		{
+			return (await GetAll()).Where((x) => x.VideoId == id).ToList();
+		}
 	}
 }
