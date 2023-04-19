@@ -35,5 +35,10 @@ namespace Repository
 
 			return bytes;
 		}
+
+		public async Task<IEnumerable<User>> GetUsersByIds(IEnumerable<string> ids)
+		{
+			return await _collection.Find(user => ids.Contains(user.Id)).ToListAsync();
+		}
 	}
 }

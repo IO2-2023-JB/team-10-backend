@@ -9,5 +9,7 @@ namespace Contracts
 		Task<string> UploadAvatar(User user, string avatarImage);
 
 		Task<byte[]> GetAvatarBytes(string id);
+
+		Task<IEnumerable<User>> GetUsersByIds(IEnumerable<string> ids);
 	}
 }

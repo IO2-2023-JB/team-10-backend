@@ -5,5 +5,6 @@
 		IUsersRepository UsersRepository { get; }
 		IVideoRepository VideoRepository { get; }
 		IReactionRepository ReactionRepository { get; }
+		ICommentRepository CommentRepository { get; }
 	}
 }
