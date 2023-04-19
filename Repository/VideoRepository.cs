@@ -1,17 +1,4 @@
-﻿using CliWrap;
-using CliWrap.Buffered;
-using Contracts;
-using Entities.Data.Video;
-using Entities.Utils;
-using Entities.Enums;
-using Entities.Models;
-using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
-using Repository.Managers;
-
-namespace Repository
+﻿namespace Repository
 {
 	public class VideoRepository : RepositoryBase<VideoMetadata>, IVideoRepository
 	{
@@ -149,6 +136,16 @@ namespace Repository
 			return await _collection
 				.Find(x => x.AuthorId == id && (x.Visibility == VideoVisibility.Public || isAuthor))
 				.ToListAsync();
+		}
+
+		public async Task<IEnumerable<VideoMetadata>> GetSubscribedVideos(IEnumerable<string> creatorsIds)
+		{
+			// zwracamy tylko publiczne filmy
+			var videos = await _collection
+				.Find(video => creatorsIds.Contains(video.AuthorId) && video.Visibility == VideoVisibility.Public)
+				.ToListAsync();
+
+			return videos.OrderByDescending(video => video.UploadDate);
 		}
 	}
 }

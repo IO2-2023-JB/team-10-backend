@@ -34,7 +34,7 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 							.FirstOrDefault()
 				);
 
-			mock.Setup(m => m.GetUserSubscriptions(It.IsAny<string>()))
+			mock.Setup(m => m.GetCreatorSubscriptions(It.IsAny<string>()))
 				.ReturnsAsync((string userId) => collection.Where(s => s.CreatorId == userId).ToList());
 
 			return mock;

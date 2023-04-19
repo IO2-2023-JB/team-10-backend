@@ -1,13 +1,4 @@
-﻿using AutoMapper;
-using Contracts;
-using Entities.Data.Video;
-using Entities.Enums;
-using Entities.Models;
-using Microsoft.AspNetCore.Mvc;
-using MojeWidelo_WebApi.Filters;
-using Repository.Managers;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -403,6 +394,20 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var result = new VideoListDto();
 			result.Videos = videosDto.ToArray();
+
+			return StatusCode(StatusCodes.Status200OK, result);
+		}
+
+		[HttpGet("user/videos/subscribed")]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<VideoMetadataDto>))]
+		public async Task<IActionResult> GetVideosSubscribed()
+		{
+			var id = GetUserIdFromToken();
+			var subscriptions = await _repository.SubscriptionsRepository.GetUserSubscriptions(id);
+			var subscribedUsersIds = new SubscriptionsManager().GetSubscribedUsersIds(subscriptions);
+
+			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
+			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}

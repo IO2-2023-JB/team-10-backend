@@ -17,9 +17,14 @@ namespace Repository
 				.FirstOrDefaultAsync();
 		}
 
-		public async Task<IEnumerable<Subscription>> GetUserSubscriptions(string userId)
+		public async Task<IEnumerable<Subscription>> GetCreatorSubscriptions(string userId)
 		{
 			return await _collection.Find(s => s.CreatorId == userId).ToListAsync();
+		}
+
+		public async Task<IEnumerable<Subscription>> GetUserSubscriptions(string userId)
+		{
+			return await _collection.Find(s => s.SubscriberId == userId).ToListAsync();
 		}
 	}
 }

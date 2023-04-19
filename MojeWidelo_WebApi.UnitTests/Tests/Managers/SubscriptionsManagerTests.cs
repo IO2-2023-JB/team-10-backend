@@ -11,8 +11,8 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Managers
 			var subscriptionsRepo = MockISubscriptionsRepository.GetMock().Object;
 			var manager = new SubscriptionsManager();
 
-			var task = subscriptionsRepo.GetUserSubscriptions("64390ed1d3768498801aa14f");
-			var result = await manager.GetSubscribersIds(task);
+			var subscriptions = await subscriptionsRepo.GetCreatorSubscriptions("64390ed1d3768498801aa14f");
+			var result = manager.GetSubscribersIds(subscriptions);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -25,8 +25,8 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Managers
 			var subscriptionsRepo = MockISubscriptionsRepository.GetMock().Object;
 			var manager = new SubscriptionsManager();
 
-			var task = subscriptionsRepo.GetUserSubscriptions("64390ed1d3768498801aa05f");
-			var result = await manager.GetSubscribersIds(task);
+			var subscriptions = await subscriptionsRepo.GetCreatorSubscriptions("64390ed1d3768498801aa05f");
+			var result = manager.GetSubscribersIds(subscriptions);
 
 			Assert.NotNull(result);
 			Assert.Empty(result);

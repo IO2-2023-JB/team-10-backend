@@ -32,7 +32,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 		public async Task GetUserSubscriptionsTest_ForCreatorWithSubscriptions(string userId)
 		{
 			var repository = MockISubscriptionsRepository.GetMock().Object;
-			var result = await repository.GetUserSubscriptions(userId);
+			var result = await repository.GetCreatorSubscriptions(userId);
 
 			Assert.NotNull(result);
 			Assert.NotEmpty(result);
@@ -47,7 +47,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 		public async Task GetUserSubscriptionsTest_ForCreatorWithoutSubscriptions(string userId)
 		{
 			var repository = MockISubscriptionsRepository.GetMock().Object;
-			var result = await repository.GetUserSubscriptions(userId);
+			var result = await repository.GetCreatorSubscriptions(userId);
 
 			Assert.NotNull(result);
 			Assert.Empty(result);
@@ -59,7 +59,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 		public async Task GetUserSubscriptionsTest_ForSimpleUser(string userId)
 		{
 			var repository = MockISubscriptionsRepository.GetMock().Object;
-			var result = await repository.GetUserSubscriptions(userId);
+			var result = await repository.GetCreatorSubscriptions(userId);
 
 			Assert.NotNull(result);
 			Assert.Empty(result);

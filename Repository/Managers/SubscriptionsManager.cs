@@ -4,10 +4,14 @@ namespace Repository.Managers
 {
 	public class SubscriptionsManager
 	{
-		public async Task<IEnumerable<string>> GetSubscribersIds(Task<IEnumerable<Subscription>> task)
+		public IEnumerable<string> GetSubscribersIds(IEnumerable<Subscription> subscriptions)
 		{
-			var subscriptions = await task;
 			return subscriptions.Select(s => s.SubscriberId);
+		}
+
+		public IEnumerable<string> GetSubscribedUsersIds(IEnumerable<Subscription> subscriptions)
+		{
+			return subscriptions.Select(s => s.CreatorId);
 		}
 	}
 }

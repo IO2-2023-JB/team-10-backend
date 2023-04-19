@@ -101,12 +101,12 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 			#endregion
 
-			var task = _repository.SubscriptionsRepository.GetUserSubscriptions(id);
-			var subscribersIds = await _subscriptionsManager.GetSubscribersIds(task);
+			var subscriptions = await _repository.SubscriptionsRepository.GetCreatorSubscriptions(id);
+			var subscribersIds = _subscriptionsManager.GetSubscribersIds(subscriptions);
 			var subscribers = await _repository.UsersRepository.GetUsersByIds(subscribersIds);
 
-			var subscriptions = _mapper.Map<IEnumerable<SubscriptionDto>>(subscribers);
-			var result = new SubscriptionListDto(subscriptions);
+			var subscriptionsDto = _mapper.Map<IEnumerable<SubscriptionDto>>(subscribers);
+			var result = new SubscriptionListDto(subscriptionsDto);
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
