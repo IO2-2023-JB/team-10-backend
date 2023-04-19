@@ -10,7 +10,7 @@
 		string UsersCollectionName { get; set; }
 		string VideoCollectionName { get; set; }
 		string ReactionCollectionName { get; set; }
-        string CommentCollectionName { get; set; }
-        #endregion
-    }
+		string CommentCollectionName { get; set; }
+		#endregion
+	}
 }

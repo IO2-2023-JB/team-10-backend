@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities.Data.Comment;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
@@ -14,6 +15,15 @@ namespace MojeWidelo_WebApi.Controllers
 		public CommentController(IRepositoryWrapper repository, IMapper mapper)
 			: base(repository, mapper) { }
 
+		/// <summary>
+		/// All comments of particular video retrieval
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns>Array of comments</returns>
+		/// <response code="200">Ok</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
+		/// <response code="404">Not found</response>
 		[HttpGet("comment", Name = "getComment")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> GetComment([Required] string id)
@@ -21,11 +31,22 @@ namespace MojeWidelo_WebApi.Controllers
 			if (await _repository.VideoRepository.GetById(id) == null)
 				return NotFound();
 
-			var comments = (await _repository.CommentRepository.GetAll()).Where((x) => x.VideoId == id).ToArray();
+			var commentsDto = new List<CommentDto>();
+			(await _repository.CommentRepository.GetAll())
+				.Where((x) => x.VideoId == id)
+				.ToList()
+				.ForEach(x => commentsDto.Add(_mapper.Map<Comment, CommentDto>(x)));
 
-			return Ok(comments);
+			return Ok(commentsDto);
 		}
 
+		/// <summary>
+		/// Adding a comment to a video
+		/// </summary>
+		/// <param name="id"></param>
+		/// <response code="200">Ok</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
 		[HttpPost("comment", Name = "addComment")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		[Consumes("text/plain")]
@@ -43,6 +64,26 @@ namespace MojeWidelo_WebApi.Controllers
 			);
 
 			return Ok("Komentarz dodany pomyślnie.");
+		}
+
+		/// <summary>
+		/// Comment deletion
+		/// </summary>
+		/// <param name="id"></param>
+		/// <response code="200">Ok</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
+		/// <response code="404">Not found</response>
+		[HttpDelete("comment", Name = "deleteComment")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> DeleteComment([Required] string id)
+		{
+			if (await _repository.CommentRepository.GetById(id) == null)
+				return BadRequest();
+
+			await _repository.CommentRepository.Delete(id);
+
+			return Ok("Komentarz usunięto pomyślnie.");
 		}
 	}
 }
