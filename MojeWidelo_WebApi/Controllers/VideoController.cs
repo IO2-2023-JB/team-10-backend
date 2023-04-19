@@ -42,13 +42,7 @@ namespace MojeWidelo_WebApi.Controllers
 			video.ProcessingProgress = ProcessingProgress.MetadataRecordCreated;
 
 			video = await _repository.VideoRepository.Create(video);
-			var createdVideo = _mapper.Map<VideoMetadataDto>(video);
-
-			var result = new VideoUploadResponseDto()
-			{
-				Id = createdVideo.Id,
-				ProcessingProgress = createdVideo.ProcessingProgress
-			};
+			var result = _mapper.Map<VideoUploadResponseDto>(video);
 
 			return StatusCode(StatusCodes.Status201Created, result);
 		}
