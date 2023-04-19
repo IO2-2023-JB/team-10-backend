@@ -21,5 +21,16 @@ namespace MojeWidelo_WebApi.Controllers
 
 			return File(bytes, "image/jpeg");
 		}
+
+		[HttpGet("thumbnail/{id}", Name = "GetThumbnail")]
+		[AllowAnonymous]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> GetThumbnail(string id)
+		{
+			var bytes = await _repository.VideoRepository.GetThumbnailBytes(id);
+			var contentType = _repository.VideoRepository.GetThumbnailContentType(id);
+
+			return File(bytes, contentType);
+		}
 	}
 }

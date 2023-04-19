@@ -1,10 +1,17 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
 using Contracts;
+using Entities.Data.Video;
 using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 using Repository.Managers;
+using System.Runtime.CompilerServices;
 
 namespace Repository
 {
@@ -78,6 +85,61 @@ namespace Repository
 				using (StreamWriter sw = File.AppendText(Path.Combine(location, id + "_error_log.txt")))
 					sw.WriteLine(errorMessage);
 			}
+		}
+
+		// W SUMIE TO TA FUNKCJA JEST TAKA SAMA JAK UPLOADAVATAR (MOŻE BY COŚ Z TYM ZROBIĆ - GDZIE TO WRZUCIĆ??)
+		public async Task<string> UploadThumbnail(string file)
+		{
+			// tak jak w userze - tutaj wymyślić jakiś sensowną nazwę
+			string fileName = "temp";
+			int startIdx = file.IndexOf(',');
+			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
+
+			startIdx = file.IndexOf(':');
+			int endIdx = file.IndexOf(';');
+
+			var id = await _bucket.UploadFromBytesAsync(
+				fileName,
+				imgByteArray,
+				new MongoDB.Driver.GridFS.GridFSUploadOptions
+				{
+					Metadata = new BsonDocument
+					{
+						{ "ContentType", file.Substring(startIdx + 1, endIdx - startIdx - 1) }
+					}
+				}
+			);
+
+			return id.ToString();
+		}
+
+		public async Task SetThumbnail(HttpContext context, VideoMetadata video, VideoBaseDto videoDto)
+		{
+			if (videoDto.Thumbnail != null)
+			{
+				Uri location = new Uri($"{context.Request.Scheme}://{context.Request.Host}");
+				string url = location.AbsoluteUri;
+				video.Thumbnail = url + "api/thumbnail/";
+				video.Thumbnail += await UploadThumbnail(videoDto.Thumbnail);
+			}
+		}
+
+		public async Task<byte[]> GetThumbnailBytes(string id)
+		{
+			var bytes = await _bucket.DownloadAsBytesAsync(ObjectId.Parse(id));
+
+			return bytes;
+		}
+
+		public string GetThumbnailContentType(string id)
+		{
+			var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.Eq(x => x.Id, ObjectId.Parse(id));
+
+			using var cursor = _bucket.Find(filter);
+			var fileInfo = cursor.ToList().FirstOrDefault();
+			var contentType = fileInfo.Metadata.GetValue("ContentType").AsString;
+
+			return contentType;
 		}
 	}
 }
