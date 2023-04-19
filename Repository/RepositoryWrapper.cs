@@ -7,16 +7,19 @@ namespace Repository
 		public IUsersRepository UsersRepository { get; }
 		public IVideoRepository VideoRepository { get; }
 		public IReactionRepository ReactionRepository { get; }
+        public ICommentRepository CommentRepository { get; }
 
-		public RepositoryWrapper(
+        public RepositoryWrapper(
 			IUsersRepository usersRepository,
 			IVideoRepository videoRepository,
-			IReactionRepository reactionRepository
+			IReactionRepository reactionRepository,
+			ICommentRepository commentRepository
 		)
 		{
 			UsersRepository = usersRepository;
 			VideoRepository = videoRepository;
 			ReactionRepository = reactionRepository;
+			CommentRepository = commentRepository;
 		}
 	}
 }

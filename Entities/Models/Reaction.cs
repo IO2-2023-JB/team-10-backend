@@ -1,5 +1,4 @@
 ﻿using Entities.Enums;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Entities.Models

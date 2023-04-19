@@ -7,5 +7,6 @@
 		public string UsersCollectionName { get; set; }
 		public string VideoCollectionName { get; set; }
 		public string ReactionCollectionName { get; set; }
-	}
+        public string CommentCollectionName { get; set; }
+    }
 }
