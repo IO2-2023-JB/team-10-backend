@@ -128,8 +128,11 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status403Forbidden, "No permissions to get video metadata");
 			}
 
-			video.ViewCount++;
-			video = await _repository.VideoRepository.Update(video.Id, video);
+			if (video.ProcessingProgress == ProcessingProgress.Ready)
+			{
+				video.ViewCount++;
+				video = await _repository.VideoRepository.Update(video.Id, video);
+			}
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
 			return Ok(result);
@@ -268,7 +271,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return BadRequest("Nie można usunąć wideo będącego w trakcie przetwarzania.");
 			}
 
-			string? location = _videoManager.GetStorageDirectory().Result;
+			string? location = _videoManager.GetStorageDirectory();
 			if (location == null)
 				return BadRequest(NotFound("Zmienna środowiskowa dla MojeWideloStorage nie jest ustawiona"));
 

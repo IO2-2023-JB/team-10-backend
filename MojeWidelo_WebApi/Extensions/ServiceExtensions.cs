@@ -1,5 +1,5 @@
 ﻿using Contracts;
-using Entities.DatabaseUtils;
+using Entities.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
@@ -166,6 +166,12 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<UsersManager>();
 			services.AddScoped<VideoManager>();
 			services.AddScoped<CommentManager>();
+		}
+
+		public static void ConfigureVariables(this IServiceCollection services, ConfigurationManager configuration)
+		{
+			services.Configure<Variables>(configuration.GetSection(nameof(Variables)));
+			services.AddOptions<Variables>();
 		}
 	}
 }

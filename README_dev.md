@@ -17,7 +17,7 @@ Solucja składa się z 5 projektów:
 - Entities - zawiera klasy używane w wymianie danych z bazą i frontem. Zawiera foldery:
 
   - Data z klasami DTO
-  - DatabaseUtils z klasą zawierająca info o strukturze naszej bazy danych
+  - Utils z klasą zawierająca info o strukturze naszej bazy danych i zmiennych
   - Enums
   - Models - klasy modelowe, identyczne jak struktury przechowywane w bazie danych
 
