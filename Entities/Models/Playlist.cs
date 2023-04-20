@@ -17,7 +17,8 @@ namespace Entities.Models
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string AuthorId { get; set; }
 
-        public IEnumerable<VideoBaseDto> Videos { get; set; }
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public IEnumerable<string> Videos { get; set; }
 
         public DateTime CreationDate { get; set; }
 
