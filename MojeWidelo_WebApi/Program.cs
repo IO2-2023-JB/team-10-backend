@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Rewrite;
 using MojeWidelo_WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,26 +20,45 @@ builder.Services.ConfigureVariables(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
+if (builder.Environment.IsProduction())
+{
+	builder.Services.AddLettuceEncrypt();
+	builder.WebHost.ConfigureKestrel(options =>
+	{
+		options.ListenAnyIP(80);
+		options.ListenAnyIP(443, configure => configure.UseHttps());
+	});
+}
+
 var app = builder.Build();
 
-app.UsePathBase(new PathString("/api"));
-app.UseRouting();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseCors("EnableCORS");
 
+RewriteOptions rewriteHttps = new RewriteOptions().AddRedirectToHttpsPermanent();
+app.UseRewriter(rewriteHttps);
+
+var (staticFileOptions, defaultFilesOptions) = builder.Configuration.FrontendPathConfiguration();
+
+// serve static files (frontend assets)
+app.UseStaticFiles(staticFileOptions);
+
+// serve React app
+RewriteOptions rewriteReact = new RewriteOptions().AddRewrite("^(?!api).+", "/", true);
+app.UseRewriter(rewriteReact);
+app.UseDefaultFiles(defaultFilesOptions);
+app.UseStaticFiles(staticFileOptions);
+
+// handle API routes
+app.UsePathBase(new PathString("/api"));
+app.UseRouting();
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
