@@ -391,7 +391,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym ID nie istnieje.");
 			}
 
-			if (user.UserType == UserType.Simple)
+			if (user.UserType != UserType.Creator)
 			{
 				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym ID nie jest twórcą.");
 			}

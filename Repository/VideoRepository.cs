@@ -6,13 +6,10 @@ using Entities.Utils;
 using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Repository.Managers;
-using System.Runtime.CompilerServices;
-using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Repository
 {
