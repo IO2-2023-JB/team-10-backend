@@ -14,7 +14,12 @@ namespace Repository
 
 		public async Task<List<Comment>> GetVideoComments(string id)
 		{
-			return (await GetAll()).Where((x) => x.VideoId == id).ToList();
+			return (await GetAll()).Where((x) => x.VideoId == id && x.OriginCommentId == null).ToList();
+		}
+
+		public async Task<List<Comment>> GetCommentResponses(string id)
+		{
+			return (await GetAll()).Where((x) => x.OriginCommentId == id).ToList();
 		}
 	}
 }
