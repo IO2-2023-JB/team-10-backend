@@ -117,7 +117,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
-			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
+			if (video.Visibility == Visibility.Private && GetUserIdFromToken() != video.AuthorId)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do metadanych.");
 			}
@@ -216,7 +216,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
-			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
+			if (video.Visibility == Visibility.Private && GetUserIdFromToken() != video.AuthorId)
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do streamowania wideo.");
 
 			if (video.ProcessingProgress != ProcessingProgress.Ready)

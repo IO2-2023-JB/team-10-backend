@@ -1,5 +1,4 @@
 ﻿using Entities.Enums;
-using Microsoft.AspNetCore.Http;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,8 +14,8 @@ namespace Entities.Models
 
 		public IEnumerable<string> Tags { get; set; }
 
-		[EnumDataType(typeof(VideoVisibility))]
-		public VideoVisibility Visibility { get; set; }
+		[EnumDataType(typeof(Visibility))]
+		public Visibility Visibility { get; set; }
 
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
 		public string AuthorId { get; set; }

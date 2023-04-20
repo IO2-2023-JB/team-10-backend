@@ -9,13 +9,15 @@ namespace Repository
 		public IReactionRepository ReactionRepository { get; }
 		public ICommentRepository CommentRepository { get; }
 		public ISubscriptionsRepository SubscriptionsRepository { get; }
+		public IPlaylistRepository PlaylistRepository { get; }
 
 		public RepositoryWrapper(
 			IUsersRepository usersRepository,
 			IVideoRepository videoRepository,
 			IReactionRepository reactionRepository,
 			ICommentRepository commentRepository,
-			ISubscriptionsRepository subscriptionsRepository
+			ISubscriptionsRepository subscriptionsRepository,
+			IPlaylistRepository playlistRepository
 		)
 		{
 			UsersRepository = usersRepository;
@@ -23,6 +25,7 @@ namespace Repository
 			ReactionRepository = reactionRepository;
 			CommentRepository = commentRepository;
 			SubscriptionsRepository = subscriptionsRepository;
+			PlaylistRepository = playlistRepository;
 		}
 	}
 }

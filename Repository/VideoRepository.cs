@@ -147,7 +147,7 @@ namespace Repository
 		public async Task<IEnumerable<VideoMetadata>> GetVideosByUserId(string id, bool isAuthor)
 		{
 			return await _collection
-				.Find(x => x.AuthorId == id && (x.Visibility == VideoVisibility.Public || isAuthor))
+				.Find(x => x.AuthorId == id && (x.Visibility == Visibility.Public || isAuthor))
 				.ToListAsync();
 		}
 
@@ -155,7 +155,7 @@ namespace Repository
 		{
 			// zwracamy tylko publiczne filmy
 			var videos = await _collection
-				.Find(video => creatorsIds.Contains(video.AuthorId) && video.Visibility == VideoVisibility.Public)
+				.Find(video => creatorsIds.Contains(video.AuthorId) && video.Visibility == Visibility.Public)
 				.ToListAsync();
 
 			return videos.OrderByDescending(video => video.UploadDate);

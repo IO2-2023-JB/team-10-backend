@@ -14,7 +14,7 @@ namespace Entities.Data.Video
 
 		public IEnumerable<string> Tags { get; set; }
 
-		[EnumDataType(typeof(VideoVisibility))]
-		public VideoVisibility Visibility { get; set; }
+		[EnumDataType(typeof(Visibility))]
+		public Visibility Visibility { get; set; }
 	}
 }
