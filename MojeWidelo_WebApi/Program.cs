@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.FileProviders;
 using MojeWidelo_WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,11 +43,7 @@ app.UseCors("EnableCORS");
 RewriteOptions rewriteHttps = new RewriteOptions().AddRedirectToHttpsPermanent();
 app.UseRewriter(rewriteHttps);
 
-var frontendPath = builder.Configuration.GetValue<string>("Variables:FrontendPath");
-var frontendAbsolutePath = Path.GetFullPath(frontendPath);
-var fileProvider = new PhysicalFileProvider(frontendAbsolutePath);
-var staticFileOptions = new StaticFileOptions { FileProvider = fileProvider };
-var defaultFilesOptions = new DefaultFilesOptions { FileProvider = fileProvider };
+var (staticFileOptions, defaultFilesOptions) = builder.Configuration.FrontendPathConfiguration();
 
 // serve static files (frontend assets)
 app.UseStaticFiles(staticFileOptions);
