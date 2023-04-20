@@ -393,6 +393,11 @@ namespace MojeWidelo_WebApi.Controllers
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
+		/// <summary>
+		/// Get videos from subscribed users
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">OK</response>
 		[HttpGet("user/videos/subscribed")]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<VideoMetadataDto>))]
 		public async Task<IActionResult> GetVideosSubscribed()

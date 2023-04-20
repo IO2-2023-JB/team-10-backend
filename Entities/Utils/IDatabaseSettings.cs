@@ -11,7 +11,7 @@
 		string VideoCollectionName { get; set; }
 		string ReactionCollectionName { get; set; }
 		string CommentCollectionName { get; set; }
-		string SubscriptionsCollectionName { get; set; }
+		string SubscriptionCollectionName { get; set; }
 
 		#endregion
 	}

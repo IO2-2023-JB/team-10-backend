@@ -8,7 +8,7 @@ namespace Repository
 	public class SubscriptionsRepository : RepositoryBase<Subscription>, ISubscriptionsRepository
 	{
 		public SubscriptionsRepository(IDatabaseSettings databaseSettings)
-			: base(databaseSettings, databaseSettings.SubscriptionsCollectionName) { }
+			: base(databaseSettings, databaseSettings.SubscriptionCollectionName) { }
 
 		public async Task<Subscription?> GetSubscription(string creatorId, string subscriberId)
 		{

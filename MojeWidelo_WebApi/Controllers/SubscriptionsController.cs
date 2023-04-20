@@ -40,9 +40,9 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> Subscribe([Required] string id)
 		{
-			#region Validate operation
 			var creator = await _repository.UsersRepository.GetById(id);
 
+			#region Validate operation
 			if (creator == null)
 			{
 				return StatusCode(StatusCodes.Status404NotFound, "Podany użytkownik nie istnieje.");
@@ -64,11 +64,14 @@ namespace MojeWidelo_WebApi.Controllers
 			var sub = await _repository.SubscriptionsRepository.GetSubscription(id, subscriberId);
 			if (sub != null)
 			{
-				return StatusCode(StatusCodes.Status200OK, $"Twórca {creator.Nickname} jest już zasubskrybowany");
+				return StatusCode(
+					StatusCodes.Status400BadRequest,
+					$"Twórca {creator.Nickname} jest już zasubskrybowany"
+				);
 			}
 
 			var subscription = new Subscription() { CreatorId = id, SubscriberId = subscriberId };
-			var result = await _repository.SubscriptionsRepository.Create(subscription);
+			await _repository.SubscriptionsRepository.Create(subscription);
 			creator.SubscriptionsCount++;
 			creator = await _repository.UsersRepository.Update(creator.Id, creator);
 
@@ -89,20 +92,17 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> GetSubscriptions([Required] string id)
 		{
-			#region Validate operation
 			var user = await _repository.UsersRepository.GetById(id);
+
+			#region Validate operation
 			if (user == null)
 			{
 				return StatusCode(StatusCodes.Status404NotFound, "Podany użytkownik nie istnieje.");
 			}
-			if (user.UserType != UserType.Creator)
-			{
-				return StatusCode(StatusCodes.Status400BadRequest, $"Użytkownik {user.Nickname} nie jest twórcą.");
-			}
 			#endregion
 
-			var subscriptions = await _repository.SubscriptionsRepository.GetCreatorSubscriptions(id);
-			var subscribersIds = _subscriptionsManager.GetSubscribersIds(subscriptions);
+			var subscriptions = await _repository.SubscriptionsRepository.GetUserSubscriptions(id);
+			var subscribersIds = _subscriptionsManager.GetSubscribedUsersIds(subscriptions);
 			var subscribers = await _repository.UsersRepository.GetUsersByIds(subscribersIds);
 
 			var subscriptionsDto = _mapper.Map<IEnumerable<SubscriptionDto>>(subscribers);
@@ -111,7 +111,7 @@ namespace MojeWidelo_WebApi.Controllers
 		}
 
 		/// <summary>
-		/// Unsubscribe from another user
+		/// Unsubscribe from creator
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
@@ -124,6 +124,8 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> Unsubscribe([Required] string id)
 		{
 			var creator = await _repository.UsersRepository.GetById(id);
+
+			#region Validate operation
 			if (creator == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Nie znaleziono użytkownika o podanym id.");
 
@@ -132,6 +134,7 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				return StatusCode(StatusCodes.Status404NotFound, "Nie znaleziono subskrypcji.");
 			}
+			#endregion
 
 			await _repository.SubscriptionsRepository.Delete(sub.Id);
 			creator.SubscriptionsCount--;

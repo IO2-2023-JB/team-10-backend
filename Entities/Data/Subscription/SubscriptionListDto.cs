@@ -1,4 +1,6 @@
-﻿namespace Entities.Data.Subscription
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Entities.Data.Subscription
 {
 	public class SubscriptionListDto
 	{
@@ -7,6 +9,7 @@
 			Subscriptions = subscriptions;
 		}
 
+		[Required]
 		public IEnumerable<SubscriptionDto> Subscriptions { get; set; }
 	}
 }

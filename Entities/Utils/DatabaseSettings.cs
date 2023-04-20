@@ -8,6 +8,6 @@
 		public string VideoCollectionName { get; set; }
 		public string ReactionCollectionName { get; set; }
 		public string CommentCollectionName { get; set; }
-		public string SubscriptionsCollectionName { get; set; }
+		public string SubscriptionCollectionName { get; set; }
 	}
 }

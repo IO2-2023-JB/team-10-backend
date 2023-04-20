@@ -5,6 +5,7 @@ namespace Entities.Data.Subscription
 {
 	public class SubscriptionDto
 	{
+		[Required]
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
 		public string Id { get; set; }
 
