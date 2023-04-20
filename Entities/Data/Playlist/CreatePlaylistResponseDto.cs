@@ -2,10 +2,10 @@
 
 namespace Entities.Data.Playlist
 {
-    public class CreatePlaylistResponseDto
-    {
-        [BsonId]
-        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public string Id { get; set; }
-    }
+	public class CreatePlaylistResponseDto
+	{
+		[BsonId]
+		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+		public string Id { get; set; }
+	}
 }

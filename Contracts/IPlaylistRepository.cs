@@ -1,8 +1,10 @@
-﻿using Entities.Models;
+﻿using Entities.Data.Video;
+using Entities.Models;
 
 namespace Contracts
 {
-    public interface IPlaylistRepository : IRepositoryBase<Playlist>
-    {
-    }
+	public interface IPlaylistRepository : IRepositoryBase<Playlist>
+	{
+		public Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, string callerID);
+	}
 }

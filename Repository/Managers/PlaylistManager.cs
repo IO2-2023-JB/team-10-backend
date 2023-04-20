@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace Repository.Managers
 {
-    public class PlaylistManager
-    {
-
-    }
+	public class PlaylistManager { }
 }

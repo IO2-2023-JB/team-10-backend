@@ -1,4 +1,4 @@
 ﻿namespace Entities.Data.Playlist
 {
-    public class CreatePlaylistRequestDto : PlaylistBaseDto { }
+	public class CreatePlaylistRequestDto : PlaylistBaseDto { }
 }
