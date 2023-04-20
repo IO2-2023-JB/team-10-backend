@@ -39,7 +39,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (user.UserType != UserType.Creator)
 				return StatusCode(
 					StatusCodes.Status403Forbidden,
-					"Brak uprawnień do przesyłania video. Użytkownik nie jest twórcą."
+					"Brak uprawnień do przesyłania wideo. Użytkownik nie jest twórcą."
 				);
 
 			// mapowanie i uzupełnienie danych
@@ -86,7 +86,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (video == null)
 			{
-				return StatusCode(StatusCodes.Status404NotFound, "Video o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 			}
 
 			if (GetUserIdFromToken() != video.AuthorId)
@@ -121,7 +121,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
-				return StatusCode(StatusCodes.Status404NotFound, "Video o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
 			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
 			{
@@ -157,10 +157,10 @@ namespace MojeWidelo_WebApi.Controllers
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
-				return StatusCode(StatusCodes.Status404NotFound, "Video o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
 			if (GetUserIdFromToken() != video.AuthorId)
-				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do przesłania video.");
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do przesłania wideo.");
 
 			if (
 				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
@@ -168,14 +168,14 @@ namespace MojeWidelo_WebApi.Controllers
 			)
 				return StatusCode(
 					StatusCodes.Status400BadRequest,
-					"Stan video nie pozwala na przesłanie go. Obecny stan: " + video.ProcessingProgress.ToString() + '.'
+					"Stan wideo nie pozwala na przesłanie go. Obecny stan: " + video.ProcessingProgress.ToString() + '.'
 				);
 
 			string? path = _videoManager.CreateNewPath(id, videoFile.FileName);
 			if (path == null)
 				return StatusCode(
 					StatusCodes.Status501NotImplemented,
-					"System nie posiada zdefiniowanej lokalizacji przechowania plików video."
+					"System nie posiada zdefiniowanej lokalizacji przechowania plików wideo."
 				);
 
 			try
@@ -219,28 +219,28 @@ namespace MojeWidelo_WebApi.Controllers
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
-				return StatusCode(StatusCodes.Status404NotFound, "Video o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
 			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
-				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do streamowania video.");
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do streamowania wideo.");
 
 			if (video.ProcessingProgress != ProcessingProgress.Ready)
 				return StatusCode(
 					StatusCodes.Status400BadRequest,
-					"Stan video nie pozwala na streaming. Obecny stan: " + video.ProcessingProgress.ToString() + '.'
+					"Stan wideo nie pozwala na streaming. Obecny stan: " + video.ProcessingProgress.ToString() + '.'
 				);
 
 			string? path = _videoManager.GetReadyFilePath(id);
 			if (path == null)
 				return StatusCode(
 					StatusCodes.Status501NotImplemented,
-					"System nie posiada zdefiniowanej lokalizacji przechowania plików video."
+					"System nie posiada zdefiniowanej lokalizacji przechowania plików wideo."
 				);
 
 			if (!System.IO.File.Exists(path))
 				return StatusCode(
 					StatusCodes.Status500InternalServerError,
-					"Plik video nie istnieje, mimo że powinien."
+					"Plik wideo nie istnieje, mimo że powinien."
 				);
 
 			var res = File(System.IO.File.OpenRead(path), "video/mp4", true);
@@ -271,13 +271,13 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (video == null)
 			{
-				return StatusCode(StatusCodes.Status404NotFound, "Video o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 			}
 
 			// dodać logikę że jak jest administratorem to może nawet jak nie jego wideo??
 			if (video.AuthorId != userId)
 			{
-				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do usunięcia video.");
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do usunięcia wideo.");
 			}
 
 			if (
@@ -287,7 +287,7 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				return StatusCode(
 					StatusCodes.Status400BadRequest,
-					"Stan video nie pozwala na usunięcie. Obecny stan: " + video.ProcessingProgress.ToString() + '.'
+					"Stan wideo nie pozwala na usunięcie. Obecny stan: " + video.ProcessingProgress.ToString() + '.'
 				);
 			}
 
@@ -295,7 +295,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (location == null)
 				return StatusCode(
 					StatusCodes.Status501NotImplemented,
-					"System nie posiada zdefiniowanej lokalizacji przechowania plików video."
+					"System nie posiada zdefiniowanej lokalizacji przechowania plików wideo."
 				);
 
 			string[] filesToDelete = Directory.GetFiles(location, id + "*");
@@ -320,7 +320,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			await _repository.VideoRepository.Delete(id);
 
-			return StatusCode(StatusCodes.Status200OK, "Video usunięte pomyślnie.");
+			return StatusCode(StatusCodes.Status200OK, "Wideo usunięte pomyślnie.");
 		}
 
 		/// <summary>

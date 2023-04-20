@@ -200,6 +200,6 @@ Wszędzie (gdzie się da (1)) do zwracania odpowiedzi w kontrolerze używamy:
 	return StatusCode(StatusCodes.StatusXXX, zwracany_obiekt);
 	
 Jeżeli kontroler, zgodnie z dokumentacją, zwraca jakiś obiekt DTO, obiekt do zwrotu wstawiamy pod zwracany_obiekt.
-Jeżeli kontroler, zgodnie z dokumentacją, zwraca jedynie kod odpowiedzi, pod zwracany_obiekt wstawiamy string podsumowujący wykonaną procedurę. Opis ten powinien być w języku Polskim.
+Jeżeli kontroler, zgodnie z dokumentacją, zwraca jedynie kod odpowiedzi, pod zwracany_obiekt wstawiamy string podsumowujący wykonaną procedurę. Opis ten powinien być w języku polskim.
 
-(1) - Są przypadki, gdy nie trzeba wprost specyfikować zwracanego kodu odpowiedzi (np. podczas streamingu video). Takie rozwiązania są w pełni poprawne.
+(1) - Są przypadki, gdy nie trzeba wprost specyfikować zwracanego kodu odpowiedzi (np. podczas streamingu wideo). Takie rozwiązania są w pełni poprawne.
