@@ -192,3 +192,14 @@ Można stosować dwa (a może istnieje więcej, nie wiem) sposoby pisania testó
    ![image](https://user-images.githubusercontent.com/102852926/230719462-bdcc7f13-1394-4912-80ec-b4494a8b3b8e.png)
 
    Samo pisanie testów dla kontrolera analogiczne do tego co wyżej.
+   
+## Opisywanie kodów odpowiedzi HTML
+
+Wszędzie (gdzie się da (1)) do zwracania odpowiedzi w kontrolerze używamy:
+	
+	return StatusCode(StatusCodes.StatusXXX, zwracany_obiekt);
+	
+Jeżeli kontroler, zgodnie z dokumentacją, zwraca jakiś obiekt DTO, obiekt do zwrotu wstawiamy pod zwracany_obiekt.
+Jeżeli kontroler, zgodnie z dokumentacją, zwraca jedynie kod odpowiedzi, pod zwracany_obiekt wstawiamy string podsumowujący wykonaną procedurę. Opis ten powinien być w języku polskim.
+
+(1) - Są przypadki, gdy nie trzeba wprost specyfikować zwracanego kodu odpowiedzi (np. podczas streamingu wideo). Takie rozwiązania są w pełni poprawne.

@@ -38,9 +38,9 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var video = await _repository.VideoRepository.GetById(id);
 			if (video == null)
-				return StatusCode(StatusCodes.Status404NotFound, "Nie znaleziono filmu o podanym identyfikatorze.");
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
-				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do komentarzy filmu.");
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do komentarzy.");
 
 			var comments = await _repository.CommentRepository.GetVideoComments(id);
 			var users = (await _repository.UsersRepository.GetUsersByIds(comments.Select(x => x.AuthorId))).ToHashSet();
@@ -88,10 +88,7 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var comment = await _repository.CommentRepository.GetById(id);
 			if (comment == null)
-				return StatusCode(
-					StatusCodes.Status404NotFound,
-					"Nie znaleziono komentarza o podanym identyfikatorze."
-				);
+				return StatusCode(StatusCodes.Status404NotFound, "Komentarz o podanym ID nie istnieje.");
 
 			var user = await GetUserFromToken();
 			if (comment.AuthorId != user.Id && user.UserType != UserType.Administrator)
@@ -99,7 +96,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			await _repository.CommentRepository.Delete(id);
 
-			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięto pomyślnie.");
+			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięty pomyślnie.");
 		}
 	}
 }
