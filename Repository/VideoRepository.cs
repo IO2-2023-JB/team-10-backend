@@ -1,4 +1,17 @@
-﻿namespace Repository
+﻿using CliWrap;
+using CliWrap.Buffered;
+using Contracts;
+using Entities.Data.Video;
+using Entities.Enums;
+using Entities.Models;
+using Entities.Utils;
+using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
+using Repository.Managers;
+
+namespace Repository
 {
 	public class VideoRepository : RepositoryBase<VideoMetadata>, IVideoRepository
 	{

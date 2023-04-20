@@ -37,6 +37,8 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 			mock.Setup(m => m.GetCreatorSubscriptions(It.IsAny<string>()))
 				.ReturnsAsync((string userId) => collection.Where(s => s.CreatorId == userId).ToList());
 
+			mock.Setup(m => m.GetUserSubscriptions(It.IsAny<string>()))
+				.ReturnsAsync((string userId) => collection.Where(s => s.SubscriberId == userId).ToList());
 			return mock;
 		}
 	}

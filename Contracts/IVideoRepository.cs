@@ -1,4 +1,9 @@
-﻿namespace Contracts
+﻿using Entities.Data.Video;
+using Entities.Enums;
+using Entities.Models;
+using Microsoft.AspNetCore.Http;
+
+namespace Contracts
 {
 	public interface IVideoRepository : IRepositoryBase<VideoMetadata>
 	{

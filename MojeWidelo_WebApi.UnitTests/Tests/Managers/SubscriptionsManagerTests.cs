@@ -32,5 +32,33 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Managers
 			Assert.Empty(result);
 			Assert.IsAssignableFrom<IEnumerable<string>>(result);
 		}
+
+		[Fact]
+		public async Task GetSubscribedUsersIds_NotEmpty()
+		{
+			var subscriptionsRepo = MockISubscriptionsRepository.GetMock().Object;
+			var manager = new SubscriptionsManager();
+
+			var subscriptions = await subscriptionsRepo.GetUserSubscriptions("64390ed1d3768498801aa04f");
+			var result = manager.GetSubscribedUsersIds(subscriptions);
+
+			Assert.NotNull(result);
+			Assert.NotEmpty(result);
+			Assert.IsAssignableFrom<IEnumerable<string>>(result);
+		}
+
+		[Fact]
+		public async Task GetSubscribersIds_Empty()
+		{
+			var subscriptionsRepo = MockISubscriptionsRepository.GetMock().Object;
+			var manager = new SubscriptionsManager();
+
+			var subscriptions = await subscriptionsRepo.GetUserSubscriptions("64390ed1d3768498801aa05f");
+			var result = manager.GetSubscribedUsersIds(subscriptions);
+
+			Assert.NotNull(result);
+			Assert.Empty(result);
+			Assert.IsAssignableFrom<IEnumerable<string>>(result);
+		}
 	}
 }

@@ -66,7 +66,7 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				return StatusCode(
 					StatusCodes.Status400BadRequest,
-					$"Twórca {creator.Nickname} jest już zasubskrybowany"
+					$"Twórca {creator.Nickname} jest już zasubskrybowany."
 				);
 			}
 

@@ -1,4 +1,13 @@
-﻿using System.Net.Mime;
+﻿using AutoMapper;
+using Contracts;
+using Entities.Data.Video;
+using Entities.Enums;
+using Entities.Models;
+using Microsoft.AspNetCore.Mvc;
+using MojeWidelo_WebApi.Filters;
+using Repository.Managers;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 
 namespace MojeWidelo_WebApi.Controllers
 {

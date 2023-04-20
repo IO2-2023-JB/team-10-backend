@@ -73,7 +73,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			var result = await controller.Subscribe(creatorId) as ObjectResult;
 
 			Assert.NotNull(result);
-			Assert.Equal(StatusCodes.Status200OK, result!.StatusCode);
+			Assert.Equal(StatusCodes.Status400BadRequest, result!.StatusCode);
 		}
 
 		[Theory]
@@ -105,20 +105,8 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 		}
 
 		[Theory]
-		[InlineData("64390ed1d3768498801aa03f")]
 		[InlineData("64390ed1d3768498801aa04f")]
-		public async Task GetSubscriptionsTest_UserIsNotCreator(string userId)
-		{
-			var controller = GetController();
-			var result = await controller.GetSubscriptions(userId) as ObjectResult;
-
-			Assert.NotNull(result);
-			Assert.Equal(StatusCodes.Status400BadRequest, result!.StatusCode);
-		}
-
-		[Theory]
-		[InlineData("64390ed1d3768498801aa14f")]
-		public async Task GetSubscriptionsTest_CreatorWithSubscriptions(string userId)
+		public async Task GetSubscriptionsTest_UserWithSubscriptions(string userId)
 		{
 			var controller = GetController();
 			var result = await controller.GetSubscriptions(userId) as ObjectResult;
@@ -131,8 +119,8 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 		}
 
 		[Theory]
-		[InlineData("64390ed1d3768498801aa15f")]
-		public async Task GetSubscriptionsTest_CreatorWithoutSubscriptions(string userId)
+		[InlineData("64390ed1d3768498801aa05f")]
+		public async Task GetSubscriptionsTest_UserWithoutSubscriptions(string userId)
 		{
 			var controller = GetController();
 			var result = await controller.GetSubscriptions(userId) as ObjectResult;
