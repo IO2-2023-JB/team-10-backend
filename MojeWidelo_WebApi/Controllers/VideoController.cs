@@ -379,5 +379,32 @@ namespace MojeWidelo_WebApi.Controllers
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
+
+		[HttpGet("/user/videos", Name = "getUserVideos")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> GetUsersVideos([Required] string id)
+		{
+			var user = await _repository.UsersRepository.GetById(id);
+
+			if (user == null)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym ID nie istnieje.");
+			}
+
+			if (user.UserType == UserType.Simple)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym ID nie jest twórcą.");
+			}
+
+			bool isAuthor = id == GetUserIdFromToken();
+
+			var videos = await _repository.VideoRepository.GetVideosByUserId(id, isAuthor);
+			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+
+			var result = new VideoListDto();
+			result.Videos = videosDto.ToArray();
+
+			return StatusCode(StatusCodes.Status200OK, result);
+		}
 	}
 }
