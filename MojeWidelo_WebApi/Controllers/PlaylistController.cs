@@ -2,6 +2,7 @@
 using Contracts;
 using Entities.Data.Playlist;
 using Entities.Data.Video;
+using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
@@ -114,7 +115,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (GetUserIdFromToken() != playlist.AuthorId)
 			{
-				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do edycji playlisty.");
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do usunięcia playlisty.");
 			}
 
 			await _repository.PlaylistRepository.Delete(id);
@@ -146,6 +147,127 @@ namespace MojeWidelo_WebApi.Controllers
 			foreach (var playlist in playlists)
 				playlistBases.Add(_mapper.Map<PlaylistBaseDto>(playlist));
 			return StatusCode(StatusCodes.Status200OK, playlistBases.ToArray());
+		}
+
+		/// <summary>
+		/// Get all videos in playlist
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
+		/// <response code="404">Not found</response>
+		[HttpGet("playlist/video")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(PlaylistDto))]
+		public async Task<IActionResult> GetVideosInPlaylist([Required] string id)
+		{
+			var playlist = await _repository.PlaylistRepository.GetById(id);
+
+			if (playlist == null)
+			{
+				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
+			}
+
+			if (playlist.Visibility == Visibility.Private && GetUserIdFromToken() != playlist.AuthorId)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do playlisty.");
+			}
+
+			var result = _mapper.Map<PlaylistDto>(playlist);
+			var user = await GetUserFromToken();
+			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, user.Id);
+			var videoBases = new List<VideoBaseDto>();
+			foreach (var video in videos)
+				videoBases.Add(_mapper.Map<VideoBaseDto>(video));
+			result.Videos = videoBases.ToArray();
+			return StatusCode(StatusCodes.Status200OK, result);
+		}
+
+		/// <summary>
+		/// Add video to playlist
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
+		/// <response code="404">Not found</response>
+		[HttpPost("playlist/{id}/{videoId}")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> AddVideoToPlaylist(string id, string videoId)
+		{
+			var playlist = await _repository.PlaylistRepository.GetById(id);
+
+			if (playlist == null)
+			{
+				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
+			}
+
+			if (GetUserIdFromToken() != playlist.AuthorId)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do edycji playlisty.");
+			}
+
+			var video = await _repository.VideoRepository.GetById(videoId);
+
+			if (video == null)
+			{
+				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
+			}
+
+			var videos = playlist.Videos.ToList();
+			if (videos.Contains(videoId))
+			{
+				return StatusCode(
+					StatusCodes.Status400BadRequest,
+					"Wideo o podanym ID znajduje się już w tej playliście."
+				);
+			}
+			videos.Add(videoId);
+			playlist.Videos = videos.ToArray();
+			playlist.EditDate = DateTime.Now;
+			await _repository.PlaylistRepository.Update(id, playlist);
+			return StatusCode(StatusCodes.Status200OK, "Wideo zostało dodane do playlisty.");
+		}
+
+		/// <summary>
+		/// Remove video from playlist
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
+		/// <response code="404">Not found</response>
+		[HttpDelete("playlist/{id}/{videoId}")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> RemoveVideoFromPlaylist(string id, string videoId)
+		{
+			var playlist = await _repository.PlaylistRepository.GetById(id);
+
+			if (playlist == null)
+			{
+				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
+			}
+
+			if (GetUserIdFromToken() != playlist.AuthorId)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do edycji playlisty.");
+			}
+
+			var videos = playlist.Videos.ToList();
+			if (!videos.Contains(videoId))
+			{
+				return StatusCode(
+					StatusCodes.Status400BadRequest,
+					"Wideo o podanym ID nie znajduje się w tej playliście."
+				);
+			}
+			videos.Remove(videoId);
+			playlist.Videos = videos.ToArray();
+			playlist.EditDate = DateTime.Now;
+			await _repository.PlaylistRepository.Update(id, playlist);
+			return StatusCode(StatusCodes.Status200OK, "Wideo zostało usunięte z playlisty.");
 		}
 	}
 }
