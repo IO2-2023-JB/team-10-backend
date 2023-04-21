@@ -396,8 +396,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var videos = await _repository.VideoRepository.GetVideosByUserId(id, isAuthor);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 
-			var result = new VideoListDto();
-			result.Videos = videosDto.ToArray();
+			var result = new VideoListDto(videosDto);
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
@@ -416,9 +415,9 @@ namespace MojeWidelo_WebApi.Controllers
 			var subscribedUsersIds = new SubscriptionsManager().GetSubscribedUsersIds(subscriptions);
 
 			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
-			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 
-			return StatusCode(StatusCodes.Status200OK, result);
+			return StatusCode(StatusCodes.Status200OK, new VideoListDto(videosDto));
 		}
 	}
 }
