@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data.Playlist
 {
-	public class PlaylistBaseDto
+	public class PlaylistBaseDto : CreatePlaylistResponseDto
 	{
 		[Required]
 		public string Name { get; set; }
