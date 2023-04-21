@@ -27,7 +27,7 @@ namespace Repository.Managers
 							opt.AfterMap(
 								(src, dest) =>
 								{
-									var user = users.TakeWhile((y) => x.AuthorId == y.Id).First();
+									var user = users.Where((y) => x.AuthorId == y.Id).First();
 									dest.Nickname = user.Nickname;
 									dest.AvatarImage = user.AvatarImage;
 								}

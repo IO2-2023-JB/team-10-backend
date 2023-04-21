@@ -141,7 +141,6 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var comments = await _repository.CommentRepository.GetCommentResponses(id);
 			var users = (await _repository.UsersRepository.GetUsersByIds(comments.Select(x => x.AuthorId))).ToHashSet();
-
 			var commentsDto = _commentManager.CreateCommentArray(comments, users);
 
 			return StatusCode(StatusCodes.Status200OK, commentsDto);
@@ -167,7 +166,6 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var user = await GetUserFromToken();
 			var originComment = await _repository.CommentRepository.GetById(id);
-			var video = await _repository.VideoRepository.GetById(originComment.VideoId);
 			await _repository.CommentRepository.Create(new Comment(originComment.VideoId, user.Id, content, id));
 			originComment.HasResponses = true;
 			await _repository.CommentRepository.Update(id, originComment);
