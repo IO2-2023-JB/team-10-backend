@@ -86,9 +86,9 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<PlaylistDto>(playlist);
 			var user = await GetUserFromToken();
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, user.Id);
-			var videoBases = new List<VideoBaseDto>();
+			var videoBases = new List<VideoMetadataDto>();
 			foreach (var video in videos)
-				videoBases.Add(_mapper.Map<VideoBaseDto>(video));
+				videoBases.Add(_mapper.Map<VideoMetadataDto>(video));
 			result.Videos = videoBases.ToArray();
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
@@ -178,9 +178,9 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<PlaylistDto>(playlist);
 			var user = await GetUserFromToken();
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, user.Id);
-			var videoBases = new List<VideoBaseDto>();
+			var videoBases = new List<VideoMetadataDto>();
 			foreach (var video in videos)
-				videoBases.Add(_mapper.Map<VideoBaseDto>(video));
+				videoBases.Add(_mapper.Map<VideoMetadataDto>(video));
 			result.Videos = videoBases.ToArray();
 			return StatusCode(StatusCodes.Status200OK, result);
 		}

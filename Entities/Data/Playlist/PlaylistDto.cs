@@ -13,7 +13,6 @@ namespace Entities.Data.Playlist
 		[EnumDataType(typeof(Visibility))]
 		public Visibility Visibility { get; set; }
 
-		[Required]
-		public IEnumerable<VideoBaseDto> Videos { get; set; }
+		public IEnumerable<VideoMetadataDto> Videos { get; set; }
 	}
 }
