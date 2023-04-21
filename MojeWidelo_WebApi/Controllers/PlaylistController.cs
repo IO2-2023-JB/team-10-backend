@@ -8,7 +8,6 @@ using MojeWidelo_WebApi.Filters;
 using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using ZstdSharp.Unsafe;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -130,7 +129,6 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorised</response>
-		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
 		[HttpGet("playlist/user")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]

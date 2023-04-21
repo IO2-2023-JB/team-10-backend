@@ -1,5 +1,4 @@
-﻿using Entities.Data.Video;
-using Entities.Enums;
+﻿using Entities.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Contracts;
-using Entities.Data.Comment;
 using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;

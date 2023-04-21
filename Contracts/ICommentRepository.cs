@@ -1,6 +1,4 @@
-﻿using Entities.Data.Video;
-using Entities.Enums;
-using Entities.Models;
+﻿using Entities.Models;
 
 namespace Contracts
 {
