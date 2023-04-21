@@ -6,12 +6,10 @@ using Entities.Utils;
 using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Repository.Managers;
-using System.Runtime.CompilerServices;
 
 namespace Repository
 {
@@ -144,6 +142,13 @@ namespace Repository
 			var contentType = fileInfo.Metadata.GetValue("ContentType").AsString;
 
 			return contentType;
+		}
+
+		public async Task<IEnumerable<VideoMetadata>> GetVideosByUserId(string id, bool isAuthor)
+		{
+			return await _collection
+				.Find(x => x.AuthorId == id && (x.Visibility == VideoVisibility.Public || isAuthor))
+				.ToListAsync();
 		}
 	}
 }
