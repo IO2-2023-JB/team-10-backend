@@ -32,6 +32,7 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<IVideoRepository, VideoRepository>();
 			services.AddScoped<IReactionRepository, ReactionRepository>();
 			services.AddScoped<ICommentRepository, CommentRepository>();
+			services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
 		}
 
 		public static void ConfigureSwagger(this IServiceCollection services)
@@ -166,6 +167,7 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<UsersManager>();
 			services.AddScoped<VideoManager>();
 			services.AddScoped<CommentManager>();
+			services.AddScoped<SubscriptionsManager>();
 		}
 
 		public static void ConfigureVariables(this IServiceCollection services, ConfigurationManager configuration)

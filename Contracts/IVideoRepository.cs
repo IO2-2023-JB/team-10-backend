@@ -14,5 +14,6 @@ namespace Contracts
 		Task<byte[]> GetThumbnailBytes(string id);
 		string GetThumbnailContentType(string id);
 		Task<IEnumerable<VideoMetadata>> GetVideosByUserId(string id, bool isAuthor);
+		Task<IEnumerable<VideoMetadata>> GetSubscribedVideos(IEnumerable<string> creatorIds);
 	}
 }

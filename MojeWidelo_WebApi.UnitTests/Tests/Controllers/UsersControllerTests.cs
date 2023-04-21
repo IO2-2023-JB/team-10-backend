@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Controllers;
-using MojeWidelo_WebApi.UnitTests.Tests.Controllers;
 using Repository.Managers;
 
-namespace MojeWidelo_WebApi.UnitTests.ControllersTests
+namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 {
 	public class UsersControllerTests : BaseControllerTests<UsersController>
 	{

@@ -51,13 +51,7 @@ namespace MojeWidelo_WebApi.Controllers
 			video.ProcessingProgress = ProcessingProgress.MetadataRecordCreated;
 
 			video = await _repository.VideoRepository.Create(video);
-			var createdVideo = _mapper.Map<VideoMetadataDto>(video);
-
-			var result = new VideoUploadResponseDto()
-			{
-				Id = createdVideo.Id,
-				ProcessingProgress = createdVideo.ProcessingProgress
-			};
+			var result = _mapper.Map<VideoUploadResponseDto>(video);
 
 			return StatusCode(StatusCodes.Status201Created, result);
 		}
@@ -131,6 +125,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
 				video.ViewCount++;
+				video.AuthorNickname = (await _repository.UsersRepository.GetById(video.AuthorId)).Nickname;
 				video = await _repository.VideoRepository.Update(video.Id, video);
 			}
 
@@ -403,6 +398,25 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var result = new VideoListDto();
 			result.Videos = videosDto.ToArray();
+
+			return StatusCode(StatusCodes.Status200OK, result);
+		}
+
+		/// <summary>
+		/// Get videos from subscribed users
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">OK</response>
+		[HttpGet("user/videos/subscribed")]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<VideoMetadataDto>))]
+		public async Task<IActionResult> GetVideosSubscribed()
+		{
+			var id = GetUserIdFromToken();
+			var subscriptions = await _repository.SubscriptionsRepository.GetUserSubscriptions(id);
+			var subscribedUsersIds = new SubscriptionsManager().GetSubscribedUsersIds(subscriptions);
+
+			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
+			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}

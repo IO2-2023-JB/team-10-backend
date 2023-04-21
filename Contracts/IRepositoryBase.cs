@@ -1,9 +1,11 @@
-﻿using MongoDB.Driver;
+﻿using Entities.Models;
+using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 
 namespace Contracts
 {
 	public interface IRepositoryBase<T>
+		where T : MongoDocumentBase
 	{
 		IMongoCollection<T> _collection { get; }
 		IGridFSBucket _bucket { get; }

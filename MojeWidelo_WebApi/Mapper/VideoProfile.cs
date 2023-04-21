@@ -10,6 +10,7 @@ namespace MojeWidelo_WebApi.Mapper
 			CreateMap<VideoUploadDto, VideoMetadata>()
 				.ForMember(video => video.Tags, opt => opt.MapFrom(video => video.Tags.Distinct()));
 			CreateMap<VideoMetadata, VideoMetadataDto>();
+			CreateMap<VideoMetadata, VideoUploadResponseDto>();
 
 			// ignoruję pola które nie mogą być zmieniane (w PUT video-metadata)
 			CreateMap<VideoUpdateDto, VideoMetadata>()

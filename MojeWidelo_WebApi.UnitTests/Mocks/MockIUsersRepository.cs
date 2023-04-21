@@ -33,13 +33,76 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
 					SubscriptionsCount = 0,
 					UserType = Entities.Enums.UserType.Simple
-				}
+				},
+				new User()
+				{
+					Id = "64390ed1d3768498801aa03f",
+					Name = "SubscriptionTestUser1",
+					Surname = "SubscriptionTestUser1",
+					Nickname = "SubTestUser1",
+					AccountBalance = 0,
+					Email = "sub1@unittest.com",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
+					SubscriptionsCount = 0,
+					UserType = Entities.Enums.UserType.Simple
+				},
+				new User()
+				{
+					Id = "64390ed1d3768498801aa04f",
+					Name = "SubscriptionTestUser2",
+					Surname = "SubscriptionTestUser2",
+					Nickname = "SubTestUser2",
+					AccountBalance = 0,
+					Email = "sub2@unittest.com",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
+					SubscriptionsCount = 0,
+					UserType = Entities.Enums.UserType.Simple
+				},
+				new User()
+				{
+					Id = "64390ed1d3768498801aa05f",
+					Name = "SubscriptionTestUser3",
+					Surname = "SubscriptionTestUser3",
+					Nickname = "SubTestUser3",
+					AccountBalance = 0,
+					Email = "sub3@unittest.com",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
+					SubscriptionsCount = 10,
+					UserType = Entities.Enums.UserType.Simple
+				},
+				new User()
+				{
+					Id = "64390ed1d3768498801aa14f",
+					Name = "creator with subs",
+					Surname = "SubscriptionTestUser4",
+					Nickname = "SubTestUser4",
+					AccountBalance = 0,
+					Email = "sub4@unittest.com",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
+					SubscriptionsCount = 0,
+					UserType = Entities.Enums.UserType.Creator
+				},
+				new User()
+				{
+					Id = "64390ed1d3768498801aa15f",
+					Name = "creator without subs",
+					Surname = "SubscriptionTestUser5",
+					Nickname = "SubTestUser5",
+					AccountBalance = 0,
+					Email = "sub4@unittest.com",
+					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
+					SubscriptionsCount = 0,
+					UserType = Entities.Enums.UserType.Creator
+				},
 			};
 
 			var mock = GetBaseMock(collection);
 
 			mock.Setup(m => m.FindUserByEmail(It.IsAny<string>()))
 				.ReturnsAsync((string email) => collection.FirstOrDefault(o => o.Email == email)!);
+
+			mock.Setup(m => m.GetUsersByIds(It.IsAny<IEnumerable<string>>()))
+				.ReturnsAsync((IEnumerable<string> ids) => collection.Where(user => ids.Contains(user.Id)).ToList());
 
 			return mock;
 		}
