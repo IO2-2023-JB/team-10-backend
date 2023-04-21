@@ -102,6 +102,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (comment.AuthorId != user.Id && user.UserType != UserType.Administrator)
 				return StatusCode(StatusCodes.Status401Unauthorized, "Brak uprawnień do usunięcia komentarza.");
 
+			await _repository.CommentRepository.DeleteCommentResponses(id);
 			await _repository.CommentRepository.Delete(id);
 
 			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięto pomyślnie.");
@@ -124,18 +125,19 @@ namespace MojeWidelo_WebApi.Controllers
 			var comment = await _repository.CommentRepository.GetById(id);
 			var video = await _repository.VideoRepository.GetById(comment.VideoId);
 			var user = await GetUserFromToken();
+			if (
+				video.Visibility == VideoVisibility.Private
+				&& user.Id != video.AuthorId
+				&& user.UserType != UserType.Administrator
+			)
+				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do odpowiedzi do komentarza.");
 			if (comment == null)
 				return StatusCode(
 					StatusCodes.Status404NotFound,
 					"Nie znaleziono komentarza o podanym identyfikatorze."
 				);
 			if (!comment.HasResponses)
-				return StatusCode(StatusCodes.Status404NotFound, "Brak odpowiedzi do komentarza.");
-			if (
-				video.Visibility == VideoVisibility.Private && user.Id != video.AuthorId
-				&& user.UserType != UserType.Administrator
-			)
-				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do odpowiedzi do komentarza.");
+				return StatusCode(StatusCodes.Status200OK, new CommentDto[0]);
 
 			var comments = await _repository.CommentRepository.GetCommentResponses(id);
 			var users = (await _repository.UsersRepository.GetUsersByIds(comments.Select(x => x.AuthorId))).ToHashSet();

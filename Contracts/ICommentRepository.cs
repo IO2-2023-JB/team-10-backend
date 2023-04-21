@@ -9,5 +9,7 @@ namespace Contracts
 		Task<List<Comment>> GetVideoComments(string id);
 
 		Task<List<Comment>> GetCommentResponses(string id);
+
+		Task DeleteCommentResponses(string id);
 	}
 }

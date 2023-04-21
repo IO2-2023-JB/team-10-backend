@@ -4,6 +4,7 @@ using Entities.Data.Video;
 using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Repository
 {
@@ -20,6 +21,19 @@ namespace Repository
 		public async Task<List<Comment>> GetCommentResponses(string id)
 		{
 			return (await GetAll()).Where((x) => x.OriginCommentId == id).ToList();
+		}
+
+		public async Task DeleteCommentResponses(string id)
+		{
+			(await GetAll())
+				.ToList()
+				.ForEach(
+					async (x) =>
+					{
+						if (x.OriginCommentId == id)
+							await Delete(x.Id);
+					}
+				);
 		}
 	}
 }
