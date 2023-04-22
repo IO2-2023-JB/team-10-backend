@@ -15,13 +15,8 @@ namespace MojeWidelo_WebApi.Controllers
 	[ApiController]
 	public class PlaylistController : BaseController
 	{
-		private readonly PlaylistManager _playlistManager;
-
-		public PlaylistController(IRepositoryWrapper repository, IMapper mapper, PlaylistManager manager)
-			: base(repository, mapper)
-		{
-			_playlistManager = manager;
-		}
+		public PlaylistController(IRepositoryWrapper repository, IMapper mapper)
+			: base(repository, mapper) { }
 
 		/// <summary>
 		/// Playlist creation

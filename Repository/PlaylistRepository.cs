@@ -9,13 +9,8 @@ namespace Repository
 {
 	public class PlaylistRepository : RepositoryBase<Playlist>, IPlaylistRepository
 	{
-		readonly PlaylistManager playlistManager;
-
-		public PlaylistRepository(IDatabaseSettings databaseSettings, PlaylistManager playlistManager)
-			: base(databaseSettings, databaseSettings.PlaylistCollectionName)
-		{
-			this.playlistManager = playlistManager;
-		}
+		public PlaylistRepository(IDatabaseSettings databaseSettings)
+			: base(databaseSettings, databaseSettings.PlaylistCollectionName) { }
 
 		public async Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, string callerID)
 		{
