@@ -15,7 +15,7 @@ namespace Repository
 		public async Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, string callerID)
 		{
 			return await _collection
-				.Find(x => x.AuthorId == id && (x.Visibility == Visibility.Public || x.AuthorId == callerID))
+				.Find(x => x.AuthorId == id && (x.Visibility == PlaylistVisibility.Public || x.AuthorId == callerID))
 				.ToListAsync();
 		}
 	}

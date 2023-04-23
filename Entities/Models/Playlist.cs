@@ -8,8 +8,8 @@ namespace Entities.Models
 	{
 		public string Name { get; set; }
 
-		[EnumDataType(typeof(Visibility))]
-		public Visibility Visibility { get; set; }
+		[EnumDataType(typeof(PlaylistVisibility))]
+		public PlaylistVisibility Visibility { get; set; }
 
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
 		public string AuthorId { get; set; }

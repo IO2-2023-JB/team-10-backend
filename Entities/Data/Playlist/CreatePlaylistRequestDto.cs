@@ -9,7 +9,7 @@ namespace Entities.Data.Playlist
 		public string Name { get; set; }
 
 		[Required]
-		[EnumDataType(typeof(Visibility))]
-		public Visibility Visibility { get; set; }
+		[EnumDataType(typeof(PlaylistVisibility))]
+		public PlaylistVisibility Visibility { get; set; }
 	}
 }

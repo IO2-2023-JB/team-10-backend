@@ -38,7 +38,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var video = await _repository.VideoRepository.GetById(id);
 			if (video == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
-			if (video.Visibility == Visibility.Private && GetUserIdFromToken() != video.AuthorId)
+			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do komentarzy.");
 
 			var comments = await _repository.CommentRepository.GetVideoComments(id);

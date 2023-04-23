@@ -31,12 +31,11 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(CreatePlaylistResponseDto))]
 		public async Task<IActionResult> CreatePlaylist([FromBody] CreatePlaylistRequestDto createPlaylistRequestDto)
 		{
-			var user = await GetUserFromToken();
+			var userID = GetUserIdFromToken();
 			var playlist = _mapper.Map<Playlist>(createPlaylistRequestDto);
-			playlist.AuthorId = user.Id;
+			playlist.AuthorId = userID;
 			playlist.Videos = new List<string>();
-			playlist.CreationDate = DateTime.Now;
-			playlist.EditDate = DateTime.Now;
+			playlist.CreationDate = playlist.EditDate = DateTime.Now;
 
 			playlist = await _repository.PlaylistRepository.Create(playlist);
 			var result = _mapper.Map<CreatePlaylistResponseDto>(playlist);
@@ -68,7 +67,8 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
 			}
 
-			if (GetUserIdFromToken() != playlist.AuthorId)
+			var userID = GetUserIdFromToken();
+			if (userID != playlist.AuthorId)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do edycji playlisty.");
 			}
@@ -79,12 +79,8 @@ namespace MojeWidelo_WebApi.Controllers
 			playlist = await _repository.PlaylistRepository.Update(id, playlist);
 
 			var result = _mapper.Map<PlaylistDto>(playlist);
-			var user = await GetUserFromToken();
-			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, user.Id);
-			var videoBases = new List<VideoMetadataDto>();
-			foreach (var video in videos)
-				videoBases.Add(_mapper.Map<VideoMetadataDto>(video));
-			result.Videos = videoBases.ToArray();
+			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
+			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -131,13 +127,13 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<PlaylistBaseDto>))]
 		public async Task<IActionResult> GetPlaylistsForUser([Required] string id)
 		{
-			var user = await GetUserFromToken();
+			var userID = GetUserIdFromToken();
 
 			var targetUser = await _repository.UsersRepository.GetById(id);
 			if (targetUser == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
 
-			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(targetUser.Id, user.Id);
+			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(targetUser.Id, userID);
 			var playlistBases = new List<PlaylistBaseDto>();
 			foreach (var playlist in playlists)
 				playlistBases.Add(_mapper.Map<PlaylistBaseDto>(playlist));
@@ -152,6 +148,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorised</response>
+		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
 		[HttpGet("playlist/video")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
@@ -165,18 +162,15 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
 			}
 
-			if (playlist.Visibility == Visibility.Private && GetUserIdFromToken() != playlist.AuthorId)
+			var userID = GetUserIdFromToken();
+			if (playlist.Visibility == PlaylistVisibility.Private && userID != playlist.AuthorId)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do playlisty.");
 			}
 
 			var result = _mapper.Map<PlaylistDto>(playlist);
-			var user = await GetUserFromToken();
-			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, user.Id);
-			var videoBases = new List<VideoMetadataDto>();
-			foreach (var video in videos)
-				videoBases.Add(_mapper.Map<VideoMetadataDto>(video));
-			result.Videos = videoBases.ToArray();
+			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
+			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -187,6 +181,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorised</response>
+		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
 		[HttpPost("playlist/{id}/{videoId}")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
@@ -219,8 +214,7 @@ namespace MojeWidelo_WebApi.Controllers
 					"Wideo o podanym ID znajduje się już w tej playliście."
 				);
 			}
-			videos.Add(videoId);
-			playlist.Videos = videos.ToArray();
+			playlist.Videos.Append(videoId);
 			playlist.EditDate = DateTime.Now;
 			await _repository.PlaylistRepository.Update(id, playlist);
 			return StatusCode(StatusCodes.Status200OK, "Wideo zostało dodane do playlisty.");
@@ -233,6 +227,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorised</response>
+		/// <response code="403">Forbidden</response>
 		/// <response code="404">Not found</response>
 		[HttpDelete("playlist/{id}/{videoId}")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
@@ -258,8 +253,7 @@ namespace MojeWidelo_WebApi.Controllers
 					"Wideo o podanym ID nie znajduje się w tej playliście."
 				);
 			}
-			videos.Remove(videoId);
-			playlist.Videos = videos.ToArray();
+			playlist.Videos = playlist.Videos.Where(x => x != videoId);
 			playlist.EditDate = DateTime.Now;
 			await _repository.PlaylistRepository.Update(id, playlist);
 			return StatusCode(StatusCodes.Status200OK, "Wideo zostało usunięte z playlisty.");

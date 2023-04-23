@@ -14,8 +14,8 @@ namespace Entities.Models
 
 		public IEnumerable<string> Tags { get; set; }
 
-		[EnumDataType(typeof(Visibility))]
-		public Visibility Visibility { get; set; }
+		[EnumDataType(typeof(VideoVisibility))]
+		public VideoVisibility Visibility { get; set; }
 
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
 		public string AuthorId { get; set; }

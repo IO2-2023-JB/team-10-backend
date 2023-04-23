@@ -147,7 +147,7 @@ namespace Repository
 		public async Task<IEnumerable<VideoMetadata>> GetVideosByUserId(string id, bool isAuthor)
 		{
 			return await _collection
-				.Find(x => x.AuthorId == id && (x.Visibility == Visibility.Public || isAuthor))
+				.Find(x => x.AuthorId == id && (x.Visibility == VideoVisibility.Public || isAuthor))
 				.ToListAsync();
 		}
 
@@ -155,17 +155,17 @@ namespace Repository
 		{
 			// zwracamy tylko publiczne filmy
 			var videos = await _collection
-				.Find(video => creatorsIds.Contains(video.AuthorId) && video.Visibility == Visibility.Public)
+				.Find(video => creatorsIds.Contains(video.AuthorId) && video.Visibility == VideoVisibility.Public)
 				.ToListAsync();
 
 			return videos.OrderByDescending(video => video.UploadDate);
 		}
 
-		public async Task<IEnumerable<VideoMetadata>> GetVideos(IEnumerable<string> videos, string userID)
+		public async Task<IEnumerable<VideoMetadata>> GetVideos(IEnumerable<string> videosIDs, string userID)
 		{
 			var toReturn = new List<VideoMetadata>();
 
-			foreach (var v in videos)
+			foreach (var v in videosIDs)
 			{
 				VideoMetadata video = await GetById(v);
 				if (video == null)
@@ -173,7 +173,7 @@ namespace Repository
 					video = new VideoMetadata();
 					video.Title = "Wideo zostało usunięte.";
 				}
-				else if (video.Visibility == Visibility.Private && video.AuthorId != userID)
+				else if (video.Visibility == VideoVisibility.Private && video.AuthorId != userID)
 				{
 					video = new VideoMetadata();
 					video.Title = "Wideo jest niedostępne.";
