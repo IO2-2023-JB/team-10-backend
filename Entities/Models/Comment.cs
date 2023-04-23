@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Entities.Models
 {
@@ -19,7 +20,16 @@ namespace Entities.Models
 
 		public DateTime LastModificationDate { get; set; }
 
-		public Comment(string videoId, string authorId, string content, bool hasResponses = false)
+		[BsonRepresentation(BsonType.ObjectId)]
+		public string? OriginCommentId { get; set; }
+
+		public Comment(
+			string videoId,
+			string authorId,
+			string content,
+			string? originCommentId = null,
+			bool hasResponses = false
+		)
 		{
 			VideoId = videoId;
 			AuthorId = authorId;
@@ -27,6 +37,7 @@ namespace Entities.Models
 			HasResponses = hasResponses;
 			CreationDate = DateTime.Now;
 			LastModificationDate = DateTime.Now;
+			OriginCommentId = originCommentId;
 		}
 	}
 }

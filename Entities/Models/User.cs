@@ -21,5 +21,15 @@ namespace Entities.Models
 		public int SubscriptionsCount { get; set; }
 
 		public string AvatarImage { get; set; }
+
+		public override bool Equals(object? obj)
+		{
+			return obj is User user && Id == user.Id;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(Id);
+		}
 	}
 }

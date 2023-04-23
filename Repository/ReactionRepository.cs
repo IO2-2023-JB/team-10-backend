@@ -3,6 +3,7 @@ using Entities.Data.Video;
 using Entities.Utils;
 using Entities.Enums;
 using Entities.Models;
+using MongoDB.Driver;
 
 namespace Repository
 {
@@ -15,14 +16,17 @@ namespace Repository
 		{
 			var reactions = await GetAll();
 			var ret = new ReactionResponseDto();
-			ret.PositiveCount = reactions.Count((x) => x.ReactionType == ReactionType.Positive);
-			ret.NegativeCount = reactions.Count((x) => x.ReactionType == ReactionType.Negative);
+			ret.PositiveCount = reactions.Count((x) => x.VideoId == id && x.ReactionType == ReactionType.Positive);
+			ret.NegativeCount = reactions.Count((x) => x.VideoId == id && x.ReactionType == ReactionType.Negative);
 			return ret;
 		}
 
 		public async Task<(ReactionType reactionType, string id)> GetCurrentUserReaction(string videoId, string userId)
 		{
-			var item = (await GetAll()).FirstOrDefault((x) => x.VideoId == videoId && x.UserId == userId);
+			var item = (
+				await _collection.Find((x) => x.VideoId == videoId && x.UserId == userId).ToListAsync()
+			).FirstOrDefault();
+
 			if (item == null)
 				return (ReactionType.None, "");
 			return (item.ReactionType, item.Id);
