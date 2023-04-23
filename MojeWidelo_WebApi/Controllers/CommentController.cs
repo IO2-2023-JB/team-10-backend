@@ -7,6 +7,7 @@ using MojeWidelo_WebApi.Filters;
 using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using Entities.Data.Comment;
 
 namespace MojeWidelo_WebApi.Controllers
 {
