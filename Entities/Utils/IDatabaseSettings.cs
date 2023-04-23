@@ -12,7 +12,7 @@
 		string ReactionCollectionName { get; set; }
 		string CommentCollectionName { get; set; }
 		string SubscriptionCollectionName { get; set; }
-
+		string PlaylistCollectionName { get; set; }
 		#endregion
 	}
 }

@@ -33,6 +33,7 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<IReactionRepository, ReactionRepository>();
 			services.AddScoped<ICommentRepository, CommentRepository>();
 			services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
+			services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 		}
 
 		public static void ConfigureSwagger(this IServiceCollection services)

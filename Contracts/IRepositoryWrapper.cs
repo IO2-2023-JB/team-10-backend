@@ -7,5 +7,6 @@
 		IReactionRepository ReactionRepository { get; }
 		ICommentRepository CommentRepository { get; }
 		ISubscriptionsRepository SubscriptionsRepository { get; }
+		IPlaylistRepository PlaylistRepository { get; }
 	}
 }

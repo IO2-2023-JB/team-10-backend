@@ -160,5 +160,28 @@ namespace Repository
 
 			return videos.OrderByDescending(video => video.UploadDate);
 		}
+
+		public async Task<IEnumerable<VideoMetadata>> GetVideos(IEnumerable<string> videosIDs, string userID)
+		{
+			var toReturn = new List<VideoMetadata>();
+
+			foreach (var v in videosIDs)
+			{
+				VideoMetadata video = await GetById(v);
+				if (video == null)
+				{
+					video = new VideoMetadata();
+					video.Title = "Wideo zostało usunięte.";
+				}
+				else if (video.Visibility == VideoVisibility.Private && video.AuthorId != userID)
+				{
+					video = new VideoMetadata();
+					video.Title = "Wideo jest niedostępne.";
+				}
+				toReturn.Add(video);
+			}
+
+			return toReturn;
+		}
 	}
 }

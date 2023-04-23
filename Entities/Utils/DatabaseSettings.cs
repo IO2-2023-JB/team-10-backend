@@ -9,5 +9,6 @@
 		public string ReactionCollectionName { get; set; }
 		public string CommentCollectionName { get; set; }
 		public string SubscriptionCollectionName { get; set; }
+		public string PlaylistCollectionName { get; set; }
 	}
 }

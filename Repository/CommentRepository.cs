@@ -1,8 +1,5 @@
 ﻿using Contracts;
-using Entities.Data.Comment;
-using Entities.Data.Video;
 using Entities.Utils;
-using Entities.Enums;
 using Entities.Models;
 using Microsoft.VisualBasic;
 using MongoDB.Driver;

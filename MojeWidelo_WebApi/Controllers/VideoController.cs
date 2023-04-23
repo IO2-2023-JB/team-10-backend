@@ -199,7 +199,7 @@ namespace MojeWidelo_WebApi.Controllers
 		}
 
 		/// <summary>
-		/// Video straming
+		/// Video streaming
 		/// </summary>
 		/// <response code="200">OK</response>
 		/// <response code="400">Bad request</response>
