@@ -93,10 +93,7 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var comment = await _repository.CommentRepository.GetById(id);
 			if (comment == null)
-				return StatusCode(
-					StatusCodes.Status404NotFound,
-					"Nie znaleziono komentarza o podanym identyfikatorze."
-				);
+				return StatusCode(StatusCodes.Status404NotFound, "Komentarz o podanym ID nie istnieje.");
 
 			var user = await GetUserFromToken();
 			if (comment.AuthorId != user.Id && user.UserType != UserType.Administrator)
@@ -105,7 +102,7 @@ namespace MojeWidelo_WebApi.Controllers
 			_repository.CommentRepository.DeleteCommentResponses(id);
 			await _repository.CommentRepository.Delete(id);
 
-			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięto pomyślnie.");
+			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięty pomyślnie.");
 		}
 
 		/// <summary>

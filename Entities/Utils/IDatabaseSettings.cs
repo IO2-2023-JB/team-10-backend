@@ -1,4 +1,4 @@
-﻿namespace Entities.DatabaseUtils
+﻿namespace Entities.Utils
 {
 	public interface IDatabaseSettings
 	{
@@ -11,6 +11,8 @@
 		string VideoCollectionName { get; set; }
 		string ReactionCollectionName { get; set; }
 		string CommentCollectionName { get; set; }
+		string SubscriptionCollectionName { get; set; }
+
 		#endregion
 	}
 }

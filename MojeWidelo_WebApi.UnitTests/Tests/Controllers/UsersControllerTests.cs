@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Controllers;
-using MojeWidelo_WebApi.UnitTests.Tests.Controllers;
 using Repository.Managers;
 
-namespace MojeWidelo_WebApi.UnitTests.ControllersTests
+namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 {
 	public class UsersControllerTests : BaseControllerTests<UsersController>
 	{
@@ -55,7 +54,7 @@ namespace MojeWidelo_WebApi.UnitTests.ControllersTests
 		{
 			var usersController = GetController();
 
-			var result = await usersController.GetUserById("1429a1ee0d48bf254e17eaf7") as NotFoundResult;
+			var result = await usersController.GetUserById("1429a1ee0d48bf254e17eaf7") as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -123,7 +122,7 @@ namespace MojeWidelo_WebApi.UnitTests.ControllersTests
 			var userController = GetController();
 			var loginDto = new LoginDto() { Email = "notFound@test.com", Password = "test_password123" };
 
-			var result = await userController.Login(loginDto) as NotFoundResult;
+			var result = await userController.Login(loginDto) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -135,7 +134,7 @@ namespace MojeWidelo_WebApi.UnitTests.ControllersTests
 			var userController = GetController();
 			var loginDto = new LoginDto() { Email = "unit@test.com", Password = "password123" };
 
-			var result = await userController.Login(loginDto) as UnauthorizedResult;
+			var result = await userController.Login(loginDto) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status401Unauthorized, result?.StatusCode);

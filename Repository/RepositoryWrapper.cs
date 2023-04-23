@@ -8,18 +8,21 @@ namespace Repository
 		public IVideoRepository VideoRepository { get; }
 		public IReactionRepository ReactionRepository { get; }
 		public ICommentRepository CommentRepository { get; }
+		public ISubscriptionsRepository SubscriptionsRepository { get; }
 
 		public RepositoryWrapper(
 			IUsersRepository usersRepository,
 			IVideoRepository videoRepository,
 			IReactionRepository reactionRepository,
-			ICommentRepository commentRepository
+			ICommentRepository commentRepository,
+			ISubscriptionsRepository subscriptionsRepository
 		)
 		{
 			UsersRepository = usersRepository;
 			VideoRepository = videoRepository;
 			ReactionRepository = reactionRepository;
 			CommentRepository = commentRepository;
+			SubscriptionsRepository = subscriptionsRepository;
 		}
 	}
 }

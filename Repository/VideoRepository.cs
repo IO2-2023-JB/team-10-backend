@@ -2,23 +2,26 @@
 using CliWrap.Buffered;
 using Contracts;
 using Entities.Data.Video;
-using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
+using Entities.Utils;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Repository.Managers;
-using System.Runtime.CompilerServices;
 
 namespace Repository
 {
 	public class VideoRepository : RepositoryBase<VideoMetadata>, IVideoRepository
 	{
-		public VideoRepository(IDatabaseSettings databaseSettings)
-			: base(databaseSettings, databaseSettings.VideoCollectionName) { }
+		readonly VideoManager videoManager;
+
+		public VideoRepository(IDatabaseSettings databaseSettings, VideoManager videoManager)
+			: base(databaseSettings, databaseSettings.VideoCollectionName)
+		{
+			this.videoManager = videoManager;
+		}
 
 		public async Task ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
 		{
@@ -40,7 +43,6 @@ namespace Repository
 
 		public async void ProccessVideoFile(string id, string path)
 		{
-			var videoManager = new VideoManager();
 			try
 			{
 				VideoMetadata video = await GetById(id);
@@ -78,7 +80,7 @@ namespace Repository
 				String errorMessage = DateTime.Now.ToString() + "   " + id + "   " + e.Message;
 				Console.WriteLine(errorMessage);
 
-				string? location = videoManager.GetStorageDirectory().Result;
+				string? location = videoManager.GetStorageDirectory();
 				if (location == null)
 					return;
 
@@ -140,6 +142,23 @@ namespace Repository
 			var contentType = fileInfo.Metadata.GetValue("ContentType").AsString;
 
 			return contentType;
+		}
+
+		public async Task<IEnumerable<VideoMetadata>> GetVideosByUserId(string id, bool isAuthor)
+		{
+			return await _collection
+				.Find(x => x.AuthorId == id && (x.Visibility == VideoVisibility.Public || isAuthor))
+				.ToListAsync();
+		}
+
+		public async Task<IEnumerable<VideoMetadata>> GetSubscribedVideos(IEnumerable<string> creatorsIds)
+		{
+			// zwracamy tylko publiczne filmy
+			var videos = await _collection
+				.Find(video => creatorsIds.Contains(video.AuthorId) && video.Visibility == VideoVisibility.Public)
+				.ToListAsync();
+
+			return videos.OrderByDescending(video => video.UploadDate);
 		}
 	}
 }

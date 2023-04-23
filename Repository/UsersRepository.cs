@@ -1,5 +1,5 @@
 ﻿using Contracts;
-using Entities.DatabaseUtils;
+using Entities.Utils;
 using Entities.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;

@@ -1,7 +1,7 @@
 ﻿using Entities.Data.User;
 using Repository.Managers;
 
-namespace MojeWidelo_WebApi.UnitTests.ManagersTests
+namespace MojeWidelo_WebApi.UnitTests.Tests.Managers
 {
 	public class UsersManagerTests
 	{
