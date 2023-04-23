@@ -3,6 +3,7 @@ using Entities.Data.Video;
 using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
+using MongoDB.Driver;
 
 namespace Repository
 {
@@ -22,7 +23,10 @@ namespace Repository
 
 		public async Task<(ReactionType reactionType, string id)> GetCurrentUserReaction(string videoId, string userId)
 		{
-			var item = (await GetAll()).FirstOrDefault((x) => x.VideoId == videoId && x.UserId == userId);
+			var item = (
+				await _collection.Find((x) => x.VideoId == videoId && x.UserId == userId).ToListAsync()
+			).FirstOrDefault();
+
 			if (item == null)
 				return (ReactionType.None, "");
 			return (item.ReactionType, item.Id);

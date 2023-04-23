@@ -102,14 +102,14 @@ namespace MojeWidelo_WebApi.Controllers
 			if (comment.AuthorId != user.Id && user.UserType != UserType.Administrator)
 				return StatusCode(StatusCodes.Status401Unauthorized, "Brak uprawnień do usunięcia komentarza.");
 
-			await _repository.CommentRepository.DeleteCommentResponses(id);
+			_repository.CommentRepository.DeleteCommentResponses(id);
 			await _repository.CommentRepository.Delete(id);
 
 			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięto pomyślnie.");
 		}
 
 		/// <summary>
-		/// All comments of particular video retrieval
+		/// All responses to particular comment retrieval
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns>Array of comments</returns>
@@ -147,7 +147,7 @@ namespace MojeWidelo_WebApi.Controllers
 		}
 
 		/// <summary>
-		/// Adding a comment to a video
+		/// Adding a response to a comment
 		/// </summary>
 		/// <param name="id"></param>
 		/// <response code="200">Ok</response>

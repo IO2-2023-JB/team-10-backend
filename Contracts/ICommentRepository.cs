@@ -10,6 +10,6 @@ namespace Contracts
 
 		Task<List<Comment>> GetCommentResponses(string id);
 
-		Task DeleteCommentResponses(string id);
+		void DeleteCommentResponses(string id);
 	}
 }

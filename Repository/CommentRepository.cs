@@ -4,6 +4,8 @@ using Entities.Data.Video;
 using Entities.DatabaseUtils;
 using Entities.Enums;
 using Entities.Models;
+using Microsoft.VisualBasic;
+using MongoDB.Driver;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Repository
@@ -15,25 +17,17 @@ namespace Repository
 
 		public async Task<List<Comment>> GetVideoComments(string id)
 		{
-			return (await GetAll()).Where((x) => x.VideoId == id && x.OriginCommentId == null).ToList();
+			return await _collection.Find((x) => x.VideoId == id && x.OriginCommentId == null).ToListAsync();
 		}
 
 		public async Task<List<Comment>> GetCommentResponses(string id)
 		{
-			return (await GetAll()).Where((x) => x.OriginCommentId == id).ToList();
+			return await _collection.Find((x) => x.OriginCommentId == id).ToListAsync();
 		}
 
-		public async Task DeleteCommentResponses(string id)
+		public void DeleteCommentResponses(string id)
 		{
-			(await GetAll())
-				.ToList()
-				.ForEach(
-					async (x) =>
-					{
-						if (x.OriginCommentId == id)
-							await Delete(x.Id);
-					}
-				);
+			_collection.Find((x) => x.OriginCommentId == id).ToList().ForEach(async (x) => await Delete(x.Id));
 		}
 	}
 }
