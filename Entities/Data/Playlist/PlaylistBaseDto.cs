@@ -1,7 +1,10 @@
 ﻿using Entities.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data.Playlist
 {
-	public class PlaylistBaseDto : CreatePlaylistResponseDto { }
+	public class PlaylistBaseDto : CreatePlaylistResponseDto
+	{
+		public string Name { get; set; }
+		public PlaylistVisibility Visibility { get; set; }
+	}
 }
