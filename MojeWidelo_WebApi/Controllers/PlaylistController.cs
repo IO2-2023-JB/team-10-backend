@@ -214,7 +214,7 @@ namespace MojeWidelo_WebApi.Controllers
 					"Wideo o podanym ID znajduje się już w tej playliście."
 				);
 			}
-			playlist.Videos.Append(videoId);
+			playlist.Videos = playlist.Videos.Append(videoId);
 			playlist.EditDate = DateTime.Now;
 			await _repository.PlaylistRepository.Update(id, playlist);
 			return StatusCode(StatusCodes.Status200OK, "Wideo zostało dodane do playlisty.");
