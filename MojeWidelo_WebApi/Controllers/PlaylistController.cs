@@ -169,14 +169,17 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			var result = _mapper.Map<PlaylistDto>(playlist);
+			var author = await _repository.UsersRepository.GetById(result.AuthorId);
+			result.AuthorNickname = author.Nickname;
+
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			foreach (var video in result.Videos)
 			{
-				var author = await _repository.UsersRepository.GetById(video.AuthorId);
-				video.AuthorNickname = author.Nickname;
+				var videoAuthor = await _repository.UsersRepository.GetById(video.AuthorId);
+				video.AuthorNickname = videoAuthor.Nickname;
 			}
-			
+
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
