@@ -3,6 +3,7 @@ using Entities.Utils;
 using Entities.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace Repository
 {
@@ -17,6 +18,9 @@ namespace Repository
 		{
 			var client = new MongoClient(databaseSettings.ConnectionString);
 			var database = client.GetDatabase(databaseSettings.DatabaseName);
+
+			var conventionPack = new ConventionPack { new IgnoreExtraElementsConvention(true) };
+			ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
 
 			_bucket = new GridFSBucket(database);
 			_collection = database.GetCollection<T>(collectionName);
