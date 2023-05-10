@@ -255,11 +255,9 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var videos = await _repository.VideoRepository.GetAll();
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
-			foreach (var video in result)
-			{
-				var author = await _repository.UsersRepository.GetById(video.AuthorId);
-				video.AuthorNickname = author.Nickname;
-			}
+			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(result, users);
+
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -401,11 +399,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var videos = await _repository.VideoRepository.GetVideosByUserId(id, isAuthor);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
-			foreach (var video in videosDto)
-			{
-				var author = await _repository.UsersRepository.GetById(video.AuthorId);
-				video.AuthorNickname = author.Nickname;
-			}
+			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(videosDto, users);
 
 			var result = new VideoListDto(videosDto);
 
@@ -427,11 +422,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
-			foreach (var video in videosDto)
-			{
-				var author = await _repository.UsersRepository.GetById(video.AuthorId);
-				video.AuthorNickname = author.Nickname;
-			}
+			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(videosDto, users);
 
 			return StatusCode(StatusCodes.Status200OK, new VideoListDto(videosDto));
 		}

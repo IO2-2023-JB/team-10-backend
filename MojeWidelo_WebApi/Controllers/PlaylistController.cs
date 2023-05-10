@@ -15,8 +15,13 @@ namespace MojeWidelo_WebApi.Controllers
 	[ApiController]
 	public class PlaylistController : BaseController
 	{
-		public PlaylistController(IRepositoryWrapper repository, IMapper mapper)
-			: base(repository, mapper) { }
+		private readonly VideoManager _videoManager;
+
+		public PlaylistController(IRepositoryWrapper repository, IMapper mapper, VideoManager videoManager)
+			: base(repository, mapper)
+		{
+			_videoManager = videoManager;
+		}
 
 		/// <summary>
 		/// Playlist creation
@@ -174,11 +179,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
-			foreach (var video in result.Videos)
-			{
-				var videoAuthor = await _repository.UsersRepository.GetById(video.AuthorId);
-				video.AuthorNickname = videoAuthor.Nickname;
-			}
+			var users = (await _repository.UsersRepository.GetUsersByIds(result.Videos.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(result.Videos, users);
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}

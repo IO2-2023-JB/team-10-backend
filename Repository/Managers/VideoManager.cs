@@ -1,3 +1,5 @@
+using Entities.Data.Video;
+using Entities.Models;
 using Entities.Utils;
 using Microsoft.Extensions.Options;
 
@@ -40,6 +42,15 @@ namespace Repository.Managers
 				return null;
 
 			return Path.Combine(location, id + ".mp4");
+		}
+
+		public void AddAuthorNickname(IEnumerable<VideoMetadataDto> videos, IEnumerable<User> users)
+		{
+			foreach (var video in videos)
+			{
+				var videoAuthor = users.Where(user => user.Id == video.AuthorId).First();
+				video.AuthorNickname = videoAuthor.Nickname;
+			}
 		}
 	}
 }
