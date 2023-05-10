@@ -15,7 +15,6 @@ namespace MojeWidelo_WebApi.Mapper
 			// ignoruję pola które nie mogą być zmieniane (w PUT video-metadata)
 			CreateMap<VideoUpdateDto, VideoMetadata>()
 				.ForMember(video => video.AuthorId, opt => opt.Ignore())
-				.ForMember(video => video.AuthorNickname, opt => opt.Ignore())
 				.ForMember(video => video.ProcessingProgress, opt => opt.Ignore())
 				.ForMember(video => video.ViewCount, opt => opt.Ignore())
 				.ForMember(video => video.Duration, opt => opt.Ignore())
