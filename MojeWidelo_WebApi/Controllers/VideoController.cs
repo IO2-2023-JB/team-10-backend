@@ -47,7 +47,6 @@ namespace MojeWidelo_WebApi.Controllers
 			await _repository.VideoRepository.SetThumbnail(HttpContext, video, videoUploadDto);
 			video.UploadDate = video.EditDate = DateTime.Now;
 			video.AuthorId = user.Id;
-			video.AuthorNickname = user.Nickname;
 			video.ProcessingProgress = ProcessingProgress.MetadataRecordCreated;
 
 			video = await _repository.VideoRepository.Create(video);
@@ -125,11 +124,13 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
 				video.ViewCount++;
-				video.AuthorNickname = (await _repository.UsersRepository.GetById(video.AuthorId)).Nickname;
 				video = await _repository.VideoRepository.Update(video.Id, video);
 			}
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
+			var author = await _repository.UsersRepository.GetById(result.AuthorId);
+			result.AuthorNickname = author.Nickname;
+
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -254,6 +255,9 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var videos = await _repository.VideoRepository.GetAll();
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(result, users);
+
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -395,6 +399,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var videos = await _repository.VideoRepository.GetVideosByUserId(id, isAuthor);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(videosDto, users);
 
 			var result = new VideoListDto(videosDto);
 
@@ -416,6 +422,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(videosDto, users);
 
 			return StatusCode(StatusCodes.Status200OK, new VideoListDto(videosDto));
 		}

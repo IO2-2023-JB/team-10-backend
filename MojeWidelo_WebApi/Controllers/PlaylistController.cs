@@ -15,8 +15,13 @@ namespace MojeWidelo_WebApi.Controllers
 	[ApiController]
 	public class PlaylistController : BaseController
 	{
-		public PlaylistController(IRepositoryWrapper repository, IMapper mapper)
-			: base(repository, mapper) { }
+		private readonly VideoManager _videoManager;
+
+		public PlaylistController(IRepositoryWrapper repository, IMapper mapper, VideoManager videoManager)
+			: base(repository, mapper)
+		{
+			_videoManager = videoManager;
+		}
 
 		/// <summary>
 		/// Playlist creation
@@ -169,8 +174,14 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			var result = _mapper.Map<PlaylistDto>(playlist);
+			var author = await _repository.UsersRepository.GetById(result.AuthorId);
+			result.AuthorNickname = author.Nickname;
+
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
+			var users = (await _repository.UsersRepository.GetUsersByIds(result.Videos.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(result.Videos, users);
+
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -214,7 +225,7 @@ namespace MojeWidelo_WebApi.Controllers
 					"Wideo o podanym ID znajduje się już w tej playliście."
 				);
 			}
-			playlist.Videos.Append(videoId);
+			playlist.Videos = playlist.Videos.Append(videoId);
 			playlist.EditDate = DateTime.Now;
 			await _repository.PlaylistRepository.Update(id, playlist);
 			return StatusCode(StatusCodes.Status200OK, "Wideo zostało dodane do playlisty.");

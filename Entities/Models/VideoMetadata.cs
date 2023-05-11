@@ -20,8 +20,6 @@ namespace Entities.Models
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
 		public string AuthorId { get; set; }
 
-		public string AuthorNickname { get; set; }
-
 		public int ViewCount { get; set; }
 
 		[EnumDataType(typeof(ProcessingProgress))]
