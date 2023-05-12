@@ -1,10 +1,11 @@
-﻿using Entities.Enums;
+﻿using Entities.Data.Interfaces;
+using Entities.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data.Video
 {
-	public class VideoMetadataDto : VideoUpdateDto
+	public class VideoMetadataDto : VideoUpdateDto, ISearchable
 	{
 		[BsonId]
 		[BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
