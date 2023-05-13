@@ -123,8 +123,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
-				video.ViewCount++;
-				video = await _repository.VideoRepository.Update(video.Id, video);
+				video = await _repository.VideoRepository.UpdateViewCount(video.Id, 1);
 			}
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
@@ -254,6 +253,7 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetAllVideos()
 		{
 			var videos = await _repository.VideoRepository.GetAll();
+			videos = videos.Where(x => x.Visibility == VideoVisibility.Public);
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result, users);

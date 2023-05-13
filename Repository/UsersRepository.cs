@@ -1,6 +1,6 @@
 ﻿using Contracts;
-using Entities.Utils;
 using Entities.Models;
+using Entities.Utils;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -13,7 +13,7 @@ namespace Repository
 
 		public async Task<User> FindUserByEmail(string email)
 		{
-			var result = await _collection.Find(x => x.Email == email).FirstOrDefaultAsync();
+			var result = await Collection.Find(x => x.Email == email).FirstOrDefaultAsync();
 
 			return result;
 		}
@@ -38,7 +38,13 @@ namespace Repository
 
 		public async Task<IEnumerable<User>> GetUsersByIds(IEnumerable<string> ids)
 		{
-			return await _collection.Find(user => ids.Contains(user.Id)).ToListAsync();
+			return await Collection.Find(user => ids.Contains(user.Id)).ToListAsync();
+		}
+
+		public async Task UpdateSubscriptionCount(string id, int value)
+		{
+			var update = Builders<User>.Update.Inc(u => u.SubscriptionsCount, value);
+			await Collection.UpdateOneAsync(user => user.Id == id, update);
 		}
 	}
 }

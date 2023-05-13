@@ -12,19 +12,19 @@ namespace Repository
 
 		public async Task<Subscription?> GetSubscription(string creatorId, string subscriberId)
 		{
-			return await _collection
+			return await Collection
 				.Find(s => s.CreatorId == creatorId && s.SubscriberId == subscriberId)
 				.FirstOrDefaultAsync();
 		}
 
 		public async Task<IEnumerable<Subscription>> GetCreatorSubscriptions(string userId)
 		{
-			return await _collection.Find(s => s.CreatorId == userId).ToListAsync();
+			return await Collection.Find(s => s.CreatorId == userId).ToListAsync();
 		}
 
 		public async Task<IEnumerable<Subscription>> GetUserSubscriptions(string userId)
 		{
-			return await _collection.Find(s => s.SubscriberId == userId).ToListAsync();
+			return await Collection.Find(s => s.SubscriberId == userId).ToListAsync();
 		}
 	}
 }

@@ -1,56 +1,58 @@
 ﻿using Contracts;
-using Entities.Utils;
 using Entities.Models;
+using Entities.Utils;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-using MongoDB.Bson.Serialization.Conventions;
 
 namespace Repository
 {
 	public abstract class RepositoryBase<T> : IRepositoryBase<T>
 		where T : MongoDocumentBase
 	{
-		public IMongoCollection<T> _collection { get; }
+		public MongoClient Client { get; }
+
+		public IMongoCollection<T> Collection { get; }
 
 		public IGridFSBucket _bucket { get; }
 
 		public RepositoryBase(IDatabaseSettings databaseSettings, string collectionName)
 		{
-			var client = new MongoClient(databaseSettings.ConnectionString);
-			var database = client.GetDatabase(databaseSettings.DatabaseName);
+			Client ??= new MongoClient(databaseSettings.ConnectionString);
+			var database = Client.GetDatabase(databaseSettings.DatabaseName);
 
 			var conventionPack = new ConventionPack { new IgnoreExtraElementsConvention(true) };
 			ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
 
 			_bucket = new GridFSBucket(database);
-			_collection = database.GetCollection<T>(collectionName);
+			Collection = database.GetCollection<T>(collectionName);
 		}
 
 		public async Task<IEnumerable<T>> GetAll()
 		{
-			return await _collection.Find(x => true).ToListAsync();
+			return await Collection.Find(x => true).ToListAsync();
 		}
 
 		public async Task<T> GetById(string id)
 		{
-			return await _collection.Find<T>(x => x.Id == id).FirstOrDefaultAsync();
+			return await Collection.Find<T>(x => x.Id == id).FirstOrDefaultAsync();
 		}
 
 		public async Task<T> Create(T entity)
 		{
-			await _collection.InsertOneAsync(entity);
+			await Collection.InsertOneAsync(entity);
 			return entity;
 		}
 
 		public async Task<T> Update(string id, T entity)
 		{
-			await _collection.ReplaceOneAsync(x => x.Id == id, entity);
+			await Collection.ReplaceOneAsync(x => x.Id == id, entity);
 			return entity;
 		}
 
 		public async Task Delete(string id)
 		{
-			await _collection.DeleteOneAsync(x => x.Id == id);
+			await Collection.DeleteOneAsync(x => x.Id == id);
 		}
 	}
 }

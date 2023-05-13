@@ -24,7 +24,7 @@ namespace Repository
 		public async Task<(ReactionType reactionType, string id)> GetCurrentUserReaction(string videoId, string userId)
 		{
 			var item = (
-				await _collection.Find((x) => x.VideoId == videoId && x.UserId == userId).ToListAsync()
+				await Collection.Find((x) => x.VideoId == videoId && x.UserId == userId).ToListAsync()
 			).FirstOrDefault();
 
 			if (item == null)

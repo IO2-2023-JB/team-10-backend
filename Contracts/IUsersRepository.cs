@@ -11,5 +11,7 @@ namespace Contracts
 		Task<byte[]> GetAvatarBytes(string id);
 
 		Task<IEnumerable<User>> GetUsersByIds(IEnumerable<string> ids);
+
+		Task UpdateSubscriptionCount(string id, int value);
 	}
 }

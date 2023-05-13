@@ -71,9 +71,9 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			var subscription = new Subscription() { CreatorId = id, SubscriberId = subscriberId };
+
 			await _repository.SubscriptionsRepository.Create(subscription);
-			creator.SubscriptionsCount++;
-			creator = await _repository.UsersRepository.Update(creator.Id, creator);
+			await _repository.UsersRepository.UpdateSubscriptionCount(id, 1);
 
 			return StatusCode(StatusCodes.Status200OK, $"Pomyślnie zasubskrybowano użytkownika {creator.Nickname}.");
 		}
@@ -137,8 +137,7 @@ namespace MojeWidelo_WebApi.Controllers
 			#endregion
 
 			await _repository.SubscriptionsRepository.Delete(sub.Id);
-			creator.SubscriptionsCount--;
-			creator = await _repository.UsersRepository.Update(creator.Id, creator);
+			await _repository.UsersRepository.UpdateSubscriptionCount(id, -1);
 
 			return StatusCode(StatusCodes.Status200OK, $"Pomyślnie odsubskrybowano użytkownika {creator.Nickname}.");
 		}
