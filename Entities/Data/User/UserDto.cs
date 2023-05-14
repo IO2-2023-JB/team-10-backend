@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Entities.Data.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Data.User
 {
-	public class UserDto : UserBaseDto
+	public class UserDto : UserBaseDto, ISearchable
 	{
 		/// <summary>
 		///     Unique identifier

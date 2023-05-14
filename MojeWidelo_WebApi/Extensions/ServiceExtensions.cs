@@ -170,12 +170,18 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<VideoManager>();
 			services.AddScoped<CommentManager>();
 			services.AddScoped<SubscriptionsManager>();
+			services.AddScoped<SearchManager>();
 		}
 
 		public static void ConfigureVariables(this IServiceCollection services, ConfigurationManager configuration)
 		{
 			services.Configure<Variables>(configuration.GetSection(nameof(Variables)));
 			services.AddOptions<Variables>();
+		}
+
+		public static void ConfigureDateOnlyTimeOnlyConverters(this IServiceCollection services)
+		{
+			services.AddDateOnlyTimeOnlyStringConverters();
 		}
 	}
 }

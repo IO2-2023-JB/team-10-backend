@@ -4,6 +4,7 @@ namespace Contracts
 {
 	public interface IPlaylistRepository : IRepositoryBase<Playlist>
 	{
-		public Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, string callerID);
+		Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, string callerID);
+		Task<IEnumerable<Playlist>> GetAllVisiblePlaylists(string userId);
 	}
 }
