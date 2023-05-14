@@ -178,5 +178,10 @@ namespace MojeWidelo_WebApi.Extensions
 			services.Configure<Variables>(configuration.GetSection(nameof(Variables)));
 			services.AddOptions<Variables>();
 		}
+
+		public static void ConfigureDateOnlyTimeOnlyConverters(this IServiceCollection services)
+		{
+			services.AddDateOnlyTimeOnlyStringConverters();
+		}
 	}
 }

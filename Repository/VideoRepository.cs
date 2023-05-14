@@ -184,6 +184,13 @@ namespace Repository
 			return toReturn;
 		}
 
+		public async Task<IEnumerable<VideoMetadata>> GetAllVisibleVideos(string userId)
+		{
+			return await Collection
+				.Find(video => video.Visibility == VideoVisibility.Public || video.AuthorId == userId)
+				.ToListAsync();
+		}
+
 		public async Task<VideoMetadata> UpdateViewCount(string id, int value)
 		{
 			var update = Builders<VideoMetadata>.Update.Inc(u => u.ViewCount, value);

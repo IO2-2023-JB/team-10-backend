@@ -15,6 +15,7 @@ builder.Services.ConfigureSwagger();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureManagers();
 builder.Services.ConfigureVariables(builder.Configuration);
+builder.Services.ConfigureDateOnlyTimeOnlyConverters();
 
 #endregion
 
