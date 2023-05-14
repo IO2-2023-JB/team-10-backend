@@ -160,6 +160,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (
 				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
 				&& video.ProcessingProgress != ProcessingProgress.FailedToUpload
+				&& video.ProcessingProgress != ProcessingProgress.FailedToProcess
 			)
 				return StatusCode(
 					StatusCodes.Status400BadRequest,
@@ -192,7 +193,15 @@ namespace MojeWidelo_WebApi.Controllers
 
 			await _repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploaded);
 
-			Thread t = new Thread(() => _repository.VideoRepository.ProccessVideoFile(id, path));
+			Thread t = new Thread(async () =>
+			{
+				await _repository.VideoRepository.ProccessVideoFile(id, path);
+				string newPath = _videoManager.GetReadyFilePath(id)!;
+				var duration = new NReco.VideoInfo.FFProbe().GetMediaInfo(newPath).Duration;
+				video = await _repository.VideoRepository.GetById(id);
+				video.Duration = duration.ToString();
+				await _repository.VideoRepository.Update(id, video);
+			});
 			t.Start();
 
 			return StatusCode(StatusCodes.Status200OK, "Przesyłanie zakończone pomyślnie.");

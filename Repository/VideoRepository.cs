@@ -41,7 +41,7 @@ namespace Repository
 			);
 		}
 
-		public async void ProccessVideoFile(string id, string path)
+		public async Task ProccessVideoFile(string id, string path)
 		{
 			try
 			{
@@ -60,9 +60,46 @@ namespace Repository
 				if (newPath == null)
 					throw new Exception("Unable to create path for converted video file!");
 
+    /*
+    string? introPath = videoManager.GetIntroFilePath();
+    if (introPath == null)
+        throw new Exception("Unable to retrieve intro file!");
+
+    (int width, int height) oryginalResolution = videoManager.GetOriginalVideoResolution(path);
+
+    string? introTempPath = await videoManager.CreateIntro(oryginalResolution, introPath, id);
+
+    string? tempPath = videoManager.GetTempFilePath(id);
+    if (tempPath == null)
+        throw new Exception("Unable to create temp path for video file!");
+    */
+
 				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
 
-				await Cli.Wrap("ffmpeg").WithArguments(new[] { "-i", path, newPath }).ExecuteBufferedAsync();
+				await Cli.Wrap("ffmpeg")
+					.WithArguments(
+						new[]
+						{
+							"-i",
+							path,
+							"-c:v",
+							"libx264",
+							"-preset",
+							"faster",
+							"-crf",
+							"22",
+							"-c:a",
+							"copy",
+							newPath
+						}
+					)
+					.ExecuteBufferedAsync();
+
+    /*
+    await Cli.Wrap("ffmpeg").WithArguments(new[] { "-i", path, "-vf", "setsar=1:1", tempPath }).ExecuteBufferedAsync();
+
+    await Cli.Wrap("ffmpeg").WithArguments(new[] { "-i", introTempPath!, "-i", tempPath, "-filter_complex", "'[0:0][0:1][1:0][1:1]concat=n=2:v=1:a=1[outv][outa]'", "-map", "[outv]", "-map", "[outa]", newPath }).ExecuteBufferedAsync();
+    */
 
 				if (!System.IO.File.Exists(newPath))
 					throw new Exception("After successful conversion, output file does not exist!");

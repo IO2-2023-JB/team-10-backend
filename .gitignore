@@ -367,3 +367,5 @@ Frontend/*
 
 wwwroot/*
 !wwwroot/.gitkeep
+
+MojeWidelo_WebApi/ffprobe.exe
