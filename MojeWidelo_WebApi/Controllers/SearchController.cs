@@ -54,9 +54,15 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var result = new SearchResultDto()
 			{
-				Users = _searchManager.SearchUsers(usersDto, query),
-				Videos = _searchManager.SearchVideos(videosDto, query),
-				Playlists = _searchManager.SearchPlaylists(playlistsDto, query),
+				Users = _searchManager.SortUsersBySubs(_searchManager.SearchUsers(usersDto, query)),
+				Videos = _searchManager.SortAndFilterVideos(
+					_searchManager.SearchVideos(videosDto, query),
+					sortingCriterion,
+					sortingType,
+					beginDate,
+					endDate
+				),
+				Playlists = _searchManager.SearchPlaylists(playlistsDto, query)
 			};
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
