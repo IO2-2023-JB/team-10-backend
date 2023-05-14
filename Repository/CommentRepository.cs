@@ -14,17 +14,17 @@ namespace Repository
 
 		public async Task<List<Comment>> GetVideoComments(string id)
 		{
-			return await _collection.Find((x) => x.VideoId == id && x.OriginCommentId == null).ToListAsync();
+			return await Collection.Find((x) => x.VideoId == id && x.OriginCommentId == null).ToListAsync();
 		}
 
 		public async Task<List<Comment>> GetCommentResponses(string id)
 		{
-			return await _collection.Find((x) => x.OriginCommentId == id).ToListAsync();
+			return await Collection.Find((x) => x.OriginCommentId == id).ToListAsync();
 		}
 
 		public void DeleteCommentResponses(string id)
 		{
-			_collection.Find((x) => x.OriginCommentId == id).ToList().ForEach(async (x) => await Delete(x.Id));
+			Collection.Find((x) => x.OriginCommentId == id).ToList().ForEach(async (x) => await Delete(x.Id));
 		}
 	}
 }

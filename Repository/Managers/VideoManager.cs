@@ -1,4 +1,4 @@
-using Entities.Data.Video;
+﻿using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
 using Microsoft.Extensions.Options;
@@ -48,8 +48,11 @@ namespace Repository.Managers
 		{
 			foreach (var video in videos)
 			{
-				var videoAuthor = users.Where(user => user.Id == video.AuthorId).First();
-				video.AuthorNickname = videoAuthor.Nickname;
+				var videoAuthor = users.Where(user => user.Id == video.AuthorId).SingleOrDefault();
+				if (videoAuthor != null)
+					video.AuthorNickname = videoAuthor.Nickname;
+				else
+					throw new Exception("Nie znaleziono użytkownika");
 			}
 		}
 	}

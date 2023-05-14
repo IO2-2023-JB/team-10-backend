@@ -7,7 +7,8 @@ namespace Contracts
 	public interface IRepositoryBase<T>
 		where T : MongoDocumentBase
 	{
-		IMongoCollection<T> _collection { get; }
+		MongoClient Client { get; }
+		IMongoCollection<T> Collection { get; }
 		IGridFSBucket _bucket { get; }
 
 		Task<IEnumerable<T>> GetAll();
