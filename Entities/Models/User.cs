@@ -1,4 +1,6 @@
 ﻿using Entities.Enums;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Entities.Models
 {
@@ -12,7 +14,8 @@ namespace Entities.Models
 
 		public string Surname { get; set; }
 
-		public double AccountBalance { get; set; }
+		[BsonRepresentation(BsonType.Decimal128)]
+		public decimal AccountBalance { get; set; }
 
 		public UserType UserType { get; set; }
 

@@ -18,7 +18,7 @@ namespace MojeWidelo_WebApi.Controllers
 
         [HttpPost("/donate/send", Name = "sendDonation")]
         [ServiceFilter(typeof(ObjectIdValidationFilter))]
-        public async Task<IActionResult> SendDonation([Required] string id, [Required] double amount)
+        public async Task<IActionResult> SendDonation([Required] string id, [Required] decimal amount)
         {
             var user = await _repository.UsersRepository.GetById(id);
 
@@ -38,7 +38,7 @@ namespace MojeWidelo_WebApi.Controllers
         }
 
         [HttpPost("/donate/withdraw", Name = "withdrawFunds")]
-        public async Task<IActionResult> WithdrawFunds([Required] double amount)
+        public async Task<IActionResult> WithdrawFunds([Required] decimal amount)
         {
             var id = GetUserIdFromToken();
 
