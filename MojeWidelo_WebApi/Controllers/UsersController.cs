@@ -192,52 +192,5 @@ namespace MojeWidelo_WebApi.Controllers
 
 			return StatusCode(StatusCodes.Status401Unauthorized, "Podane dane nie są poprawne.");
 		}
-
-		[HttpPost("/donate/send", Name = "sendDonation")]
-		[ServiceFilter(typeof(ModelValidationFilter))]
-		public async Task<IActionResult> SendDonation([Required] string id, [Required] double amount)
-		{
-			var user = await _repository.UsersRepository.GetById(id);
-
-			if (user == null)
-			{
-				return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
-			}
-
-			if (user.UserType != UserType.Creator)
-			{
-				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym ID nie jest twórcą.");
-			}
-
-			await _repository.UsersRepository.UpdateAccountBalance(id, amount);
-
-			return StatusCode(StatusCodes.Status200OK, "Dotacja została wysłana pomyślnie.");
-		}
-
-		[HttpPost("/donate/withdraw", Name = "withdrawFunds")]
-		[ServiceFilter(typeof(ModelValidationFilter))]
-		public async Task<IActionResult> WithdrawFunds([Required] double amount)
-		{
-			var id = GetUserIdFromToken();
-
-			var user = await _repository.UsersRepository.GetById(id);
-
-			if (user.UserType != UserType.Creator)
-			{
-				return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz wypłacić środków, nie jesteś twórcą.");
-			}
-
-			if (user.AccountBalance < amount)
-			{
-				return StatusCode(
-					StatusCodes.Status400BadRequest,
-					"Nie można wypłacić środków, niewystarczająca ilość środków na koncie."
-				);
-			}
-
-			await _repository.UsersRepository.UpdateAccountBalance(id, -amount);
-
-			return StatusCode(StatusCodes.Status200OK, "Środki zostały wypłacone pomyślnie.");
-		}
 	}
 }
