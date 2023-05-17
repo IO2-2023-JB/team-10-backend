@@ -44,7 +44,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			// mapowanie i uzupełnienie danych
 			var video = _mapper.Map<VideoMetadata>(videoUploadDto);
-			await _repository.VideoRepository.SetThumbnail(HttpContext, video, videoUploadDto);
+			await _repository.VideoRepository.SetThumbnail(video, videoUploadDto);
 			video.UploadDate = video.EditDate = DateTime.Now;
 			video.AuthorId = user.Id;
 			video.ProcessingProgress = ProcessingProgress.MetadataRecordCreated;
@@ -89,7 +89,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			video = _mapper.Map<VideoUpdateDto, VideoMetadata>(videoUpdateDto, video);
 
-			await _repository.VideoRepository.SetThumbnail(HttpContext, video, videoUpdateDto);
+			await _repository.VideoRepository.SetThumbnail(video, videoUpdateDto);
 			video.EditDate = DateTime.Now;
 			video = await _repository.VideoRepository.Update(id, video);
 			var result = _mapper.Map<VideoMetadataDto>(video);
@@ -129,6 +129,12 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<VideoMetadataDto>(video);
 			var author = await _repository.UsersRepository.GetById(result.AuthorId);
 			result.AuthorNickname = author.Nickname;
+
+			if (result.Thumbnail != null)
+			{
+				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
+				result.Thumbnail = location.AbsoluteUri + result.Thumbnail;
+			}
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
@@ -401,6 +407,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(videosDto, users);
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), videosDto);
 
 			var result = new VideoListDto(videosDto);
 
@@ -424,6 +431,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(videosDto, users);
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), videosDto);
 
 			return StatusCode(StatusCodes.Status200OK, new VideoListDto(videosDto));
 		}

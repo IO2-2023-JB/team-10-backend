@@ -40,6 +40,7 @@ namespace MojeWidelo_WebApi.Controllers
 		{
 			var users = await _repository.UsersRepository.GetAll();
 			var result = _mapper.Map<IEnumerable<UserDto>>(users);
+			_usersManager.AddAvatarUri(new Uri($"{Request.Scheme}://{Request.Host}"), result);
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -61,6 +62,12 @@ namespace MojeWidelo_WebApi.Controllers
 			if (user == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
 			var result = _mapper.Map<UserDto>(user);
+
+			if (result.AvatarImage != null)
+			{
+				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
+				result.AvatarImage = location.AbsoluteUri + result.AvatarImage;
+			}
 
 			result = _usersManager.CheckPermissionToGetAccountBalance(GetUserIdFromToken(), result);
 
@@ -97,13 +104,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			user = _mapper.Map<UpdateUserDto, User>(userDto, user);
 
-			if (userDto.AvatarImage != null)
-			{
-				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
-				string url = location.AbsoluteUri;
-				user.AvatarImage = url + "api/avatar/";
-				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, userDto.AvatarImage);
-			}
+			await _repository.UsersRepository.SetAvatar(user, userDto);
 
 			var newUser = await _repository.UsersRepository.Update(id, user);
 			var result = _mapper.Map<UserDto>(newUser);
@@ -129,13 +130,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var user = _mapper.Map<User>(registerDto);
 
-			if (registerDto.AvatarImage != null)
-			{
-				Uri location = new Uri($"{Request.Scheme}://{Request.Host}");
-				string url = location.AbsoluteUri;
-				user.AvatarImage = url + "api/avatar/";
-				user.AvatarImage += await _repository.UsersRepository.UploadAvatar(user, registerDto.AvatarImage);
-			}
+			await _repository.UsersRepository.SetAvatar(user, registerDto);
 
 			user = await _repository.UsersRepository.Create(user);
 
