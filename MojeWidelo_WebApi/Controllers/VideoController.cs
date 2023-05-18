@@ -160,6 +160,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (
 				video.ProcessingProgress != ProcessingProgress.MetadataRecordCreated
 				&& video.ProcessingProgress != ProcessingProgress.FailedToUpload
+				&& video.ProcessingProgress != ProcessingProgress.FailedToProcess
 			)
 				return StatusCode(
 					StatusCodes.Status400BadRequest,
