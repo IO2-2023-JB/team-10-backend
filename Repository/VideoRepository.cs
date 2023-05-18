@@ -221,5 +221,12 @@ namespace Repository
 			var update = Builders<VideoMetadata>.Update.Set(v => v.Duration, duration);
 			await Collection.UpdateOneAsync(v => v.Id == id, update);
 		}
+
+		public async Task ProcessAndAddDuration(string id, string path)
+		{
+			await ProccessVideoFile(id, path);
+			string duration = await GetDuration(id);
+			await UpdateVideoDuration(id, duration);
+		}
 	}
 }

@@ -20,5 +20,6 @@ namespace Contracts
 		Task<VideoMetadata> UpdateViewCount(string id, int value);
 		Task<string> GetDuration(string id);
 		Task UpdateVideoDuration(string id, string duration);
+		Task ProcessAndAddDuration(string id, string path);
 	}
 }
