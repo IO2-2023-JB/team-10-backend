@@ -62,7 +62,28 @@ namespace Repository
 
 				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
 
-				await Cli.Wrap("ffmpeg").WithArguments(new[] { "-i", path, newPath }).ExecuteBufferedAsync();
+				await Cli.Wrap("ffmpeg")
+					.WithArguments(
+						new[]
+						{
+							"-i",
+							path,
+							"-map_metadata",
+							"-1",
+							"-c:v",
+							"libx264",
+							"-preset",
+							"faster",
+							"-crf",
+							"30",
+							"-c:a",
+							"ac3",
+							"-b:a",
+							"128k",
+							newPath
+						}
+					)
+					.ExecuteBufferedAsync();
 
 				if (!System.IO.File.Exists(newPath))
 					throw new Exception("After successful conversion, output file does not exist!");
