@@ -3,7 +3,7 @@ using Repository.Managers;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Managers
 {
-	public class UsersManagerTests
+	public class UsersManagerTests : BaseManagerTests
 	{
 		[Theory]
 		[InlineData("1234a1ee0d48bf254e17eaf7")]

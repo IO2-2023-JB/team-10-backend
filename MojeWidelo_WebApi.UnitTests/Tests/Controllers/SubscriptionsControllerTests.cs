@@ -13,7 +13,12 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			var repositoryWrapperMock = GetRepositoryWrapperMock();
 			var mapper = GetMapper();
 			var manager = new SubscriptionsManager();
-			var controller = new SubscriptionsController(repositoryWrapperMock.Object, mapper, manager);
+			var controllerContext = GetControllerContext();
+
+			var controller = new SubscriptionsController(repositoryWrapperMock.Object, mapper, manager)
+			{
+				ControllerContext = controllerContext
+			};
 
 			return controller;
 		}

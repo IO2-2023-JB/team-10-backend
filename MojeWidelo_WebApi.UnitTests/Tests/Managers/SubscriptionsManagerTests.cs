@@ -3,7 +3,7 @@ using Repository.Managers;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Managers
 {
-	public class SubscriptionsManagerTests
+	public class SubscriptionsManagerTests : BaseManagerTests
 	{
 		[Fact]
 		public async Task GetSubscribersIdsForCreatorTest()

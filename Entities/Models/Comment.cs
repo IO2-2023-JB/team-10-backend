@@ -39,5 +39,7 @@ namespace Entities.Models
 			LastModificationDate = DateTime.Now;
 			OriginCommentId = originCommentId;
 		}
+
+		public Comment() { }
 	}
 }
