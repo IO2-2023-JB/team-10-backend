@@ -46,5 +46,11 @@ namespace Repository
 			var update = Builders<User>.Update.Inc(u => u.SubscriptionsCount, value);
 			await Collection.UpdateOneAsync(user => user.Id == id, update);
 		}
+
+		public async Task UpdateAccountBalance(string id, decimal amount)
+		{
+			var update = Builders<User>.Update.Inc(u => u.AccountBalance, amount);
+			await Collection.UpdateOneAsync(user => user.Id == id, update);
+		}
 	}
 }

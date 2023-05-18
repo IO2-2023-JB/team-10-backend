@@ -24,7 +24,7 @@ namespace Entities.Data.User
 		///     Account balance
 		/// </summary>
 		/// <example>132</example>
-		public double? AccountBalance { get; set; }
+		public decimal? AccountBalance { get; set; }
 
 		/// <summary>
 		///     Subscriptions counter
