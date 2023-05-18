@@ -8,7 +8,7 @@ namespace Contracts
 	public interface IVideoRepository : IRepositoryBase<VideoMetadata>
 	{
 		Task ChangeVideoProcessingProgress(string id, ProcessingProgress uploading);
-		void ProccessVideoFile(string id, string path);
+		Task ProccessVideoFile(string id, string path);
 		Task<string> UploadThumbnail(string file);
 		Task SetThumbnail(HttpContext httpContext, VideoMetadata video, VideoBaseDto videoDto);
 		Task<byte[]> GetThumbnailBytes(string id);
@@ -18,5 +18,7 @@ namespace Contracts
 		Task<IEnumerable<VideoMetadata>> GetVideos(IEnumerable<string> videosIDs, string userID);
 		Task<IEnumerable<VideoMetadata>> GetAllVisibleVideos(string userId);
 		Task<VideoMetadata> UpdateViewCount(string id, int value);
+		Task<string> GetDuration(string id);
+		Task UpdateVideoDuration(string id, string duration);
 	}
 }

@@ -192,7 +192,12 @@ namespace MojeWidelo_WebApi.Controllers
 
 			await _repository.VideoRepository.ChangeVideoProcessingProgress(id, ProcessingProgress.Uploaded);
 
-			Thread t = new Thread(() => _repository.VideoRepository.ProccessVideoFile(id, path));
+			Thread t = new Thread(async () =>
+			{
+				await _repository.VideoRepository.ProccessVideoFile(id, path);
+				string duration = await _repository.VideoRepository.GetDuration(id);
+				await _repository.VideoRepository.UpdateVideoDuration(id, duration);
+			});
 			t.Start();
 
 			return StatusCode(StatusCodes.Status200OK, "Przesyłanie zakończone pomyślnie.");
