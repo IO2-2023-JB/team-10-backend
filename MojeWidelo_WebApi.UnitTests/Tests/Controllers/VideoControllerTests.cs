@@ -122,5 +122,44 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value as VideoMetadataDto);
 			// Unable to compare results because of using DateTime.Now
 		}
+
+		[Fact]
+		public async void GetVideoMetadataByIdVideoNotExisting()
+		{
+			var videoController = GetController();
+
+			var result = await videoController.GetVideoMetadataById("64651cbf1754ecd2e4bc6f86") as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
+		}
+
+		[Fact]
+		public async void GetVideoMetadataByIdUserNotOwner()
+		{
+			var videoController = GetController();
+
+			var result = await videoController.GetVideoMetadataById("6465177ea074a4809cea03e8") as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Brak uprawnień do dostępu do metadanych.", result?.Value);
+		}
+
+		//[Fact]
+		//public async void GetVideoMetadataByIdSuccessfully()
+		//{
+		//	var videoController = GetController();
+
+		//	var result = await videoController.GetVideoMetadataById("6465615b2643675169770867") as ObjectResult;
+
+		//	Assert.NotNull(result);
+		//	Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+		//	Assert.IsAssignableFrom<VideoMetadataDto>(result?.Value);
+		//	Assert.NotNull(result?.Value as VideoMetadataDto);
+		//}
 	}
 }
