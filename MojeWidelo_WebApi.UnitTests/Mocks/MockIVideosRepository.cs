@@ -39,6 +39,36 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 					UploadDate = DateTime.Parse("2023-05-15T14:18:05.410Z"),
 					EditDate = DateTime.Parse("2023-05-15T14:34:22.723Z"),
 					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465615b2643675169770867",
+					Title = "Video title mock 1",
+					Description = "Video description mock 1",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "1" },
+					Visibility = Entities.Enums.VideoVisibility.Private,
+					AuthorId = "6429a1ee0d48bf254e17eaf7",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.Ready,
+					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
+					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465177ea074a4809cea03e8",
+					Title = "Video title mock 2",
+					Description = "Video description mock 2",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "2" },
+					Visibility = Entities.Enums.VideoVisibility.Private,
+					AuthorId = "643bfe61ba19d5c39d32b979",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.Ready,
+					UploadDate = DateTime.Parse("2023-05-17T18:05:50.131+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T18:18:05.553+00:00"),
+					Duration = ""
 				}
 			};
 
