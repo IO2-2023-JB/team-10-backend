@@ -16,7 +16,7 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 					Name = "UnitTestName",
 					Surname = "UnitTestSurname",
 					Nickname = "Unit Test User",
-					AccountBalance = 123042,
+					AccountBalance = 100.0M,
 					Email = "unit@test.com",
 					Password = "$2a$11$g6G3sI7tF3ZdJ5syUj4aLuDAMn7w2A2XS7wefOwYi/1u/.bPa3GQ6",
 					SubscriptionsCount = 42,
@@ -103,6 +103,8 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 
 			mock.Setup(m => m.GetUsersByIds(It.IsAny<IEnumerable<string>>()))
 				.ReturnsAsync((IEnumerable<string> ids) => collection.Where(user => ids.Contains(user.Id)).ToList());
+
+			mock.Setup(m => m.UpdateAccountBalance(It.IsAny<string>(), It.IsAny<decimal>())).Callback(() => { });
 
 			return mock;
 		}
