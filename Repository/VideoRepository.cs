@@ -5,10 +5,8 @@ using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
 using Entities.Utils;
-using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 using Repository.Managers;
 using System.Text.RegularExpressions;
 

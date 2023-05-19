@@ -1,5 +1,4 @@
-﻿using Entities.Data.Subscription;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Controllers;
 using Repository.Managers;
