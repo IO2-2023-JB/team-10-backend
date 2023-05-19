@@ -1,4 +1,5 @@
-﻿using Entities.Data.Video;
+﻿using Amazon.Runtime.Internal;
+using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
 using Microsoft.Extensions.Options;
@@ -53,6 +54,17 @@ namespace Repository.Managers
 					video.AuthorNickname = videoAuthor.Nickname;
 				else
 					throw new Exception("Nie znaleziono użytkownika");
+			}
+		}
+
+		public void AddThumbnailUri(Uri location, IEnumerable<VideoMetadataDto> videos)
+		{
+			foreach (var video in videos)
+			{
+				if (video.Thumbnail != null)
+				{
+					video.Thumbnail = location.AbsoluteUri + video.Thumbnail;
+				}
 			}
 		}
 	}

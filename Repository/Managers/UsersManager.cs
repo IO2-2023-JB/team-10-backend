@@ -12,5 +12,16 @@ namespace Repository.Managers
 			}
 			return user;
 		}
+
+		public void AddAvatarUri(Uri location, IEnumerable<UserBaseDto> users)
+		{
+			foreach (var user in users)
+			{
+				if (user.AvatarImage != null)
+				{
+					user.AvatarImage = location.AbsoluteUri + user.AvatarImage;
+				}
+			}
+		}
 	}
 }

@@ -1,8 +1,11 @@
 ﻿using Contracts;
+using Entities.Data.User;
+using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace Repository
 {
@@ -18,22 +21,18 @@ namespace Repository
 			return result;
 		}
 
-		public async Task<string> UploadAvatar(User user, string file)
+		public async Task SetAvatar(User user, UserBaseDto userDto)
 		{
-			string fileName = "temp";
-			int startIdx = file.IndexOf(',');
-			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
-
-			var id = await _bucket.UploadFromBytesAsync(fileName, imgByteArray);
-
-			return id.ToString();
+			if (userDto.AvatarImage != null)
+			{
+				user.AvatarImage = "api/avatar/";
+				user.AvatarImage += await UploadImage(userDto.Nickname += " - avatar", userDto.AvatarImage);
+			}
 		}
 
 		public async Task<byte[]> GetAvatarBytes(string id)
 		{
-			var bytes = await _bucket.DownloadAsBytesAsync(ObjectId.Parse(id));
-
-			return bytes;
+			return await _bucket.DownloadAsBytesAsync(ObjectId.Parse(id));
 		}
 
 		public async Task<IEnumerable<User>> GetUsersByIds(IEnumerable<string> ids)

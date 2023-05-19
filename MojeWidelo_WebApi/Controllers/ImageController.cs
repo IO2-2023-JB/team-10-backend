@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +18,22 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetAvatar(string id)
 		{
 			var bytes = await _repository.UsersRepository.GetAvatarBytes(id);
+			if (bytes == null)
+			{
+				return StatusCode(StatusCodes.Status404NotFound, "Zdjęcie profilowe o podanym ID nie istnieje.");
+			}
 
-			return File(bytes, "image/jpeg");
+			string contentType;
+			try
+			{
+				contentType = await _repository.UsersRepository.GetContentType(id);
+			}
+			catch
+			{
+				return File(bytes, "");
+			}
+
+			return File(bytes, contentType);
 		}
 
 		[HttpGet("thumbnail/{id}", Name = "GetThumbnail")]
@@ -28,7 +42,20 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetThumbnail(string id)
 		{
 			var bytes = await _repository.VideoRepository.GetThumbnailBytes(id);
-			var contentType = _repository.VideoRepository.GetThumbnailContentType(id);
+			if (bytes == null)
+			{
+				return StatusCode(StatusCodes.Status404NotFound, "Miniaturka o podanym ID nie istnieje.");
+			}
+
+			string contentType;
+			try
+			{
+				contentType = await _repository.VideoRepository.GetContentType(id);
+			}
+			catch
+			{
+				return File(bytes, "");
+			}
 
 			return File(bytes, contentType);
 		}
