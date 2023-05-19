@@ -149,17 +149,134 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Brak uprawnień do dostępu do metadanych.", result?.Value);
 		}
 
-		//[Fact]
-		//public async void GetVideoMetadataByIdSuccessfully()
-		//{
-		//	var videoController = GetController();
+		[Fact]
+		public async void GetVideoMetadataByIdSuccessfullyPrivate()
+		{
+			var videoController = GetController();
 
-		//	var result = await videoController.GetVideoMetadataById("6465615b2643675169770867") as ObjectResult;
+			var result = await videoController.GetVideoMetadataById("6465615b2643675169770867") as ObjectResult;
 
-		//	Assert.NotNull(result);
-		//	Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
-		//	Assert.IsAssignableFrom<VideoMetadataDto>(result?.Value);
-		//	Assert.NotNull(result?.Value as VideoMetadataDto);
-		//}
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.IsAssignableFrom<VideoMetadataDto>(result?.Value);
+			Assert.NotNull(result?.Value as VideoMetadataDto);
+		}
+
+		[Fact]
+		public async void GetVideoMetadataByIdSuccessfullyPublic()
+		{
+			var videoController = GetController();
+
+			var result = await videoController.GetVideoMetadataById("6465615b264367516977086A") as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.IsAssignableFrom<VideoMetadataDto>(result?.Value);
+			Assert.NotNull(result?.Value as VideoMetadataDto);
+		}
+
+		[Fact]
+		public async void UploadVideoVideoNotExisting()
+		{
+			var videoController = GetController();
+
+			var result =
+				await videoController.UploadVideo("64651cbf1754ecd2e4bc6f86", new FormFile(null!, 0, 0, null!, null!))
+				as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
+		}
+
+		[Fact]
+		public async void UploadVideoUserNotOwner()
+		{
+			var videoController = GetController();
+
+			var result =
+				await videoController.UploadVideo("6465177ea074a4809cea03e8", new FormFile(null!, 0, 0, null!, null!))
+				as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Brak uprawnień do przesłania wideo.", result?.Value);
+		}
+
+		[Fact]
+		public async void UploadVideoInvalidStates()
+		{
+			var videoController = GetController();
+
+			String[] vIDs = new string[]
+			{
+				"6465615b264367516977086A",
+				"6465615b264367516977086C",
+				"6465615b264367516977086D"
+			};
+
+			foreach (var v in vIDs)
+			{
+				var result =
+					await videoController.UploadVideo(v, new FormFile(null!, 0, 0, null!, null!)) as ObjectResult;
+
+				Assert.NotNull(result);
+				Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+				Assert.NotNull(result?.Value);
+			}
+		}
+
+		[Fact]
+		public async void StreamVideoVideoNotExisting()
+		{
+			var videoController = GetController();
+
+			var result = await videoController.StreamVideo("klucz", "64651cbf1754ecd2e4bc6f86") as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
+		}
+
+		[Fact]
+		public async void StreamVideoUserNotOwner()
+		{
+			var videoController = GetController();
+
+			var result = await videoController.StreamVideo("klucz", "6465177ea074a4809cea03e8") as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Brak uprawnień do streamowania wideo.", result?.Value);
+		}
+
+		[Fact]
+		public async void StreamVideoInvalidStates()
+		{
+			var videoController = GetController();
+
+			String[] vIDs = new string[]
+			{
+				"6465615b2643675169770867",
+				"6465615b264367516977086A",
+				"6465615b264367516977086B",
+				"6465615b264367516977086C",
+				"6465615b264367516977086D",
+				"6465615b264367516977086E"
+			};
+
+			foreach (var v in vIDs)
+			{
+				var result = await videoController.StreamVideo("klucz", v) as ObjectResult;
+
+				Assert.NotNull(result);
+				Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+				Assert.NotNull(result?.Value);
+			}
+		}
 	}
 }

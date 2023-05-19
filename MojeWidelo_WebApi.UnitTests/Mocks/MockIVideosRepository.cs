@@ -43,14 +43,89 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 				new VideoMetadata()
 				{
 					Id = "6465615b2643675169770867",
-					Title = "Video title mock 1",
+					Title = "Video title mock 1 - metadata created",
 					Description = "Video description mock 1",
 					Thumbnail = null,
 					Tags = new[] { "video", "tags", "mock", "1" },
 					Visibility = Entities.Enums.VideoVisibility.Private,
 					AuthorId = "6429a1ee0d48bf254e17eaf7",
 					ViewCount = 0,
-					ProcessingProgress = Entities.Enums.ProcessingProgress.Ready,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.MetadataRecordCreated,
+					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
+					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465615b264367516977086A",
+					Title = "Video title mock 1 - uploading",
+					Description = "Video description mock 1",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "1" },
+					Visibility = Entities.Enums.VideoVisibility.Public,
+					AuthorId = "6429a1ee0d48bf254e17eaf7",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.Uploading,
+					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
+					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465615b264367516977086B",
+					Title = "Video title mock 1 - failed 2 upload",
+					Description = "Video description mock 1",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "1" },
+					Visibility = Entities.Enums.VideoVisibility.Private,
+					AuthorId = "6429a1ee0d48bf254e17eaf7",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.FailedToUpload,
+					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
+					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465615b264367516977086C",
+					Title = "Video title mock 1 - uploaded",
+					Description = "Video description mock 1",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "1" },
+					Visibility = Entities.Enums.VideoVisibility.Private,
+					AuthorId = "6429a1ee0d48bf254e17eaf7",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.Uploaded,
+					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
+					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465615b264367516977086D",
+					Title = "Video title mock 1 - processing",
+					Description = "Video description mock 1",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "1" },
+					Visibility = Entities.Enums.VideoVisibility.Private,
+					AuthorId = "6429a1ee0d48bf254e17eaf7",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.Processing,
+					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
+					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
+					Duration = ""
+				},
+				new VideoMetadata()
+				{
+					Id = "6465615b264367516977086E",
+					Title = "Video title mock 1 - failed 2 process",
+					Description = "Video description mock 1",
+					Thumbnail = null,
+					Tags = new[] { "video", "tags", "mock", "1" },
+					Visibility = Entities.Enums.VideoVisibility.Private,
+					AuthorId = "6429a1ee0d48bf254e17eaf7",
+					ViewCount = 0,
+					ProcessingProgress = Entities.Enums.ProcessingProgress.FailedToProcess,
 					UploadDate = DateTime.Parse("2023-05-17T23:20:59.670+00:00"),
 					EditDate = DateTime.Parse("2023-05-17T23:21:04.953+00:00"),
 					Duration = ""
@@ -73,6 +148,9 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 			};
 
 			var mock = GetBaseMock(collection);
+
+			mock.Setup(m => m.UpdateViewCount(It.IsAny<string>(), It.IsAny<int>()))
+				.ReturnsAsync((string id, int value) => collection.FirstOrDefault(o => o.Id == id)!);
 
 			return mock;
 		}
