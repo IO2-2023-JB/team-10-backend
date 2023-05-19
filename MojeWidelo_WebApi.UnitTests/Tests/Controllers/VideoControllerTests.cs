@@ -1,12 +1,9 @@
 ﻿using Entities.Data.Video;
 using Entities.Utils;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
 using MojeWidelo_WebApi.Controllers;
 using Repository.Managers;
-using System;
-using System.Globalization;
 using ObjectResult = Microsoft.AspNetCore.Mvc.ObjectResult;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers

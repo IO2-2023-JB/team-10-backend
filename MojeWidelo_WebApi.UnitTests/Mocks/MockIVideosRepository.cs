@@ -1,8 +1,6 @@
 ﻿using Contracts;
-using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
-using Microsoft.VisualBasic;
 using Moq;
 
 namespace MojeWidelo_WebApi.UnitTests.Mocks
@@ -153,7 +151,14 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 			var mock = GetBaseMock(collection);
 
 			mock.Setup(m => m.UpdateViewCount(It.IsAny<string>(), It.IsAny<int>()))
-				.ReturnsAsync((string id, int value) => collection.FirstOrDefault(o => o.Id == id)!);
+				.ReturnsAsync(
+					(string id, int value) =>
+					{
+						var video = collection.First(o => o.Id == id);
+						video.ViewCount++;
+						return video;
+					}
+				);
 
 			mock.Setup(m => m.GetVideosByUserId(It.IsAny<string>(), It.IsAny<bool>()))
 				.ReturnsAsync(
@@ -167,6 +172,41 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 						collection.Where(
 							x => creatorsIds.Contains(x.AuthorId) && x.Visibility == VideoVisibility.Public
 						)
+				);
+
+			mock.Setup(m => m.GetById(It.IsAny<string>()))
+				.ReturnsAsync((string id) => collection.FirstOrDefault(o => o.Id == id)!);
+
+			mock.Setup(m => m.GetVideos(It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
+				.ReturnsAsync(
+					(IEnumerable<string> videosIDs, string userID) =>
+					{
+						var toReturn = new List<VideoMetadata>();
+
+						foreach (var v in videosIDs)
+						{
+							VideoMetadata video = collection.First(x => x.Id == v);
+							if (video == null)
+							{
+								video = new VideoMetadata();
+								video.Title = "Wideo zostało usunięte.";
+							}
+							else if (video.Visibility == VideoVisibility.Private && video.AuthorId != userID)
+							{
+								video = new VideoMetadata();
+								video.Title = "Wideo jest niedostępne.";
+							}
+							toReturn.Add(video);
+						}
+
+						return toReturn;
+					}
+				);
+
+			mock.Setup(m => m.GetAllVisibleVideos(It.IsAny<string>()))
+				.ReturnsAsync(
+					(string userId) =>
+						collection.Where(x => x.Visibility == VideoVisibility.Public || x.AuthorId == userId)
 				);
 
 			return mock;
