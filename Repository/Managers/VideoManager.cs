@@ -1,4 +1,6 @@
 ﻿using Amazon.Runtime.Internal;
+using CliWrap;
+using CliWrap.Buffered;
 using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
@@ -66,6 +68,54 @@ namespace Repository.Managers
 					video.Thumbnail = location.AbsoluteUri + video.Thumbnail;
 				}
 			}
+		}
+
+		public string? GetIntroFilePath()
+		{
+			string? location = GetStorageDirectory();
+			if (location == null)
+				return null;
+			string path = Path.Combine(location, "intro" + ".mp4");
+			if (!System.IO.File.Exists(path))
+				return null;
+			return path;
+		}
+
+		public (int width, int height) GetOriginalVideoResolution(string path)
+		{
+			//var videoInfo = new NReco.VideoInfo.FFProbe().GetMediaInfo(path).Streams;
+			//return (videoInfo[0].Width, videoInfo[0].Height);
+
+			throw new NotImplementedException();
+		}
+
+		public async Task<string?> CreateIntro((int width, int height) oryginalResolution, string introPath, string id)
+		{
+			string? location = GetStorageDirectory();
+			if (location == null)
+				return null;
+			string path = Path.Combine(location, id + "_intro.mp4");
+			await Cli.Wrap("ffmpeg")
+				.WithArguments(
+					new[]
+					{
+						"-i",
+						introPath,
+						"-vf",
+						"scale=" + oryginalResolution.width + 'x' + oryginalResolution.height + ",setsar=1:1",
+						path
+					}
+				)
+				.ExecuteBufferedAsync();
+			return path;
+		}
+
+		public string? GetTempFilePath(string id)
+		{
+			string? location = GetStorageDirectory();
+			if (location == null)
+				return null;
+			return Path.Combine(location, id + "_temp.mp4");
 		}
 	}
 }
