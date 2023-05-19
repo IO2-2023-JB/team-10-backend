@@ -11,9 +11,13 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 
 			var usersRepoMock = MockIUsersRepository.GetMock();
 			var subscriptionsRepoMock = MockISubscriptionsRepository.GetMock();
+			var commentsRepoMock = MockICommentsRepository.GetMock();
+			var videosRepoMock = MockIVideosRepository.GetMock();
 
 			mock.Setup(m => m.UsersRepository).Returns(() => usersRepoMock.Object);
 			mock.Setup(m => m.SubscriptionsRepository).Returns(() => subscriptionsRepoMock.Object);
+			mock.Setup(m => m.CommentRepository).Returns(() => commentsRepoMock.Object);
+			mock.Setup(m => m.VideoRepository).Returns(() => videosRepoMock.Object);
 
 			return mock;
 		}

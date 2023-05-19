@@ -120,6 +120,11 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetCommentResponse([Required] string id)
 		{
 			var comment = await _repository.CommentRepository.GetById(id);
+			if (comment == null)
+				return StatusCode(
+					StatusCodes.Status404NotFound,
+					"Nie znaleziono komentarza o podanym identyfikatorze."
+				);
 			var video = await _repository.VideoRepository.GetById(comment.VideoId);
 			var user = await GetUserFromToken();
 			if (
@@ -128,11 +133,7 @@ namespace MojeWidelo_WebApi.Controllers
 				&& user.UserType != UserType.Administrator
 			)
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do odpowiedzi do komentarza.");
-			if (comment == null)
-				return StatusCode(
-					StatusCodes.Status404NotFound,
-					"Nie znaleziono komentarza o podanym identyfikatorze."
-				);
+
 			if (!comment.HasResponses)
 				return StatusCode(StatusCodes.Status200OK, new CommentDto[0]);
 
