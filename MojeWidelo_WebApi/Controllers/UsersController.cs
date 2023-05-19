@@ -103,6 +103,17 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do edycji danych użytkownika.");
 			}
 
+			if (user.UserType == UserType.Creator && userDto.UserType == UserType.Simple)
+			{
+				var userVideos = _repository.VideoRepository.GetVideosByUserId(id, true).Result;
+
+				if (userVideos.Any())
+					return StatusCode(
+						StatusCodes.Status400BadRequest,
+						"Twórca musi usunąć wszystkie filmy przed zmianą typu konta."
+					);
+			}
+
 			user = _mapper.Map<UpdateUserDto, User>(userDto, user);
 
 			await _repository.UsersRepository.SetAvatar(user, userDto);
