@@ -86,6 +86,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<PlaylistDto>(playlist);
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result.Videos);
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -181,6 +182,7 @@ namespace MojeWidelo_WebApi.Controllers
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Videos.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result.Videos, users);
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result.Videos);
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
