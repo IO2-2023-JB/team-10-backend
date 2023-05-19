@@ -174,9 +174,6 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 						)
 				);
 
-			mock.Setup(m => m.GetById(It.IsAny<string>()))
-				.ReturnsAsync((string id) => collection.FirstOrDefault(o => o.Id == id)!);
-
 			mock.Setup(m => m.GetVideos(It.IsAny<IEnumerable<string>>(), It.IsAny<string>()))
 				.ReturnsAsync(
 					(IEnumerable<string> videosIDs, string userID) =>

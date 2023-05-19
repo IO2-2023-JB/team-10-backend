@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using MojeWidelo_WebApi.Mapper;
-using MojeWidelo_WebApi.UnitTests.Mocks;
+﻿using MojeWidelo_WebApi.UnitTests.Mocks;
 using Repository.Managers;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Managers

@@ -49,7 +49,6 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal(StatusCodes.Status201Created, result?.StatusCode);
 			Assert.IsAssignableFrom<VideoUploadResponseDto>(result?.Value);
 			Assert.NotNull(result?.Value as VideoUploadResponseDto);
-			// Unable to compare results because of using DateTime.Now
 		}
 
 		[Theory]
@@ -119,7 +118,6 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
 			Assert.IsAssignableFrom<VideoMetadataDto>(result?.Value);
 			Assert.NotNull(result?.Value as VideoMetadataDto);
-			// Unable to compare results because of using DateTime.Now
 		}
 
 		[Theory]
@@ -336,60 +334,5 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value);
 			Assert.Equal("Użytkownik o podanym ID nie jest twórcą.", result?.Value);
 		}
-
-  /*
-  [Theory]
-  [InlineData("6429a1ee0d48bf254e17eaf7")]
-  public async void GetUsersVideosSuccess(string id)
-  {
-      var videoController = GetController();
-
-      var result = await videoController.GetUsersVideos(id) as ObjectResult;
-
-      Assert.NotNull(result);
-      Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
-      Assert.IsAssignableFrom<VideoListDto>(result?.Value);
-      Assert.NotNull(result?.Value as VideoListDto);
-  }
-
-  SOSNA'S BUG:
-
-  Message:
-      System.UriFormatException : Invalid URI: The format of the URI could not be determined.
-
-  Stack Trace:
-      Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
-      Uri.ctor(String uriString)
-          VideoController.GetUsersVideos(String id) line 412
-          VideoControllerTests.GetUsersVideosSuccess() line 360
-  */
-
-  /*
-  [Fact]
-  public async void VideosSubscribedSuccess()
-  {
-      var videoController = GetController();
-
-      var result = await videoController.GetVideosSubscribed() as ObjectResult;
-
-      Assert.NotNull(result);
-      Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
-      Assert.IsAssignableFrom<VideoListDto>(result?.Value);
-      Assert.NotNull(result?.Value as VideoListDto);
-  }
-
-
-  SOSNA'S BUG:
-
-  Message:
-      System.UriFormatException : Invalid URI: The format of the URI could not be determined.
-
-  Stack Trace:
-
-      Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
-      Uri.ctor(String uriString)
-          VideoController.GetUsersVideos(String id) line 412
-          VideoControllerTests.GetUsersVideosSuccess() line 360
-  */
 	}
 }

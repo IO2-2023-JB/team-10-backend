@@ -1,5 +1,4 @@
 ﻿using MojeWidelo_WebApi.UnitTests.Mocks;
-using NuGet.Frameworks;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 {
