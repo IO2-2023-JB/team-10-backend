@@ -191,7 +191,14 @@ namespace Repository
 			if (splitted.Count != 1)
 				return String.Empty;
 
-			return splitted[0].TrimEnd(',');
+			var checkHourArr = (splitted[0].Substring(0, splitted[0].Length - 4)).Split(':');
+			if (checkHourArr.Length != 3)
+				return String.Empty;
+
+			if (Int32.Parse(checkHourArr[0]) != 0)
+				return checkHourArr[0] + ":" + checkHourArr[1] + ":" + checkHourArr[2];
+			else
+				return checkHourArr[1] + ":" + checkHourArr[2];
 		}
 
 		public async Task UpdateVideoDuration(string id, string duration)
