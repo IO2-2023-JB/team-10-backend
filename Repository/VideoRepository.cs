@@ -10,6 +10,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Repository.Managers;
+using System.Text.RegularExpressions;
 
 namespace Repository
 {
@@ -41,7 +42,7 @@ namespace Repository
 			);
 		}
 
-		public async void ProccessVideoFile(string id, string path)
+		public async Task ProccessVideoFile(string id, string path)
 		{
 			try
 			{
@@ -62,7 +63,28 @@ namespace Repository
 
 				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
 
-				await Cli.Wrap("ffmpeg").WithArguments(new[] { "-i", path, newPath }).ExecuteBufferedAsync();
+				await Cli.Wrap("ffmpeg")
+					.WithArguments(
+						new[]
+						{
+							"-i",
+							path,
+							"-map_metadata",
+							"-1",
+							"-c:v",
+							"libx264",
+							"-preset",
+							"faster",
+							"-crf",
+							"30",
+							"-c:a",
+							"ac3",
+							"-b:a",
+							"128k",
+							newPath
+						}
+					)
+					.ExecuteBufferedAsync();
 
 				if (!System.IO.File.Exists(newPath))
 					throw new Exception("After successful conversion, output file does not exist!");
@@ -155,6 +177,36 @@ namespace Repository
 			var update = Builders<VideoMetadata>.Update.Inc(u => u.ViewCount, value);
 			await Collection.UpdateOneAsync(video => video.Id == id, update);
 			return await GetById(id);
+		}
+
+		public async Task<string> GetDuration(string id)
+		{
+			string newPath = videoManager.GetReadyFilePath(id)!;
+			BufferedCommandResult? result = await Cli.Wrap("ffmpeg")
+				.WithArguments(new[] { "-i", newPath })
+				.WithValidation(CommandResultValidation.None)
+				.ExecuteBufferedAsync();
+
+			List<string> splitted = result.StandardError.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+			splitted.RemoveAll(x => !Regex.IsMatch(x, @"\d*\d\d:\d\d:\d\d.\d\d"));
+
+			if (splitted.Count != 1)
+				return String.Empty;
+
+			return splitted[0].TrimEnd(',');
+		}
+
+		public async Task UpdateVideoDuration(string id, string duration)
+		{
+			var update = Builders<VideoMetadata>.Update.Set(v => v.Duration, duration);
+			await Collection.UpdateOneAsync(v => v.Id == id, update);
+		}
+
+		public async Task ProcessAndAddDuration(string id, string path)
+		{
+			await ProccessVideoFile(id, path);
+			string duration = await GetDuration(id);
+			await UpdateVideoDuration(id, duration);
 		}
 	}
 }
