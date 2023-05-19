@@ -15,6 +15,7 @@ namespace MojeWidelo_WebApi.Controllers
 	[ApiController]
 	public class SearchController : BaseController
 	{
+		private readonly UsersManager _usersManager;
 		private readonly VideoManager _videoManager;
 		private readonly SearchManager _searchManager;
 
@@ -22,10 +23,12 @@ namespace MojeWidelo_WebApi.Controllers
 			IRepositoryWrapper repository,
 			IMapper mapper,
 			SearchManager searchManager,
+			UsersManager usersManager,
 			VideoManager videoManager
 		)
 			: base(repository, mapper)
 		{
+			_usersManager = usersManager;
 			_videoManager = videoManager;
 			_searchManager = searchManager;
 		}
@@ -64,6 +67,10 @@ namespace MojeWidelo_WebApi.Controllers
 				),
 				Playlists = _searchManager.SearchPlaylists(playlistsDto, query)
 			};
+
+			_usersManager.AddAvatarUri(new Uri($"{Request.Scheme}://{Request.Host}"), result.Users);
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result.Videos);
+
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 	}

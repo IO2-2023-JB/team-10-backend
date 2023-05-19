@@ -263,6 +263,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result, users);
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result);
 
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
