@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
 using MojeWidelo_WebApi.Controllers;
 using Repository.Managers;
+using System;
+using System.Globalization;
 using ObjectResult = Microsoft.AspNetCore.Mvc.ObjectResult;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
@@ -53,8 +55,9 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			// Unable to compare results because of using DateTime.Now
 		}
 
-		[Fact]
-		public async void UpdateVideoMetadataVideoNotExisting()
+		[Theory]
+		[InlineData("64651cbf1754ecd2e4bc6f86")]
+		public async void UpdateVideoMetadataVideoNotExisting(string id)
 		{
 			var videoController = GetController();
 
@@ -67,8 +70,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 				Visibility = Entities.Enums.VideoVisibility.Public
 			};
 
-			var result =
-				await videoController.UpdateVideoMetadata("64651cbf1754ecd2e4bc6f86", updateData) as ObjectResult;
+			var result = await videoController.UpdateVideoMetadata(id, updateData) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -76,8 +78,9 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
 		}
 
-		[Fact]
-		public async void UpdateVideoMetadataUserNotOwner()
+		[Theory]
+		[InlineData("6465177ea074a4809cea03e8")]
+		public async void UpdateVideoMetadataUserNotOwner(string id)
 		{
 			var videoController = GetController();
 
@@ -90,8 +93,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 				Visibility = Entities.Enums.VideoVisibility.Public
 			};
 
-			var result =
-				await videoController.UpdateVideoMetadata("6465177ea074a4809cea03e8", updateData) as ObjectResult;
+			var result = await videoController.UpdateVideoMetadata(id, updateData) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
@@ -99,8 +101,9 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Brak uprawnień do edycji metadanych.", result?.Value);
 		}
 
-		[Fact]
-		public async void UpdateVideoMetadataSuccessfully()
+		[Theory]
+		[InlineData("6465615b2643675169770867")]
+		public async void UpdateVideoMetadataSuccessfully(string id)
 		{
 			var videoController = GetController();
 
@@ -113,8 +116,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 				Visibility = Entities.Enums.VideoVisibility.Public
 			};
 
-			var result =
-				await videoController.UpdateVideoMetadata("6465615b2643675169770867", updateData) as ObjectResult;
+			var result = await videoController.UpdateVideoMetadata(id, updateData) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
@@ -123,12 +125,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			// Unable to compare results because of using DateTime.Now
 		}
 
-		[Fact]
-		public async void GetVideoMetadataByIdVideoNotExisting()
+		[Theory]
+		[InlineData("64651cbf1754ecd2e4bc6f86")]
+		public async void GetVideoMetadataByIdVideoNotExisting(string id)
 		{
 			var videoController = GetController();
 
-			var result = await videoController.GetVideoMetadataById("64651cbf1754ecd2e4bc6f86") as ObjectResult;
+			var result = await videoController.GetVideoMetadataById(id) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -136,12 +139,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
 		}
 
-		[Fact]
-		public async void GetVideoMetadataByIdUserNotOwner()
+		[Theory]
+		[InlineData("6465177ea074a4809cea03e8")]
+		public async void GetVideoMetadataByIdUserNotOwner(string id)
 		{
 			var videoController = GetController();
 
-			var result = await videoController.GetVideoMetadataById("6465177ea074a4809cea03e8") as ObjectResult;
+			var result = await videoController.GetVideoMetadataById(id) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
@@ -149,12 +153,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Brak uprawnień do dostępu do metadanych.", result?.Value);
 		}
 
-		[Fact]
-		public async void GetVideoMetadataByIdSuccessfullyPrivate()
+		[Theory]
+		[InlineData("6465615b2643675169770867")]
+		public async void GetVideoMetadataByIdSuccessfullyPrivate(string id)
 		{
 			var videoController = GetController();
 
-			var result = await videoController.GetVideoMetadataById("6465615b2643675169770867") as ObjectResult;
+			var result = await videoController.GetVideoMetadataById(id) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
@@ -162,12 +167,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value as VideoMetadataDto);
 		}
 
-		[Fact]
-		public async void GetVideoMetadataByIdSuccessfullyPublic()
+		[Theory]
+		[InlineData("6465615b264367516977086A")]
+		public async void GetVideoMetadataByIdSuccessfullyPublic(string id)
 		{
 			var videoController = GetController();
 
-			var result = await videoController.GetVideoMetadataById("6465615b264367516977086A") as ObjectResult;
+			var result = await videoController.GetVideoMetadataById(id) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
@@ -175,14 +181,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value as VideoMetadataDto);
 		}
 
-		[Fact]
-		public async void UploadVideoVideoNotExisting()
+		[Theory]
+		[InlineData("64651cbf1754ecd2e4bc6f86")]
+		public async void UploadVideoVideoNotExisting(string id)
 		{
 			var videoController = GetController();
 
-			var result =
-				await videoController.UploadVideo("64651cbf1754ecd2e4bc6f86", new FormFile(null!, 0, 0, null!, null!))
-				as ObjectResult;
+			var result = await videoController.UploadVideo(id, new FormFile(null!, 0, 0, null!, null!)) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -190,14 +195,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
 		}
 
-		[Fact]
-		public async void UploadVideoUserNotOwner()
+		[Theory]
+		[InlineData("6465177ea074a4809cea03e8")]
+		public async void UploadVideoUserNotOwner(string id)
 		{
 			var videoController = GetController();
 
-			var result =
-				await videoController.UploadVideo("6465177ea074a4809cea03e8", new FormFile(null!, 0, 0, null!, null!))
-				as ObjectResult;
+			var result = await videoController.UploadVideo(id, new FormFile(null!, 0, 0, null!, null!)) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
@@ -205,35 +209,28 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Brak uprawnień do przesłania wideo.", result?.Value);
 		}
 
-		[Fact]
-		public async void UploadVideoInvalidStates()
+		[Theory]
+		[InlineData("6465615b264367516977086A")]
+		[InlineData("6465615b264367516977086C")]
+		[InlineData("6465615b264367516977086D")]
+		public async void UploadVideoInvalidStates(string id)
 		{
 			var videoController = GetController();
 
-			String[] vIDs = new string[]
-			{
-				"6465615b264367516977086A",
-				"6465615b264367516977086C",
-				"6465615b264367516977086D"
-			};
+			var result = await videoController.UploadVideo(id, new FormFile(null!, 0, 0, null!, null!)) as ObjectResult;
 
-			foreach (var v in vIDs)
-			{
-				var result =
-					await videoController.UploadVideo(v, new FormFile(null!, 0, 0, null!, null!)) as ObjectResult;
-
-				Assert.NotNull(result);
-				Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
-				Assert.NotNull(result?.Value);
-			}
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+			Assert.NotNull(result?.Value);
 		}
 
-		[Fact]
-		public async void StreamVideoVideoNotExisting()
+		[Theory]
+		[InlineData("64651cbf1754ecd2e4bc6f86")]
+		public async void StreamVideoVideoNotExisting(string id)
 		{
 			var videoController = GetController();
 
-			var result = await videoController.StreamVideo("klucz", "64651cbf1754ecd2e4bc6f86") as ObjectResult;
+			var result = await videoController.StreamVideo("klucz", id) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
@@ -241,12 +238,13 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
 		}
 
-		[Fact]
-		public async void StreamVideoUserNotOwner()
+		[Theory]
+		[InlineData("6465177ea074a4809cea03e8")]
+		public async void StreamVideoUserNotOwner(string id)
 		{
 			var videoController = GetController();
 
-			var result = await videoController.StreamVideo("klucz", "6465177ea074a4809cea03e8") as ObjectResult;
+			var result = await videoController.StreamVideo("klucz", id) as ObjectResult;
 
 			Assert.NotNull(result);
 			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
@@ -254,29 +252,147 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal("Brak uprawnień do streamowania wideo.", result?.Value);
 		}
 
-		[Fact]
-		public async void StreamVideoInvalidStates()
+		[Theory]
+		[InlineData("6465615b2643675169770867")]
+		[InlineData("6465615b264367516977086A")]
+		[InlineData("6465615b264367516977086B")]
+		[InlineData("6465615b264367516977086C")]
+		[InlineData("6465615b264367516977086D")]
+		[InlineData("6465615b264367516977086E")]
+		public async void StreamVideoInvalidStates(string id)
 		{
 			var videoController = GetController();
 
-			String[] vIDs = new string[]
-			{
-				"6465615b2643675169770867",
-				"6465615b264367516977086A",
-				"6465615b264367516977086B",
-				"6465615b264367516977086C",
-				"6465615b264367516977086D",
-				"6465615b264367516977086E"
-			};
+			var result = await videoController.StreamVideo("klucz", id) as ObjectResult;
 
-			foreach (var v in vIDs)
-			{
-				var result = await videoController.StreamVideo("klucz", v) as ObjectResult;
-
-				Assert.NotNull(result);
-				Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
-				Assert.NotNull(result?.Value);
-			}
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+			Assert.NotNull(result?.Value);
 		}
+
+		[Theory]
+		[InlineData("64651cbf1754ecd2e4bc6f86")]
+		public async void DeleteVideoVideoNotExisting(string id)
+		{
+			var videoController = GetController();
+
+			var result = await videoController.DeleteVideo(id) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status404NotFound, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Wideo o podanym ID nie istnieje.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465177ea074a4809cea03e8")]
+		public async void DeleteVideoUserNotOwner(string id)
+		{
+			var videoController = GetController();
+
+			var result = await videoController.DeleteVideo(id) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status403Forbidden, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Brak uprawnień do usunięcia wideo.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086A")]
+		[InlineData("6465615b264367516977086D")]
+		public async void DeleteVideoInvalidStates(string id)
+		{
+			var videoController = GetController();
+
+			var result = await videoController.DeleteVideo(id) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+		}
+
+		[Theory]
+		[InlineData("64390ed1d37684988022aa13f")]
+		public async void GetUsersVideosUserNotExisting(string id)
+		{
+			var videoController = GetController();
+
+			var result = await videoController.GetUsersVideos(id) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Użytkownik o podanym ID nie istnieje.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("64390ed1d3768498801aa05f")]
+		public async void GetUsersVideosUserNotCreator(string id)
+		{
+			var videoController = GetController();
+
+			var result = await videoController.GetUsersVideos(id) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Użytkownik o podanym ID nie jest twórcą.", result?.Value);
+		}
+
+  /*
+  [Theory]
+  [InlineData("6429a1ee0d48bf254e17eaf7")]
+  public async void GetUsersVideosSuccess(string id)
+  {
+      var videoController = GetController();
+
+      var result = await videoController.GetUsersVideos(id) as ObjectResult;
+
+      Assert.NotNull(result);
+      Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+      Assert.IsAssignableFrom<VideoListDto>(result?.Value);
+      Assert.NotNull(result?.Value as VideoListDto);
+  }
+
+  SOSNA'S BUG:
+
+  Message:
+      System.UriFormatException : Invalid URI: The format of the URI could not be determined.
+
+  Stack Trace:
+      Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+      Uri.ctor(String uriString)
+          VideoController.GetUsersVideos(String id) line 412
+          VideoControllerTests.GetUsersVideosSuccess() line 360
+  */
+
+  /*
+  [Fact]
+  public async void VideosSubscribedSuccess()
+  {
+      var videoController = GetController();
+
+      var result = await videoController.GetVideosSubscribed() as ObjectResult;
+
+      Assert.NotNull(result);
+      Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+      Assert.IsAssignableFrom<VideoListDto>(result?.Value);
+      Assert.NotNull(result?.Value as VideoListDto);
+  }
+
+
+  SOSNA'S BUG:
+
+  Message:
+      System.UriFormatException : Invalid URI: The format of the URI could not be determined.
+
+  Stack Trace:
+
+      Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+      Uri.ctor(String uriString)
+          VideoController.GetUsersVideos(String id) line 412
+          VideoControllerTests.GetUsersVideosSuccess() line 360
+  */
 	}
 }

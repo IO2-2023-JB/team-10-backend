@@ -1,5 +1,8 @@
 ﻿using Contracts;
+using Entities.Data.Video;
+using Entities.Enums;
 using Entities.Models;
+using Microsoft.VisualBasic;
 using Moq;
 
 namespace MojeWidelo_WebApi.UnitTests.Mocks
@@ -151,6 +154,20 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 
 			mock.Setup(m => m.UpdateViewCount(It.IsAny<string>(), It.IsAny<int>()))
 				.ReturnsAsync((string id, int value) => collection.FirstOrDefault(o => o.Id == id)!);
+
+			mock.Setup(m => m.GetVideosByUserId(It.IsAny<string>(), It.IsAny<bool>()))
+				.ReturnsAsync(
+					(string id, bool isAuthor) =>
+						collection.Where(x => x.AuthorId == id && (x.Visibility == VideoVisibility.Public || isAuthor))
+				);
+
+			mock.Setup(m => m.GetSubscribedVideos(It.IsAny<IEnumerable<string>>()))
+				.ReturnsAsync(
+					(IEnumerable<string> creatorsIds) =>
+						collection.Where(
+							x => creatorsIds.Contains(x.AuthorId) && x.Visibility == VideoVisibility.Public
+						)
+				);
 
 			return mock;
 		}
