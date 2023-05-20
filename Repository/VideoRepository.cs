@@ -76,9 +76,9 @@ namespace Repository
 							"-crf",
 							"30",
 							"-c:a",
-							"libmp3lame",
+							"aac",
 							"-q:a",
-							"5",
+							"1",
 							newPath
 						}
 					)
