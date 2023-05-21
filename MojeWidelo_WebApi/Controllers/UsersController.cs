@@ -105,7 +105,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (user.UserType == UserType.Creator && userDto.UserType == UserType.Simple)
 			{
-				var userVideos = _repository.VideoRepository.GetVideosByUserId(id, true).Result;
+				var userVideos = await _repository.VideoRepository.GetVideosByUserId(id, true);
 
 				if (userVideos.Any())
 					return StatusCode(
