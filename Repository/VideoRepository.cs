@@ -65,42 +65,22 @@ namespace Repository
 
 				string originalResolution = await GetResolution(path);
 				string originalFPS = await GetFPS(path);
-
 				string? introTempPath = await videoManager.CreateIntro(originalResolution, originalFPS, introPath, id);
+				if (introTempPath == null)
+					throw new Exception("Unable to create intro based on original video file!");
+
+				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
 
 				string? tempPath = videoManager.GetTempFilePath(id);
 				if (tempPath == null)
 					throw new Exception("Unable to create temp path for video file!");
 
-				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
-
 				var arguments = new List<string>(new[] { "-i", path });
 				arguments.AddRange(videoManager.FFMpegConversionParams);
-				arguments.Add(newPath);
+				arguments.Add(tempPath);
 				await Cli.Wrap("ffmpeg").WithArguments(arguments).ExecuteBufferedAsync();
 
-				await Cli.Wrap("ffmpeg")
-					.WithArguments(new[] { "-i", path, "-vf", "setsar=1:1", tempPath })
-					.ExecuteBufferedAsync();
-
-				await Cli.Wrap("ffmpeg")
-					.WithArguments(
-						new[]
-						{
-							"-i",
-							introTempPath!,
-							"-i",
-							tempPath,
-							"-filter_complex",
-							"'[0:0][0:1][1:0][1:1]concat=n=2:v=1:a=1[outv][outa]'",
-							"-map",
-							"[outv]",
-							"-map",
-							"[outa]",
-							newPath
-						}
-					)
-					.ExecuteBufferedAsync();
+				await videoManager.ConcatVideo(id, introTempPath, tempPath, newPath);
 
 				if (!System.IO.File.Exists(newPath))
 					throw new Exception("After successful conversion, output file does not exist!");
