@@ -73,28 +73,10 @@ namespace Repository
 
 				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
 
-				await Cli.Wrap("ffmpeg")
-					.WithArguments(
-						new[]
-						{
-							"-i",
-							path,
-							"-map_metadata",
-							"-1",
-							"-c:v",
-							"libx264",
-							"-preset",
-							"faster",
-							"-crf",
-							"30",
-							"-c:a",
-							"aac",
-							"-q:a",
-							"1",
-							newPath
-						}
-					)
-					.ExecuteBufferedAsync();
+				var arguments = new List<string>(new[] { "-i", path });
+				arguments.AddRange(videoManager.FFMpegConversionParams);
+				arguments.Add(newPath);
+				await Cli.Wrap("ffmpeg").WithArguments(arguments).ExecuteBufferedAsync();
 
 				await Cli.Wrap("ffmpeg")
 					.WithArguments(new[] { "-i", path, "-vf", "setsar=1:1", tempPath })

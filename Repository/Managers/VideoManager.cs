@@ -11,10 +11,12 @@ namespace Repository.Managers
 	public class VideoManager
 	{
 		readonly string videoStorageLocation;
+		public readonly string[] FFMpegConversionParams;
 
 		public VideoManager(IOptions<Variables> variables)
 		{
 			videoStorageLocation = variables.Value.VideoStorageLocation;
+			FFMpegConversionParams = variables.Value.FFMpegConversionParams;
 		}
 
 		public string? CreateNewPath(string id, string fileName)
