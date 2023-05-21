@@ -63,9 +63,10 @@ namespace Repository
 				if (introPath == null)
 					throw new Exception("Unable to retrieve intro file!");
 
-				(int width, int height) oryginalResolution = videoManager.GetOriginalVideoResolution(path);
+				string originalResolution = await GetResolution(path);
+				string originalFPS = await GetFPS(path);
 
-				string? introTempPath = await videoManager.CreateIntro(oryginalResolution, introPath, id);
+				string? introTempPath = await videoManager.CreateIntro(originalResolution, originalFPS, introPath, id);
 
 				string? tempPath = videoManager.GetTempFilePath(id);
 				if (tempPath == null)
@@ -229,6 +230,35 @@ namespace Repository
 			await ProccessVideoFile(id, path);
 			string duration = await GetDuration(id);
 			await UpdateVideoDuration(id, duration);
+		}
+
+		public async Task<string> GetResolution(string path)
+		{
+			BufferedCommandResult? result = await Cli.Wrap("ffmpeg")
+				.WithArguments(new[] { "-i", path })
+				.WithValidation(CommandResultValidation.None)
+				.ExecuteBufferedAsync();
+
+			List<string> splitted = result.StandardError.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+			splitted.RemoveAll(x => !Regex.IsMatch(x, @"\d+\dx\d\d+"));
+
+			if (splitted.Count != 1)
+				return String.Empty;
+
+			return splitted[0];
+		}
+
+		public async Task<string> GetFPS(string path)
+		{
+			BufferedCommandResult? result = await Cli.Wrap("ffmpeg")
+				.WithArguments(new[] { "-i", path })
+				.WithValidation(CommandResultValidation.None)
+				.ExecuteBufferedAsync();
+
+			string[] splitted = result.StandardError.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			int indx = Array.FindIndex(splitted, x => Regex.IsMatch(x, "fps"));
+
+			return splitted[indx - 1];
 		}
 	}
 }
