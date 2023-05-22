@@ -38,7 +38,7 @@ poetry run start
 - `poetry shell` - activate virtual environment
 - `poetry add <name>` - add PIP package (use this instead of `pip install <name>`)
 
-## VS Code configuration
+## VS Code virtual environment configuration
 
 If type checking or automatic imports are not working, you need to point VS Code to the right virtual environment.
 
@@ -47,3 +47,36 @@ If type checking or automatic imports are not working, you need to point VS Code
 1. Copy `Executable` path
 1. `Ctrl+Shift+P` -> `Python: Select interpreter`
 1. Paste path
+
+## Code formatting
+
+This project uses Black for code formatting and isort for organizing imports.
+
+Run Black using:
+
+- (Recommended) VS Code extension
+- With command line
+  ```
+  black .
+  ```
+
+Run isort using:
+
+- (Recommended) Automatically in VS Code on save:
+
+  Add to `settings.json`:
+
+  ```JSON
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
+  ```
+
+- In VS Code, manually
+
+  `Ctrl+Shift+P` -> `Organize imports`
+
+- With command line
+  ```
+  isort .
+  ```
