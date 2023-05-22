@@ -13,7 +13,6 @@ start = "app.main:main"
 python = "^3.11"
 fastapi = {extras = ["all"], version = "^0.95.2"}
 
-
 [tool.poetry.group.dev.dependencies]
 isort = "^5.12.0"
 black = "^23.3.0"

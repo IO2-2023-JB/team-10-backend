@@ -11,7 +11,6 @@ app = FastAPI()
 async def get_recommendations(user_id: str) -> list[Recommendation]:
     return generate_recommendations(user_id)
 
-
 def main():
     uvicorn.run(app, port=8000)
 
