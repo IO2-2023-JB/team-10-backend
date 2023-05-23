@@ -146,6 +146,8 @@ namespace MojeWidelo_WebApi.Controllers
 
 			user = await _repository.UsersRepository.Create(user);
 
+			await _repository.HistoryRepository.Create(new History(user.Id));
+
 			return StatusCode(StatusCodes.Status201Created, "Konto zostało utworzone pomyślnie.");
 		}
 

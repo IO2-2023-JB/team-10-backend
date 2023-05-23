@@ -124,6 +124,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
 				video = await _repository.VideoRepository.UpdateViewCount(video.Id, 1);
+				await _repository.HistoryRepository.AddToHistory(GetUserIdFromToken(), video.Id);
 			}
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
