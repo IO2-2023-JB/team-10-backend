@@ -1,4 +1,4 @@
-from recommendation_engine.app.models import Recommendation
+from app.models import Recommendation
 
 
 def generate_recommendations(user_id: str) -> list[Recommendation]:

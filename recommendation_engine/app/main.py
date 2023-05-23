@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 
-from recommendation_engine.app.models import Recommendation
-from recommendation_engine.app.recommendations import generate_recommendations
+from app.models import Recommendation
+from app.recommendations import generate_recommendations
 
 app = FastAPI()
 
