@@ -16,6 +16,11 @@ builder.Services.ConfigureServices();
 builder.Services.ConfigureManagers();
 builder.Services.ConfigureVariables(builder.Configuration);
 builder.Services.ConfigureDateOnlyTimeOnlyConverters();
+builder.Services.AddResponseCompression(options =>
+{
+	options.EnableForHttps = true;
+	options.MimeTypes = new[] { "text/html", "application/javascript", "text/css" };
+});
 
 #endregion
 
@@ -40,6 +45,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("EnableCORS");
+app.UseResponseCompression();
 
 RewriteOptions rewriteHttps = new RewriteOptions().AddRedirectToHttpsPermanent();
 app.UseRewriter(rewriteHttps);
