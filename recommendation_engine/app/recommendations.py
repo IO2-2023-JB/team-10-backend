@@ -76,3 +76,19 @@ class Recommendations:
         ].transform(lambda x: not pd.isnull(x))
         user_watched_videos = user_watched_videos.drop(columns=["SubscriberId"])
         self.user_data = user_watched_videos
+
+    def calculate_movie_similarity_matrix(self):
+        video_count = len(self.video_collection["AuthorId"])
+        movie_matrix = np.zeros((video_count, video_count), float)
+        for i in range(video_count):
+            for j in range(video_count):
+                tags1, tags2 = (
+                    self.video_collection["Tags"][i],
+                    self.video_collection["Tags"][j],
+                )
+                min_length = min(len(tags1), len(tags2))
+                if i == j or min_length == 0:
+                    print(min_length)
+                    continue
+                movie_matrix[i, j] = len(np.intersect1d(tags1, tags2)) / min_length
+        self.movie_matrix = movie_matrix
