@@ -74,6 +74,26 @@ where `X` is one of
 - `restart`
 - `status`
 
+### Search API service
+
+To add the service on another machine, create the file `/etc/systemd/system/io2_api_search.service` with the following contents:
+
+    [Unit]
+    Description=mojeWidelo python api
+
+    [Service]
+    User=ubuntu
+    WorkingDirectory=/home/ubuntu/production/search
+    ExecStart=/home/ubuntu/.local/bin/poetry run start
+    Restart=always
+    RestartSec=10
+    SyslogIdentifier=mojeWidelo_python_api_Production
+
+    [Install]
+    WantedBy=multi-user.target
+
+Control the service as in the # Service section (despite the fact that in this case service is named io2_api_search.service).
+
 ## Video storage
 
 The location of video storage should be set in the `appsettings.json` file (`appsettings.Production.json` for production).
