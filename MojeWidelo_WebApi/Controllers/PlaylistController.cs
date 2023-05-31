@@ -297,7 +297,7 @@ namespace MojeWidelo_WebApi.Controllers
 			recommended.Visibility = PlaylistVisibility.Private;
 			recommended.Videos = result;
 			recommended.AuthorId = GetUserIdFromToken();
-			recommended.AuthorNickname = await _repository.UsersRepository.GetNicknameFromID(recommended.AuthorId);
+			recommended.AuthorNickname = (await GetUserFromToken()).Nickname;
 
 			return StatusCode(StatusCodes.Status200OK, recommended);
 		}
