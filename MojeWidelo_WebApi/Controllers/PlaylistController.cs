@@ -293,7 +293,11 @@ namespace MojeWidelo_WebApi.Controllers
 			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result);
 
 			var recommended = new PlaylistDto();
+			recommended.Name = "Video recommendation " + DateTime.Now.ToString();
+			recommended.Visibility = PlaylistVisibility.Private;
 			recommended.Videos = result;
+			recommended.AuthorId = GetUserIdFromToken();
+			recommended.AuthorNickname = await _repository.UsersRepository.GetNicknameFromID(recommended.AuthorId);
 
 			return StatusCode(StatusCodes.Status200OK, recommended);
 		}

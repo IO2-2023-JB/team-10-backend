@@ -11,5 +11,6 @@ namespace Contracts
 		Task<IEnumerable<User>> GetUsersByIds(IEnumerable<string> ids);
 		Task UpdateSubscriptionCount(string id, int value);
 		Task UpdateAccountBalance(string id, decimal amount);
+		Task<string> GetNicknameFromID(string id);
 	}
 }
