@@ -271,5 +271,31 @@ namespace MojeWidelo_WebApi.Controllers
 			await _repository.PlaylistRepository.Update(id, playlist);
 			return StatusCode(StatusCodes.Status200OK, "Wideo zostało usunięte z playlisty.");
 		}
+
+		/// <summary>
+		/// Get recommended videos for current user
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">OK</response>
+		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorised</response>
+		[HttpGet("playlist/recommended")]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(PlaylistDto))]
+		public async Task<IActionResult> GetRecommendedVideos()
+		{
+			// temporary logic - same as in videos/GetAll();
+			// Zagor jak zrobi rekomendacje to tutaj wrzuci co potrzeba
+			var videos = await _repository.VideoRepository.GetAll();
+			videos = videos.Where(x => x.Visibility == VideoVisibility.Public);
+			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
+			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
+			_videoManager.AddAuthorNickname(result, users);
+			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result);
+
+			var recommended = new PlaylistDto();
+			recommended.Videos = result;
+
+			return StatusCode(StatusCodes.Status200OK, recommended);
+		}
 	}
 }
