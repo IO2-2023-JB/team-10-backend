@@ -9,7 +9,6 @@ app = FastAPI()
 @app.get("/recommendations/{user_id}")
 async def get_recommendations(user_id: str) -> list[Recommendation]:
     recommendations = Recommendations()
-    print(recommendations)
     return recommendations.generate_recommendations(user_id)
 
 def main():

@@ -21,15 +21,15 @@ class Recommendations:
         self.db = self.db_client[DATABASE_NAME]
 
     def generate_recommendations(self, user_id: str) -> list[Recommendation]:
+        user_id = ObjectId(user_id)
         self.collect_data()
         self.preprocess_user_history_data(user_id)
         self.calculate_movie_similarity_matrix()
-
         recommendations = self.find_recommendations_by_tags_similarity()
+        print(recommendations)
         result = list()
-        for i in len(recommendations):
-            result.append(Recommendation(video_id=recommendations[i]))
-
+        for i in range(len(recommendations)):
+            result.append(Recommendation(video_id=str(recommendations["VideoId"][i])))
         return result
 
     def collect_data(self):
@@ -51,7 +51,7 @@ class Recommendations:
         self,
         user_id: str,
     ):
-        user_id = ObjectId("6425dbadc7611003a102a7ab")
+        # todo: handle empty collections
         user_history_index = self.history_collection["WatchedVideos"][
             self.history_collection["_id"] == user_id
         ].index[0]
@@ -73,7 +73,7 @@ class Recommendations:
             .merge(
                 user_subscriptions, left_on="AuthorId", right_on="CreatorId", how="left"
             )
-            .loc[:, ["VideoId", "Date", "Tags_x", "ReactionType", "SubscriberId"]]
+            .loc[:, ["VideoId", "Date", "Tags", "ReactionType", "SubscriberId"]]
         )
         user_watched_videos["Subscribes"] = user_watched_videos.loc[
             :, "SubscriberId"
@@ -97,23 +97,28 @@ class Recommendations:
         self.video_matrix = movie_matrix
 
     def find_recommendations_by_tags_similarity(self):
-        user_history = self.user_data.drop_duplicates(
-            subset="VideoId", keep="last"
+        user_history = (
+            self.user_data.drop_duplicates(subset="VideoId", keep="last")
+            .reset_index()
+            .drop_duplicates(subset="VideoId", keep="first")
         ).reset_index()
         recommended = pd.DataFrame(columns=["VideoId", "score"])
         history_length = len(user_history)
-        for i in min(range(history_length), HISTORY_DEPTH):
+
+        for i in range(min(history_length, HISTORY_DEPTH)):
             video_index = self.video_collection[
                 self.video_collection["_id"] == user_history["VideoId"][i]
             ].index
             for j in range(len(self.video_matrix)):
                 if self.video_matrix[video_index, j] > 0:
                     recommended.loc[len(recommended)] = {
-                        "VideoId": user_history["VideoId"][i],
+                        "VideoId": self.video_collection["_id"][j],
                         "score": self.video_matrix[video_index, j]
-                        / (i * DEPTH_PENALTY),
+                        / ((i + 1) * DEPTH_PENALTY),
                     }
-
-        return recommended.drop_duplicates(subset="VideoId", keep="first").sort_values(
-            by="score", ascending=False
+                    print(self.video_matrix, i, j, self.video_collection)
+        return (
+            recommended.drop_duplicates(subset="VideoId", keep="first")
+            .sort_values(by="score", ascending=False)
+            .reset_index()
         )
