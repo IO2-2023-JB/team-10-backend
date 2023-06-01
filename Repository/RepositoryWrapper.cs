@@ -10,6 +10,7 @@ namespace Repository
 		public ICommentRepository CommentRepository { get; }
 		public ISubscriptionsRepository SubscriptionsRepository { get; }
 		public IPlaylistRepository PlaylistRepository { get; }
+		public IHistoryRepository HistoryRepository { get; }
 
 		public RepositoryWrapper(
 			IUsersRepository usersRepository,
@@ -17,7 +18,8 @@ namespace Repository
 			IReactionRepository reactionRepository,
 			ICommentRepository commentRepository,
 			ISubscriptionsRepository subscriptionsRepository,
-			IPlaylistRepository playlistRepository
+			IPlaylistRepository playlistRepository,
+			IHistoryRepository historyRepository
 		)
 		{
 			UsersRepository = usersRepository;
@@ -26,6 +28,7 @@ namespace Repository
 			CommentRepository = commentRepository;
 			SubscriptionsRepository = subscriptionsRepository;
 			PlaylistRepository = playlistRepository;
+			HistoryRepository = historyRepository;
 		}
 	}
 }
