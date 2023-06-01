@@ -7,11 +7,11 @@ namespace Entities.Models
 	/// Obiekt historii oglądania filmów przez użytkownika
 	/// Id historii == Id usera
 	/// </summary>
-	public class History : MongoDocumentBase
+	public class UserHistory : MongoDocumentBase
 	{
 		public IEnumerable<HistoryItem> WatchedVideos { get; set; }
 
-		public History(string userId)
+		public UserHistory(string userId)
 		{
 			Id = userId;
 			WatchedVideos = new List<HistoryItem>();

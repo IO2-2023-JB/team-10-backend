@@ -4,11 +4,11 @@ using Moq;
 
 namespace MojeWidelo_WebApi.UnitTests.Mocks
 {
-	public class MockIHistoryRepository : MockIRepositoryBase<IHistoryRepository, History>
+	public class MockIHistoryRepository : MockIRepositoryBase<IHistoryRepository, UserHistory>
 	{
 		public static Mock<IHistoryRepository> GetMock()
 		{
-			var collection = new List<History>() { };
+			var collection = new List<UserHistory>() { };
 
 			var mock = GetBaseMock(collection);
 
