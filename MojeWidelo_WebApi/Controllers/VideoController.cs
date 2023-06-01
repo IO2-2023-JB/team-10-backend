@@ -111,20 +111,25 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDto))]
 		public async Task<IActionResult> GetVideoMetadataById([Required] string id)
 		{
+			var userId = GetUserIdFromToken();
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
-			if (video.Visibility == VideoVisibility.Private && GetUserIdFromToken() != video.AuthorId)
+			if (video.Visibility == VideoVisibility.Private && userId != video.AuthorId)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do metadanych.");
 			}
 
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
-				video = await _repository.VideoRepository.UpdateViewCount(video.Id, 1);
-				await _repository.HistoryRepository.AddToHistory(GetUserIdFromToken(), video.Id);
+				var date = await _repository.HistoryRepository.GetDateTimeOfLastWatchedVideoById(userId, id);
+				if (date == null || DateTime.Now - date > TimeSpan.FromSeconds(30))
+				{
+					video = await _repository.VideoRepository.UpdateViewCount(video.Id, 1);
+					await _repository.HistoryRepository.AddToHistory(userId, video.Id);
+				}
 			}
 
 			var result = _mapper.Map<VideoMetadataDto>(video);
