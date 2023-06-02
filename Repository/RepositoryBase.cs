@@ -56,44 +56,11 @@ namespace Repository
 			await Collection.DeleteOneAsync(x => x.Id == id);
 		}
 
-		public async Task<string> UploadImage(string fileName, string file)
+		public async Task<string> UploadImage(string fileName, byte[] file)
 		{
-			int startIdx = file.IndexOf(',');
-			byte[] imgByteArray = Convert.FromBase64String(file.Substring(startIdx + 1));
-
-			startIdx = file.IndexOf(':');
-			int endIdx = file.IndexOf(';');
-
-			var id = await _bucket.UploadFromBytesAsync(
-				fileName,
-				imgByteArray,
-				new MongoDB.Driver.GridFS.GridFSUploadOptions
-				{
-					Metadata = new BsonDocument
-					{
-						{ "ContentType", file.Substring(startIdx + 1, endIdx - startIdx - 1) }
-					}
-				}
-			);
+			var id = await _bucket.UploadFromBytesAsync(fileName, file);
 
 			return id.ToString();
-		}
-
-		public async Task<string> GetContentType(string id)
-		{
-			var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.Eq(x => x.Id, ObjectId.Parse(id));
-
-			using var cursor = await _bucket.FindAsync(filter);
-			var fileInfo = cursor.ToList().FirstOrDefault();
-
-			if (fileInfo == null)
-			{
-				throw new ArgumentNullException(null, nameof(fileInfo));
-			}
-
-			var contentType = fileInfo.Metadata.GetValue("ContentType").AsString;
-
-			return contentType;
 		}
 	}
 }

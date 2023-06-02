@@ -23,17 +23,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Zdjęcie profilowe o podanym ID nie istnieje.");
 			}
 
-			string contentType;
-			try
-			{
-				contentType = await _repository.UsersRepository.GetContentType(id);
-			}
-			catch
-			{
-				return File(bytes, "");
-			}
-
-			return File(bytes, contentType);
+			return File(bytes, "image/png");
 		}
 
 		[HttpGet("thumbnail/{id}", Name = "GetThumbnail")]
@@ -47,17 +37,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Miniaturka o podanym ID nie istnieje.");
 			}
 
-			string contentType;
-			try
-			{
-				contentType = await _repository.VideoRepository.GetContentType(id);
-			}
-			catch
-			{
-				return File(bytes, "");
-			}
-
-			return File(bytes, contentType);
+			return File(bytes, "image/png");
 		}
 	}
 }
