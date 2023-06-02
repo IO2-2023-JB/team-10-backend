@@ -10,5 +10,6 @@
 		public string CommentCollectionName { get; set; }
 		public string SubscriptionCollectionName { get; set; }
 		public string PlaylistCollectionName { get; set; }
+		public string HistoryCollectionName { get; set; }
 	}
 }

@@ -15,20 +15,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Stop service
-        run: sudo systemctl stop io2_api_production.service
+      - name: Stop services
+        run: sudo systemctl stop io2_api_production.service; sudo systemctl stop io2_api_search.service
 
       - name: Delete current build
-        run: sudo rm -rf ~/production/backend
+        run: sudo rm -rf ~/production/backend; sudo rm -rf ~/production/search
+
+      - name: Copy search engine
+        run: cp -r ./recommendation_engine ~/production/search
 
       - name: Install .NET Core 6.0.x
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
 
+      - name: Install Python dependencies
+        run: poetry install --no-interaction
+        working-directory: recommendation_engine
+
       - name: Publish app
         run: dotnet publish -c Release -o ~/production/backend
 
-      - name: Restart service
-        run: sudo systemctl restart io2_api_production.service
+      - name: Restart services
+        run: sudo systemctl restart io2_api_production.service; sudo systemctl restart io2_api_search.service
         if: always()
