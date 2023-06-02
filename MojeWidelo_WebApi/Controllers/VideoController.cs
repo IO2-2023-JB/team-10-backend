@@ -15,6 +15,7 @@ namespace MojeWidelo_WebApi.Controllers
 	public class VideoController : BaseController
 	{
 		private readonly VideoManager _videoManager;
+		private readonly TimeSpan _viewCountWaitingTime = TimeSpan.FromSeconds(30);
 
 		public VideoController(IRepositoryWrapper repository, IMapper mapper, VideoManager videoManager)
 			: base(repository, mapper)
@@ -125,7 +126,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
 				var date = await _repository.HistoryRepository.GetDateTimeOfLastWatchedVideoById(userId, id);
-				if (date == null || DateTime.Now - date > TimeSpan.FromSeconds(30))
+				if (date == null || DateTime.Now - date > _viewCountWaitingTime)
 				{
 					video = await _repository.VideoRepository.UpdateViewCount(video.Id, 1);
 					await _repository.HistoryRepository.AddToHistory(userId, video.Id);
