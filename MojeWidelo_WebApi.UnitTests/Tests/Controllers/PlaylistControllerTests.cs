@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using MojeWidelo_WebApi.Controllers;
 using Repository.Managers;
-using System.Data.Entity.Core.Objects;
 using ObjectResult = Microsoft.AspNetCore.Mvc.ObjectResult;
 
 namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
@@ -88,26 +87,6 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value);
 			Assert.Equal("Brak uprawnień do edycji playlisty.", result?.Value);
 		}
-
-		//[Theory]
-		//[InlineData("6477ba87143e6a9ccc8336df")]
-		//public async void EditPlaylistSuccessfullyTest(string id)
-		//{
-		//    var playlistController = GetController();
-
-		//    var updateData = new PlaylistEditDto()
-		//    {
-		//        Name = "testowa playlista edytowana",
-		//        Visibility = Entities.Enums.PlaylistVisibility.Public
-		//    };
-
-		//    var result = await playlistController.EditPlaylist(id, updateData) as ObjectResult;
-
-		//    Assert.NotNull(result);
-		//    Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
-		//    Assert.IsAssignableFrom<PlaylistDto>(result?.Value);
-		//    Assert.NotNull(result?.Value as PlaylistDto);
-		//}
 
 		[Theory]
 		[InlineData("6477b96b143e6a9ccc83360b")]
@@ -206,20 +185,6 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value);
 			Assert.Equal("Brak uprawnień do dostępu do playlisty.", result?.Value);
 		}
-
-		//[Theory]
-		//[InlineData("6477ba87143e6a9ccc8336df")]
-		//public async void GetVideosInPlaylistSuccessfullyTest(string id)
-		//{
-		//    var playlistController = GetController();
-
-		//    var result = await playlistController.GetVideosInPlaylist(id) as ObjectResult;
-
-		//    Assert.NotNull(result);
-		//    Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
-		//    Assert.IsAssignableFrom<PlaylistDto>(result?.Value);
-		//    Assert.NotNull(result?.Value as PlaylistDto);
-		//}
 
 		[Theory]
 		[InlineData("6477b96b143e6a9ccc83360b", "64623f1db83bfeff70a313ac")]
@@ -346,18 +311,5 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.NotNull(result?.Value);
 			Assert.Equal("Wideo zostało usunięte z playlisty.", result?.Value);
 		}
-
-		//[Fact]
-		//public async void GetRecommendedVideosSuccessfullyTest()
-		//{
-		//    var playlistController = GetController();
-
-		//    var result = await playlistController.GetRecommendedVideos() as ObjectResult;
-
-		//    Assert.NotNull(result);
-		//    Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
-		//    Assert.IsAssignableFrom<PlaylistDto>(result?.Value);
-		//    Assert.NotNull(result?.Value as PlaylistDto);
-		//}
 	}
 }
