@@ -9,6 +9,7 @@ using MojeWidelo_WebApi.Filters;
 using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
+using System.Text.Json;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -283,10 +284,19 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(PlaylistDto))]
 		public async Task<IActionResult> GetRecommendedVideos()
 		{
-			// temporary logic - same as in videos/GetAll();
-			// Zagor jak zrobi rekomendacje to tutaj wrzuci co potrzeba
-			var videos = await _repository.VideoRepository.GetAll();
-			videos = videos.Where(x => x.Visibility == VideoVisibility.Public);
+			var user = await GetUserFromToken();
+
+			using HttpClient client = new();
+			var json = await client.GetStringAsync("http://localhost:8000/recommendations/" + user.Id);
+			if (json == null)
+				return StatusCode(
+					StatusCodes.Status500InternalServerError,
+					"Próba uzyskania rekomendacji nie powiodła się!"
+				);
+
+			var videoIDs = JsonSerializer.Deserialize<IEnumerable<RecommendationDto>>(json);
+			var videos = await _repository.VideoRepository.GetMoreVideosToRecommend(videoIDs!, user.Id);
+
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result, users);
@@ -296,8 +306,8 @@ namespace MojeWidelo_WebApi.Controllers
 			recommended.Name = "Video recommendation " + DateTime.Now.ToString();
 			recommended.Visibility = PlaylistVisibility.Private;
 			recommended.Videos = result;
-			recommended.AuthorId = GetUserIdFromToken();
-			recommended.AuthorNickname = (await GetUserFromToken()).Nickname;
+			recommended.AuthorId = user.Id;
+			recommended.AuthorNickname = user.Nickname;
 
 			return StatusCode(StatusCodes.Status200OK, recommended);
 		}

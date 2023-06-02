@@ -1,7 +1,7 @@
-﻿using Entities.Data.Video;
+﻿using Entities.Data.Playlist;
+using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace Contracts
 {
@@ -19,5 +19,9 @@ namespace Contracts
 		Task<string> GetDuration(string id);
 		Task UpdateVideoDuration(string id, string duration);
 		Task ProcessAndAddDuration(string id, string path);
+		Task<IEnumerable<VideoMetadata>> GetMoreVideosToRecommend(
+			IEnumerable<RecommendationDto> videoIDs,
+			string userId
+		);
 	}
 }

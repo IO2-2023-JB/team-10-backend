@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using CliWrap.Buffered;
 using Contracts;
+using Entities.Data.Playlist;
 using Entities.Data.Video;
 using Entities.Enums;
 using Entities.Models;
@@ -16,6 +17,7 @@ namespace Repository
 	{
 		readonly VideoManager videoManager;
 		private readonly ImagesManager _imagesManager;
+		static int minNumberOfRecommendations = 10;
 
 		public VideoRepository(
 			IDatabaseSettings databaseSettings,
@@ -219,6 +221,38 @@ namespace Repository
 			await ProccessVideoFile(id, path);
 			string duration = await GetDuration(id);
 			await UpdateVideoDuration(id, duration);
+		}
+
+		public async Task<IEnumerable<VideoMetadata>> GetMoreVideosToRecommend(
+			IEnumerable<RecommendationDto> videoIDs,
+			string userId
+		)
+		{
+			List<VideoMetadata> toReturn = new List<VideoMetadata>();
+			foreach (var v in videoIDs)
+				toReturn.Add(await GetById(v.video_id));
+
+			if (toReturn.Count >= minNumberOfRecommendations)
+				return toReturn;
+
+			var videos = await Collection
+				.Find(
+					video =>
+						video.Visibility == VideoVisibility.Public
+						&& video.AuthorId != userId
+						&& video.ProcessingProgress == ProcessingProgress.Ready
+				)
+				.ToListAsync();
+
+			foreach (var v in videos)
+				if (!toReturn.Any(video => video.Id == v.Id))
+				{
+					toReturn.Add(v);
+					if (toReturn.Count >= minNumberOfRecommendations)
+						return toReturn;
+				}
+
+			return toReturn;
 		}
 	}
 }

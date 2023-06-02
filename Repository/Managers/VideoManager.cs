@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using Entities.Data.Video;
+﻿using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
 using Microsoft.Extensions.Options;
