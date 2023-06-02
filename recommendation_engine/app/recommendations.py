@@ -1,24 +1,25 @@
-from app.models import Recommendation
+import os
+
 import numpy as np
 import pandas as pd
 import pymongo
-from app.const import (
-    DATABASE_URL,
-    DATABASE_NAME,
+from bson.objectid import ObjectId
+
+from app.models import Recommendation
+from app.recommendations_parameters import (
     DEPTH_PENALTY,
-    USER_COLLECTION_NAME,
-    VIDEO_COLLECTION_NAME,
-    REACTION_COLLECTION_NAME,
-    SUBSCRIPTION_COLLECTION_NAME,
     HISTORY_COLLECTION_NAME,
     HISTORY_DEPTH,
+    REACTION_COLLECTION_NAME,
+    SUBSCRIPTION_COLLECTION_NAME,
+    USER_COLLECTION_NAME,
+    VIDEO_COLLECTION_NAME,
 )
-from bson.objectid import ObjectId
 
 class Recommendations:
     def __init__(self):
-        self.db_client = pymongo.MongoClient(DATABASE_URL)
-        self.db = self.db_client[DATABASE_NAME]
+        self.db_client = pymongo.MongoClient(os.getenv("DATABASE_URL"))
+        self.db = self.db_client[os.getenv("DATABASE_NAME")]
 
     def generate_recommendations(self, user_id: str) -> list[Recommendation]:
         user_id = ObjectId(user_id)
@@ -48,15 +49,10 @@ class Recommendations:
             list(self.db[HISTORY_COLLECTION_NAME].find())
         )
 
-    def preprocess_user_history_data(
-        self,
-        user_id: str,
-    ):
-        # todo: handle empty collections
+    def preprocess_user_history_data(self, user_id: str):
         user_history_index = self.history_collection["WatchedVideos"][
             self.history_collection["_id"] == user_id
         ].index[0]
-        # todo: do not use subscriptions? we already implemented subs page... (maybe hide subscribed channels?)
         user_subscriptions = self.subscription_collection[
             self.subscription_collection["SubscriberId"] == user_id
         ]
