@@ -26,9 +26,15 @@ namespace Entities.Models
 			Date = DateTime.Now;
 		}
 
+		private DateTime _date;
+
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string VideoId { get; set; }
 
-		public DateTime Date { get; set; }
+		public DateTime Date
+		{
+			get => _date;
+			set => _date = value.ToLocalTime();
+		}
 	}
 }
