@@ -31,7 +31,7 @@
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				image.SaveAsPng(ms);
+				image.SaveAsJpeg(ms);
 				return ms.ToArray();
 			}
 		}
