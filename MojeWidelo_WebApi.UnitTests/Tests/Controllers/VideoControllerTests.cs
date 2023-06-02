@@ -1,4 +1,5 @@
 ﻿using Entities.Data.Video;
+using Entities.Enums;
 using Entities.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,25 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 
 			var videoManager = new VideoManager(vars);
 			var controllerContext = GetControllerContext();
+
+			var videoController = new VideoController(repositoryWrapperMock.Object, mapper, videoManager)
+			{
+				ControllerContext = controllerContext
+			};
+
+			return videoController;
+		}
+
+		protected VideoController GetController(string userId)
+		{
+			var repositoryWrapperMock = GetRepositoryWrapperMock();
+			var mapper = GetMapper();
+
+			var location = new Variables() { VideoStorageLocation = "" };
+			IOptions<Variables> vars = Options.Create(location);
+
+			var videoManager = new VideoManager(vars);
+			var controllerContext = GetControllerContext(userId);
 
 			var videoController = new VideoController(repositoryWrapperMock.Object, mapper, videoManager)
 			{
@@ -333,6 +353,144 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			Assert.Equal(StatusCodes.Status400BadRequest, result?.StatusCode);
 			Assert.NotNull(result?.Value);
 			Assert.Equal("Użytkownik o podanym ID nie jest twórcą.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086B")]
+		public async void GetUserReactionPositive(string videoId)
+		{
+			var videoController = GetController("6465615b264367516977086C");
+			var result = await videoController.GetReaction(videoId) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.IsAssignableFrom<ReactionResponseDto>(result?.Value);
+			Assert.Equal(1, (result?.Value as ReactionResponseDto)!.PositiveCount);
+			Assert.Equal(0, (result?.Value as ReactionResponseDto)!.NegativeCount);
+			Assert.Equal(ReactionType.Positive, ((ReactionResponseDto)result.Value).CurrentUserReaction);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086E")]
+		public async void GetUserReactionNegative(string videoId)
+		{
+			var videoController = GetController("6465177ea074a4809cea03e8");
+			var result = await videoController.GetReaction(videoId) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.IsAssignableFrom<ReactionResponseDto>(result?.Value);
+			Assert.Equal(0, (result?.Value as ReactionResponseDto)!.PositiveCount);
+			Assert.Equal(1, (result?.Value as ReactionResponseDto)!.NegativeCount);
+			Assert.Equal(ReactionType.Negative, ((ReactionResponseDto)result.Value).CurrentUserReaction);
+		}
+
+		[Theory]
+		[InlineData("64623f1db83bfeff70a313ac")]
+		public async void GetUserReactionNone(string videoId)
+		{
+			var videoController = GetController("6465615b2643675169770867");
+			var result = await videoController.GetReaction(videoId) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.IsAssignableFrom<ReactionResponseDto>(result?.Value);
+			Assert.Equal(0, (result?.Value as ReactionResponseDto)!.PositiveCount);
+			Assert.Equal(0, (result?.Value as ReactionResponseDto)!.NegativeCount);
+			Assert.Equal(ReactionType.None, ((ReactionResponseDto)result.Value).CurrentUserReaction);
+		}
+
+		[Theory]
+		[InlineData("64623f1db83bfeff70a313ac")]
+		public async void AddUserReactionPositive(string videoId)
+		{
+			var videoController = GetController("6465615b2643675169770867");
+			var reaction = new ReactionDto();
+			reaction.ReactionType = ReactionType.Positive;
+			var result = await videoController.AddReaction(videoId, reaction) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Reakcja dodana pomyślnie.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("64623f1db83bfeff70a313ac")]
+		public async void AddUserReactionNegative(string videoId)
+		{
+			var videoController = GetController("6465615b2643675169770867");
+			var reaction = new ReactionDto();
+			reaction.ReactionType = ReactionType.Negative;
+			var result = await videoController.AddReaction(videoId, reaction) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Reakcja dodana pomyślnie.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086E")]
+		public async void AddUserReactionNegativeToNone(string videoId)
+		{
+			var videoController = GetController("6465177ea074a4809cea03e8");
+			var reaction = new ReactionDto();
+			reaction.ReactionType = ReactionType.Negative;
+			var result = await videoController.AddReaction(videoId, reaction) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Reakcja dodana pomyślnie.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086E")]
+		public async void AddUserReactionNegativeToPositive(string videoId)
+		{
+			var videoController = GetController("6465177ea074a4809cea03e8");
+			var reaction = new ReactionDto();
+			reaction.ReactionType = ReactionType.Positive;
+			var result = await videoController.AddReaction(videoId, reaction) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Reakcja dodana pomyślnie.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086B")]
+		public async void AddUserReactionPositiveToNone(string videoId)
+		{
+			var videoController = GetController("6465615b264367516977086C");
+			var reaction = new ReactionDto();
+			reaction.ReactionType = ReactionType.Positive;
+			var result = await videoController.AddReaction(videoId, reaction) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Reakcja dodana pomyślnie.", result?.Value);
+		}
+
+		[Theory]
+		[InlineData("6465615b264367516977086B")]
+		public async void AddUserReactionPositiveToNegative(string videoId)
+		{
+			var videoController = GetController("6465615b264367516977086C");
+			var reaction = new ReactionDto();
+			reaction.ReactionType = ReactionType.Negative;
+			var result = await videoController.AddReaction(videoId, reaction) as ObjectResult;
+
+			Assert.NotNull(result);
+			Assert.Equal(StatusCodes.Status200OK, result?.StatusCode);
+			Assert.NotNull(result?.Value);
+			Assert.Equal("Reakcja dodana pomyślnie.", result?.Value);
 		}
 	}
 }
