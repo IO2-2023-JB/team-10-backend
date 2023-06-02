@@ -11,10 +11,12 @@ if os.getenv("IO2_ENVIRONMENT") == "Production":
 else:
     load_dotenv("./.env.development")
 
+
 @app.get("/recommendations/{user_id}")
 async def get_recommendations(user_id: str) -> list[Recommendation]:
     recommendations = Recommendations()
     return recommendations.generate_recommendations(user_id)
+
 
 def main():
     uvicorn.run(app, port=8000)

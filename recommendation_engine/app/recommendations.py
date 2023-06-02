@@ -16,6 +16,7 @@ from app.recommendations_parameters import (
     VIDEO_COLLECTION_NAME,
 )
 
+
 class Recommendations:
     def __init__(self):
         self.db_client = pymongo.MongoClient(os.getenv("DATABASE_URL"))
