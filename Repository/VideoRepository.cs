@@ -224,12 +224,12 @@ namespace Repository
 		}
 
 		public async Task<IEnumerable<VideoMetadata>> GetMoreVideosToRecommend(
-			IEnumerable<RecommendationDto> vIDs,
+			IEnumerable<RecommendationDto> videoIDs,
 			string userId
 		)
 		{
 			List<VideoMetadata> toReturn = new List<VideoMetadata>();
-			foreach (var v in vIDs)
+			foreach (var v in videoIDs)
 				toReturn.Add(await GetById(v.video_id));
 
 			if (toReturn.Count >= minNumberOfRecommendations)

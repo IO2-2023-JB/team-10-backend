@@ -294,8 +294,8 @@ namespace MojeWidelo_WebApi.Controllers
 					"Próba uzyskania rekomendacji nie powiodła się!"
 				);
 
-			var vIDs = JsonSerializer.Deserialize<IEnumerable<RecommendationDto>>(json);
-			var videos = await _repository.VideoRepository.GetMoreVideosToRecommend(vIDs!, user.Id);
+			var videoIDs = JsonSerializer.Deserialize<IEnumerable<RecommendationDto>>(json);
+			var videos = await _repository.VideoRepository.GetMoreVideosToRecommend(videoIDs!, user.Id);
 
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
