@@ -15,11 +15,17 @@ namespace Repository
 	public class VideoRepository : RepositoryBase<VideoMetadata>, IVideoRepository
 	{
 		readonly VideoManager videoManager;
+		private readonly ImagesManager _imagesManager;
 
-		public VideoRepository(IDatabaseSettings databaseSettings, VideoManager videoManager)
+		public VideoRepository(
+			IDatabaseSettings databaseSettings,
+			VideoManager videoManager,
+			ImagesManager imagesManager
+		)
 			: base(databaseSettings, databaseSettings.VideoCollectionName)
 		{
 			this.videoManager = videoManager;
+			_imagesManager = imagesManager;
 		}
 
 		public async Task ChangeVideoProcessingProgress(string id, ProcessingProgress progress)
@@ -114,7 +120,8 @@ namespace Repository
 			if (videoDto.Thumbnail != null)
 			{
 				video.Thumbnail = "api/thumbnail/";
-				video.Thumbnail += await UploadImage(videoDto.Title + " - thumbnail", videoDto.Thumbnail);
+				var bytes = _imagesManager.CompressFile(_imagesManager.GetBytesFromBase64(videoDto.Thumbnail));
+				video.Thumbnail += await UploadImage(videoDto.Title + " - thumbnail", bytes);
 			}
 		}
 

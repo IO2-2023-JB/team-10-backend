@@ -172,6 +172,7 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<CommentManager>();
 			services.AddScoped<SubscriptionsManager>();
 			services.AddScoped<SearchManager>();
+			services.AddScoped<ImagesManager>();
 		}
 
 		public static void ConfigureVariables(this IServiceCollection services, ConfigurationManager configuration)

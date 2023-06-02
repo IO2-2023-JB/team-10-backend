@@ -14,6 +14,7 @@
 	  </PackageReference>
     <PackageReference Include="LinqKit" Version="1.2.4" />
     <PackageReference Include="MongoDB.Driver.GridFS" Version="2.19.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>

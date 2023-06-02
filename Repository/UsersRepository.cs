@@ -6,13 +6,19 @@ using Entities.Utils;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using Repository.Managers;
 
 namespace Repository
 {
 	public class UsersRepository : RepositoryBase<User>, IUsersRepository
 	{
-		public UsersRepository(IDatabaseSettings databaseSettings)
-			: base(databaseSettings, databaseSettings.UsersCollectionName) { }
+		private readonly ImagesManager _imagesManager;
+
+		public UsersRepository(IDatabaseSettings databaseSettings, ImagesManager imageManager)
+			: base(databaseSettings, databaseSettings.UsersCollectionName)
+		{
+			_imagesManager = imageManager;
+		}
 
 		public async Task<User> FindUserByEmail(string email)
 		{
@@ -26,7 +32,8 @@ namespace Repository
 			if (userDto.AvatarImage != null)
 			{
 				user.AvatarImage = "api/avatar/";
-				user.AvatarImage += await UploadImage(userDto.Nickname += " - avatar", userDto.AvatarImage);
+				var bytes = _imagesManager.CompressFile(_imagesManager.GetBytesFromBase64(userDto.AvatarImage));
+				user.AvatarImage += await UploadImage(userDto.Nickname += " - avatar", bytes);
 			}
 		}
 

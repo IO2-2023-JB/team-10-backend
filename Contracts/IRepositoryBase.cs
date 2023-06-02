@@ -16,7 +16,6 @@ namespace Contracts
 		Task<T> Create(T entity);
 		Task<T> Update(string id, T entity);
 		Task Delete(string id);
-		Task<string> UploadImage(string fileName, string file);
-		Task<string> GetContentType(string id);
+		Task<string> UploadImage(string fileName, byte[] file);
 	}
 }
