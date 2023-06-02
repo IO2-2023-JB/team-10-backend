@@ -29,6 +29,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 				cfs.AddProfile(new VideoProfile());
 				cfs.AddProfile(new SubscriptionProfile());
 				cfs.AddProfile(new CommentProfile());
+				cfs.AddProfile(new PlaylistProfile());
 			});
 			return new AutoMapper.Mapper(configuration);
 		}
