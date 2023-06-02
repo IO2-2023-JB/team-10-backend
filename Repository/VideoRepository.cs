@@ -65,30 +65,28 @@ namespace Repository
 				if (newPath == null)
 					throw new Exception("Unable to create path for converted video file!");
 
+				string? introPath = videoManager.GetIntroFilePath();
+				if (introPath == null)
+					throw new Exception("Unable to retrieve intro file!");
+
+				string originalResolution = await GetResolution(path);
+				string originalFPS = await GetFPS(path);
+				string? introTempPath = await videoManager.CreateIntro(originalResolution, originalFPS, introPath, id);
+				if (introTempPath == null)
+					throw new Exception("Unable to create intro based on original video file!");
+
 				await ChangeVideoProcessingProgress(id, ProcessingProgress.Processing);
 
-				await Cli.Wrap("ffmpeg")
-					.WithArguments(
-						new[]
-						{
-							"-i",
-							path,
-							"-map_metadata",
-							"-1",
-							"-c:v",
-							"libx264",
-							"-preset",
-							"faster",
-							"-crf",
-							"30",
-							"-c:a",
-							"aac",
-							"-q:a",
-							"1",
-							newPath
-						}
-					)
-					.ExecuteBufferedAsync();
+				string? tempPath = videoManager.GetTempFilePath(id);
+				if (tempPath == null)
+					throw new Exception("Unable to create temp path for video file!");
+
+				var arguments = new List<string>(new[] { "-i", path });
+				arguments.AddRange(videoManager.FFMpegConversionParams);
+				arguments.Add(tempPath);
+				await Cli.Wrap("ffmpeg").WithArguments(arguments).ExecuteBufferedAsync();
+
+				await videoManager.ConcatVideo(id, introTempPath, tempPath, newPath);
 
 				if (!System.IO.File.Exists(newPath))
 					throw new Exception("After successful conversion, output file does not exist!");
@@ -219,6 +217,35 @@ namespace Repository
 			await ProccessVideoFile(id, path);
 			string duration = await GetDuration(id);
 			await UpdateVideoDuration(id, duration);
+		}
+
+		public async Task<string> GetResolution(string path)
+		{
+			BufferedCommandResult? result = await Cli.Wrap("ffmpeg")
+				.WithArguments(new[] { "-i", path })
+				.WithValidation(CommandResultValidation.None)
+				.ExecuteBufferedAsync();
+
+			List<string> splitted = result.StandardError.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+			splitted.RemoveAll(x => !Regex.IsMatch(x, @"\d+\dx\d\d+"));
+
+			if (splitted.Count != 1)
+				return String.Empty;
+
+			return splitted[0];
+		}
+
+		public async Task<string> GetFPS(string path)
+		{
+			BufferedCommandResult? result = await Cli.Wrap("ffmpeg")
+				.WithArguments(new[] { "-i", path })
+				.WithValidation(CommandResultValidation.None)
+				.ExecuteBufferedAsync();
+
+			string[] splitted = result.StandardError.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			int indx = Array.FindIndex(splitted, x => Regex.IsMatch(x, "fps"));
+
+			return splitted[indx - 1];
 		}
 	}
 }
