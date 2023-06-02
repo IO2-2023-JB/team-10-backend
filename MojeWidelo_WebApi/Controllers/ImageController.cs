@@ -23,7 +23,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Zdjęcie profilowe o podanym ID nie istnieje.");
 			}
 
-			return File(bytes, "image/png");
+			return File(bytes, "image/jpeg");
 		}
 
 		[HttpGet("thumbnail/{id}", Name = "GetThumbnail")]
@@ -37,7 +37,7 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Miniaturka o podanym ID nie istnieje.");
 			}
 
-			return File(bytes, "image/png");
+			return File(bytes, "image/jpeg");
 		}
 	}
 }
