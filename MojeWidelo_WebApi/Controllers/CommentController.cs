@@ -50,9 +50,9 @@ namespace MojeWidelo_WebApi.Controllers
 			var comments = await _repository.CommentRepository.GetVideoComments(id);
 			var users = (await _repository.UsersRepository.GetUsersByIds(comments.Select(x => x.AuthorId))).ToHashSet();
 
-			var commentsDto = _commentManager.CreateCommentArray(comments, users);
+			var commentListDto = new CommentListDto(_commentManager.CreateCommentArray(comments, users));
 
-			return StatusCode(StatusCodes.Status200OK, commentsDto);
+			return StatusCode(StatusCodes.Status200OK, commentListDto);
 		}
 
 		/// <summary>
@@ -135,13 +135,13 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do odpowiedzi do komentarza.");
 
 			if (!comment.HasResponses)
-				return StatusCode(StatusCodes.Status200OK, new CommentDto[0]);
+				return StatusCode(StatusCodes.Status200OK, new CommentListDto(new CommentDto[0]));
 
 			var comments = await _repository.CommentRepository.GetCommentResponses(id);
 			var users = (await _repository.UsersRepository.GetUsersByIds(comments.Select(x => x.AuthorId))).ToHashSet();
-			var commentsDto = _commentManager.CreateCommentArray(comments, users);
+			var commentListDto = new CommentListDto(_commentManager.CreateCommentArray(comments, users));
 
-			return StatusCode(StatusCodes.Status200OK, commentsDto);
+			return StatusCode(StatusCodes.Status200OK, commentListDto);
 		}
 
 		/// <summary>

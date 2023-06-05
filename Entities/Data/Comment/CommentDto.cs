@@ -17,4 +17,14 @@ namespace Entities.Data.Comment
 
 		public bool HasResponses { get; set; }
 	}
+
+	public class CommentListDto
+	{
+		public CommentDto[] Comments { get; set; }
+
+		public CommentListDto(CommentDto[] list)
+		{
+			Comments = list;
+		}
+	}
 }
