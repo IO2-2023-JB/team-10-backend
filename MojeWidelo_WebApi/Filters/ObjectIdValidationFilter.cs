@@ -10,11 +10,13 @@ namespace MojeWidelo_WebApi.Filters
 	/// </summary>
 	public class ObjectIdValidationFilter : IActionFilter
 	{
+		private const string idKey = "id";
+
 		public void OnActionExecuting(ActionExecutingContext context)
 		{
 			if (
-				!context.ActionArguments.ContainsKey("id")
-				|| !ObjectId.TryParse(context.ActionArguments["id"]!.ToString(), out _)
+				!context.ActionArguments.ContainsKey(idKey)
+				|| !ObjectId.TryParse(context.ActionArguments[idKey]!.ToString(), out _)
 			)
 			{
 				context.Result = new BadRequestResult();
