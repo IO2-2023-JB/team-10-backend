@@ -25,7 +25,14 @@ class Recommendations:
     def generate_recommendations(self, user_id: str) -> list[Recommendation]:
         user_id = ObjectId(user_id)
         self.collect_data()
-        if len(self.history_collection) == 0:
+        if (
+            len(
+                self.history_collection[
+                    self.history_collection["_id"] == ObjectId(user_id)
+                ].reset_index()["WatchedVideos"][0]
+            )
+            == 0
+        ):
             return []
         self.preprocess_user_history_data(user_id)
         self.calculate_movie_similarity_matrix()
@@ -50,7 +57,7 @@ class Recommendations:
             list(self.db[HISTORY_COLLECTION_NAME].find())
         )
 
-    def preprocess_user_history_data(self, user_id: str):
+    def preprocess_user_history_data(self, user_id: ObjectId):
         user_history_index = self.history_collection["WatchedVideos"][
             self.history_collection["_id"] == user_id
         ].index[0]
@@ -63,16 +70,19 @@ class Recommendations:
         watched_video = pd.DataFrame(
             self.history_collection["WatchedVideos"][user_history_index].copy()
         )
-        user_watched_videos = (
-            watched_video.merge(
-                self.video_collection, left_on="VideoId", right_on="_id"
-            )
-            .merge(user_reactions, left_on="VideoId", right_on="VideoId", how="left")
-            .merge(
-                user_subscriptions, left_on="AuthorId", right_on="CreatorId", how="left"
-            )
-            .loc[:, ["VideoId", "Date", "Tags", "ReactionType", "SubscriberId"]]
+        user_watched_videos = watched_video.merge(
+            self.video_collection, left_on="VideoId", right_on="_id"
         )
+        user_watched_videos = user_watched_videos.merge(
+            user_reactions, left_on="VideoId", right_on="VideoId", how="left"
+        )
+        user_watched_videos = user_watched_videos.merge(
+            user_subscriptions, left_on="AuthorId", right_on="CreatorId", how="left"
+        )
+        user_watched_videos = user_watched_videos.loc[
+            :, ["VideoId", "Date", "Tags", "ReactionType", "SubscriberId"]
+        ]
+
         user_watched_videos["Subscribes"] = user_watched_videos.loc[
             :, "SubscriberId"
         ].transform(lambda x: not pd.isnull(x))
