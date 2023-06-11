@@ -165,8 +165,9 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> DeleteUser([Required] string id)
 		{
-			var user = await _repository.UsersRepository.GetById(id);
-			if (user.UserType != UserType.Administrator)
+			var senderId = GetUserIdFromToken();
+			var user = await _repository.UsersRepository.GetById(senderId);
+			if (user.UserType != UserType.Administrator && senderId != id)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Nie masz uprawnień do usunięcia konta.");
 			}
