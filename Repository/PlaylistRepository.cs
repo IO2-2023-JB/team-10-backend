@@ -11,10 +11,18 @@ namespace Repository
 		public PlaylistRepository(IDatabaseSettings databaseSettings)
 			: base(databaseSettings, databaseSettings.PlaylistCollectionName) { }
 
-		public async Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, string callerID)
+		public async Task<IEnumerable<Playlist>> GetPlaylistByUserId(string id, User caller)
 		{
 			return await Collection
-				.Find(x => x.AuthorId == id && (x.Visibility == PlaylistVisibility.Public || x.AuthorId == callerID))
+				.Find(
+					x =>
+						x.AuthorId == id
+						&& (
+							x.Visibility == PlaylistVisibility.Public
+							|| x.AuthorId == caller.Id
+							|| caller.UserType == UserType.Administrator
+						)
+				)
 				.ToListAsync();
 		}
 
