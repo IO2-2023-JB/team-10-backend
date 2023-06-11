@@ -232,6 +232,8 @@ namespace Repository
 			foreach (var v in videoIDs)
 				toReturn.Add(await GetById(v.video_id));
 
+			toReturn = toReturn.Where(x => x.ProcessingProgress == ProcessingProgress.Ready).ToList();
+
 			if (toReturn.Count >= minNumberOfRecommendations)
 				return toReturn;
 

@@ -267,7 +267,9 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetAllVideos()
 		{
 			var videos = await _repository.VideoRepository.GetAll();
-			videos = videos.Where(x => x.Visibility == VideoVisibility.Public);
+			videos = videos.Where(
+				x => x.Visibility == VideoVisibility.Public && x.ProcessingProgress == ProcessingProgress.Ready
+			);
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result, users);
@@ -437,6 +439,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var subscribedUsersIds = new SubscriptionsManager().GetSubscribedUsersIds(subscriptions);
 
 			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
+			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(videosDto, users);

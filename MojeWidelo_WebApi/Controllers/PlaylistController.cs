@@ -180,6 +180,7 @@ namespace MojeWidelo_WebApi.Controllers
 			result.AuthorNickname = author.Nickname;
 
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
+			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Videos.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result.Videos, users);
