@@ -1,14 +1,16 @@
-﻿using Entities.Data.Video;
+﻿using Entities.Data.Playlist;
+using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Repository.Managers
 {
 	public class VideoManager
 	{
 		readonly string videoStorageLocation;
-		public readonly string recommendationPath;
+		readonly string recommendationPath;
 
 		public VideoManager(IOptions<Variables> variables)
 		{
@@ -66,6 +68,25 @@ namespace Repository.Managers
 				{
 					video.Thumbnail = location.AbsoluteUri + video.Thumbnail;
 				}
+			}
+		}
+
+		public async Task<IEnumerable<RecommendationDto>?> GetRecommendationsFromEngine(string userId)
+		{
+			try
+			{
+				using (HttpClient client = new())
+				{
+					var json = await client.GetStringAsync(recommendationPath + userId);
+					if (json == null)
+						return null;
+
+					return JsonSerializer.Deserialize<IEnumerable<RecommendationDto>>(json)!;
+				}
+			}
+			catch
+			{
+				return null;
 			}
 		}
 	}
