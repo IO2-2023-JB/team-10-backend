@@ -209,5 +209,29 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<GetTicketStatusDto>(ticket);
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
+
+		/// <summary>
+		/// Ticket list retreival
+		/// </summary>
+		/// <returns></returns>
+		/// <response code="200">Created</response>
+		/// <response code="400">Bad request</response>
+		[HttpGet("ticket/list")]
+		[ServiceFilter(typeof(ModelValidationFilter))]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<GetTicketDto>))]
+		public async Task<IActionResult> GetTicketList()
+		{
+			var userID = GetUserIdFromToken();
+
+			var tickets = await _repository.TicketRepository.GetTicketsByUserId(userID);
+			var ticketsDtos = new List<GetTicketDto>();
+			foreach (var ticket in tickets)
+			{
+				var tempTicket = _mapper.Map<GetTicketDto>(ticket);
+				tempTicket.TicketId = ticket.Id;
+				ticketsDtos.Add(tempTicket);
+			}
+			return StatusCode(StatusCodes.Status200OK, ticketsDtos);
+		}
 	}
 }
