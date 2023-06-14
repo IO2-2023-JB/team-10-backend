@@ -221,9 +221,18 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<GetTicketDto>))]
 		public async Task<IActionResult> GetTicketList()
 		{
-			var userID = GetUserIdFromToken();
+			var user = await GetUserFromToken();
+			IEnumerable<Ticket> tickets = Array.Empty<Ticket>();
 
-			var tickets = await _repository.TicketRepository.GetTicketsByUserId(userID);
+			if (user.UserType == UserType.Administrator)
+			{
+				tickets = await _repository.TicketRepository.GetAllActive();
+			}
+			else
+			{
+				tickets = await _repository.TicketRepository.GetTicketsByUserId(user.Id);
+			}
+
 			var ticketsDtos = new List<GetTicketDto>();
 			foreach (var ticket in tickets)
 			{
