@@ -11,6 +11,7 @@ namespace MojeWidelo_WebApi.Mapper
 			CreateMap<Ticket, SubmitTicketResponseDto>();
 			CreateMap<RespondToTicketDto, Ticket>();
 			CreateMap<Ticket, GetTicketDto>();
+			CreateMap<Ticket, GetTicketStatusDto>();
 		}
 	}
 }
