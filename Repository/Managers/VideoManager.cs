@@ -8,10 +8,12 @@ namespace Repository.Managers
 	public class VideoManager
 	{
 		readonly string videoStorageLocation;
+		public readonly string recommendationPath;
 
 		public VideoManager(IOptions<Variables> variables)
 		{
 			videoStorageLocation = variables.Value.VideoStorageLocation;
+			recommendationPath = variables.Value.RecommendationPath;
 		}
 
 		public string? CreateNewPath(string id, string fileName)

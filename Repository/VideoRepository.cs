@@ -230,7 +230,7 @@ namespace Repository
 		{
 			List<VideoMetadata> toReturn = new List<VideoMetadata>();
 			foreach (var v in videoIDs)
-				toReturn.Add(await GetById(v.video_id));
+				toReturn.Add(await GetById(v.VideoId));
 
 			if (toReturn.Count >= minNumberOfRecommendations)
 				return toReturn;

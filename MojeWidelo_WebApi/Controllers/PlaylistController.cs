@@ -290,7 +290,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			using (HttpClient client = new())
 			{
-				var json = await client.GetStringAsync("http://localhost:8000/recommendations/" + user.Id);
+				var json = await client.GetStringAsync(_videoManager.recommendationPath + user.Id);
 				if (json == null)
 					return StatusCode(
 						StatusCodes.Status500InternalServerError,

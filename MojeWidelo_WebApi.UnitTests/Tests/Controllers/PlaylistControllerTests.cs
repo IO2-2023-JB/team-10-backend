@@ -16,7 +16,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			var mapper = GetMapper();
 			var controllerContext = GetControllerContext();
 
-			var location = new Variables() { VideoStorageLocation = "" };
+			var location = new Variables() { VideoStorageLocation = "", RecommendationPath = "" };
 			IOptions<Variables> vars = Options.Create(location);
 
 			var videoManager = new VideoManager(vars);
