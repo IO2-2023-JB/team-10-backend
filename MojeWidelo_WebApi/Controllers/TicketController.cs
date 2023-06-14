@@ -5,10 +5,8 @@ using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
-using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Text.Json;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -88,7 +86,11 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var ticket = _mapper.Map<Ticket>(submitTicketDto);
 			ticket.SubmitterId = userID;
+<<<<<<< HEAD
 			ticket.TargetType = type.Value;
+=======
+			ticket.TargetType = (TicketTargetTypeDto)type;
+>>>>>>> 0d3915f (Fix model so that it fits documentation)
 			ticket.Status = TicketStatus.Submitted;
 			ticket.CreationDate = DateTime.Now;
 
