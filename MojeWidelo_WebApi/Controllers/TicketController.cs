@@ -5,10 +5,8 @@ using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using MojeWidelo_WebApi.Filters;
-using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using System.Text.Json;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -31,8 +29,64 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> SubmitTicket([FromBody] SubmitTicketDto submitTicketDto)
 		{
 			var userID = GetUserIdFromToken();
+			bool ownContent = false;
+			TicketTargetTypeDto? type = null;
+
+			var video = await _repository.VideoRepository.GetById(submitTicketDto.TargetId);
+			if (video != null)
+			{
+				if (video.AuthorId == userID)
+					ownContent = true;
+				type = TicketTargetTypeDto.Video;
+			}
+			else
+			{
+				var user = await _repository.UsersRepository.GetById(submitTicketDto.TargetId);
+				if (user != null)
+				{
+					if (user.Id == userID)
+						ownContent = true;
+					type = TicketTargetTypeDto.User;
+				}
+				else
+				{
+					var playlist = await _repository.PlaylistRepository.GetById(submitTicketDto.TargetId);
+					if (playlist != null)
+					{
+						if (playlist.AuthorId == userID)
+							ownContent = true;
+						type = TicketTargetTypeDto.Playlist;
+					}
+					else
+					{
+						var comment = await _repository.CommentRepository.GetById(submitTicketDto.TargetId);
+						if (comment != null)
+						{
+							if (comment.AuthorId == userID)
+							{
+								ownContent = true;
+							}
+							if (comment.OriginCommentId == null)
+							{
+								type = TicketTargetTypeDto.Comment;
+							}
+							else
+							{
+								type = TicketTargetTypeDto.CommentResponse;
+							}
+						}
+					}
+				}
+			}
+
+			if (ownContent)
+				return StatusCode(StatusCodes.Status400BadRequest, "Nie można zgłaszać własnych treści!");
+			if (type == null)
+				return StatusCode(StatusCodes.Status400BadRequest, "Treść o podanym ID nie istnieje!");
+
 			var ticket = _mapper.Map<Ticket>(submitTicketDto);
-			ticket.AuthorId = userID;
+			ticket.SubmitterId = userID;
+			ticket.TargetType = (TicketTargetTypeDto)type;
 			ticket.Status = TicketStatus.Submitted;
 			ticket.CreationDate = DateTime.Now;
 
@@ -79,6 +133,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			ticket = _mapper.Map<RespondToTicketDto, Ticket>(respondToTicketDto, ticket);
 			ticket.ResponseDate = DateTime.Now;
+			ticket.AdminId = user.Id;
 			ticket = await _repository.TicketRepository.Update(id, ticket);
 
 			var result = _mapper.Map<SubmitTicketResponseDto>(ticket);
