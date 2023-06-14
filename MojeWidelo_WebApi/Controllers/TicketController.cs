@@ -134,6 +134,7 @@ namespace MojeWidelo_WebApi.Controllers
 			ticket = _mapper.Map<RespondToTicketDto, Ticket>(respondToTicketDto, ticket);
 			ticket.ResponseDate = DateTime.Now;
 			ticket.AdminId = user.Id;
+			ticket.Status = TicketStatus.Resolved;
 			ticket = await _repository.TicketRepository.Update(id, ticket);
 
 			var result = _mapper.Map<SubmitTicketResponseDto>(ticket);
