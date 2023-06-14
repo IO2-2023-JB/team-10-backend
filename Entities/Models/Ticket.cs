@@ -21,5 +21,9 @@ namespace Entities.Models
 		public string? AdminId { get; set; }
 
 		public string? Response { get; set; }
+
+		public DateTime CreationDate { get; set; }
+
+		public DateTime? ResponseDate { get; set; }
 	}
 }
