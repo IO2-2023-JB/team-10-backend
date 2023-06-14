@@ -36,6 +36,7 @@ namespace MojeWidelo_WebApi.Extensions
 			services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
 			services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 			services.AddScoped<IHistoryRepository, HistoryRepository>();
+			services.AddScoped<ITicketRepository, TicketRepository>();
 		}
 
 		public static void ConfigureSwagger(this IServiceCollection services)
