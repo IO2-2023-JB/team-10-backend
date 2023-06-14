@@ -144,5 +144,38 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<SubmitTicketResponseDto>(ticket);
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
+
+		/// <summary>
+		/// Ticket retreival
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		/// <response code="200">Created</response>
+		/// <response code="400">Bad request</response>
+		[HttpGet("ticket")]
+		[ServiceFilter(typeof(ModelValidationFilter))]
+		[Produces(MediaTypeNames.Application.Json, Type = typeof(GetTicketDto))]
+		public async Task<IActionResult> GetTicket([Required] string id)
+		{
+			var ticket = await _repository.TicketRepository.GetById(id);
+
+			if (ticket == null)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, "Ticket o podanym ID nie istnieje.");
+			}
+
+			var user = await GetUserFromToken();
+			if (user.UserType != UserType.Administrator || ticket.SubmitterId != user.Id)
+			{
+				return StatusCode(
+					StatusCodes.Status400BadRequest,
+					"Brak uprawnień do dostępu do ticketu o podanym ID!"
+				);
+			}
+
+			var result = _mapper.Map<GetTicketDto>(ticket);
+			result.TicketId = id;
+			return StatusCode(StatusCodes.Status200OK, result);
+		}
 	}
 }
