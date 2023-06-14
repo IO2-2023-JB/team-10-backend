@@ -2,6 +2,6 @@
 {
 	public class RecommendationDto
 	{
-		public string video_id { get; set; }
+		public string VideoId { get; set; }
 	}
 }
