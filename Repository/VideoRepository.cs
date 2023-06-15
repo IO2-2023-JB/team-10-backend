@@ -175,7 +175,11 @@ namespace Repository
 		public async Task<IEnumerable<VideoMetadata>> GetAllVisibleVideos(string userId)
 		{
 			return await Collection
-				.Find(video => video.Visibility == VideoVisibility.Public || video.AuthorId == userId)
+				.Find(
+					video =>
+						(video.Visibility == VideoVisibility.Public || video.AuthorId == userId)
+						&& video.ProcessingProgress == ProcessingProgress.Ready
+				)
 				.ToListAsync();
 		}
 
@@ -231,6 +235,8 @@ namespace Repository
 			List<VideoMetadata> toReturn = new List<VideoMetadata>();
 			foreach (var v in videoIDs)
 				toReturn.Add(await GetById(v.video_id));
+
+			toReturn = toReturn.Where(x => x.ProcessingProgress == ProcessingProgress.Ready).ToList();
 
 			if (toReturn.Count >= minNumberOfRecommendations)
 				return toReturn;

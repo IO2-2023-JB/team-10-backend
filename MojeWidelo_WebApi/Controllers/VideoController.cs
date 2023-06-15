@@ -112,8 +112,7 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(VideoMetadataDto))]
 		public async Task<IActionResult> GetVideoMetadataById([Required] string id)
 		{
-			var userId = GetUserIdFromToken();
-			var user = await _repository.UsersRepository.GetById(userId);
+			var user = await GetUserFromToken();
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
@@ -121,7 +120,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (
 				video.Visibility == VideoVisibility.Private
-				&& userId != video.AuthorId
+				&& user.Id != video.AuthorId
 				&& user.UserType != UserType.Administrator
 			)
 			{
@@ -130,11 +129,11 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (video.ProcessingProgress == ProcessingProgress.Ready)
 			{
-				var date = await _repository.HistoryRepository.GetDateTimeOfLastWatchedVideoById(userId, id);
+				var date = await _repository.HistoryRepository.GetDateTimeOfLastWatchedVideoById(user.Id, id);
 				if (date == null || DateTime.Now - date > _viewCountWaitingTime)
 				{
 					video = await _repository.VideoRepository.UpdateViewCount(video.Id, 1);
-					await _repository.HistoryRepository.AddToHistory(userId, video.Id);
+					await _repository.HistoryRepository.AddToHistory(user.Id, video.Id);
 				}
 			}
 
@@ -272,7 +271,9 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetAllVideos()
 		{
 			var videos = await _repository.VideoRepository.GetAll();
-			videos = videos.Where(x => x.Visibility == VideoVisibility.Public);
+			videos = videos.Where(
+				x => x.Visibility == VideoVisibility.Public && x.ProcessingProgress == ProcessingProgress.Ready
+			);
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result, users);
@@ -445,6 +446,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var subscribedUsersIds = new SubscriptionsManager().GetSubscribedUsersIds(subscriptions);
 
 			var videos = await _repository.VideoRepository.GetSubscribedVideos(subscribedUsersIds);
+			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(videosDto, users);
