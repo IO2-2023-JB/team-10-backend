@@ -340,6 +340,7 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			await _repository.VideoRepository.Delete(id);
+			await _repository.CommentRepository.DeleteVideoComments(id);
 
 			return StatusCode(StatusCodes.Status200OK, "Wideo usunięte pomyślnie.");
 		}

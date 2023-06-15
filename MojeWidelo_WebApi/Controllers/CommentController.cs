@@ -99,7 +99,7 @@ namespace MojeWidelo_WebApi.Controllers
 			if (comment.AuthorId != user.Id && user.UserType != UserType.Administrator)
 				return StatusCode(StatusCodes.Status401Unauthorized, "Brak uprawnień do usunięcia komentarza.");
 
-			_repository.CommentRepository.DeleteCommentResponses(id);
+			await _repository.CommentRepository.DeleteCommentResponses(id);
 			await _repository.CommentRepository.Delete(id);
 
 			return StatusCode(StatusCodes.Status200OK, "Komentarz usunięty pomyślnie.");

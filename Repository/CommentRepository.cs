@@ -22,9 +22,14 @@ namespace Repository
 			return await Collection.Find((x) => x.OriginCommentId == id).ToListAsync();
 		}
 
-		public void DeleteCommentResponses(string id)
+		public async Task DeleteCommentResponses(string id)
 		{
-			Collection.Find((x) => x.OriginCommentId == id).ToList().ForEach(async (x) => await Delete(x.Id));
+			await Collection.DeleteManyAsync(x => x.OriginCommentId == id);
+		}
+
+		public async Task DeleteVideoComments(string videoId)
+		{
+			await Collection.DeleteManyAsync(x => x.VideoId == videoId);
 		}
 	}
 }
