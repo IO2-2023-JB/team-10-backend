@@ -24,7 +24,7 @@ namespace Repository
 
 		public void DeleteCommentResponses(string id)
 		{
-			Collection.Find((x) => x.OriginCommentId == id).ToList().ForEach(async (x) => await Delete(x.Id));
+			Collection.DeleteManyAsync(x => x.OriginCommentId == id);
 		}
 	}
 }
