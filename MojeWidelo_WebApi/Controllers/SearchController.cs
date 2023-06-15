@@ -49,7 +49,6 @@ namespace MojeWidelo_WebApi.Controllers
 			var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
 
 			var videos = await _repository.VideoRepository.GetAllVisibleVideos(callerId);
-			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			_videoManager.AddAuthorNickname(videosDto, users);
 

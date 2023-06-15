@@ -175,7 +175,11 @@ namespace Repository
 		public async Task<IEnumerable<VideoMetadata>> GetAllVisibleVideos(string userId)
 		{
 			return await Collection
-				.Find(video => video.Visibility == VideoVisibility.Public || video.AuthorId == userId)
+				.Find(
+					video =>
+						(video.Visibility == VideoVisibility.Public || video.AuthorId == userId)
+						&& video.ProcessingProgress == ProcessingProgress.Ready
+				)
 				.ToListAsync();
 		}
 

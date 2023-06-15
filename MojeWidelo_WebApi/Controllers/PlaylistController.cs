@@ -86,6 +86,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var result = _mapper.Map<PlaylistDto>(playlist);
 			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
+			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			_videoManager.AddThumbnailUri(new Uri($"{Request.Scheme}://{Request.Host}"), result.Videos);
 			return StatusCode(StatusCodes.Status200OK, result);
