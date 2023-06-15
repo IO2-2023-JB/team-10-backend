@@ -46,6 +46,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var callerId = GetUserIdFromToken();
 
 			var users = await _repository.UsersRepository.GetAll();
+			users = users.Where(x => x.UserType != UserType.Administrator);
 			var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
 
 			var videos = await _repository.VideoRepository.GetAllVisibleVideos(callerId);

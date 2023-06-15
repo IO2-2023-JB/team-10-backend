@@ -11,5 +11,6 @@
 		public string SubscriptionCollectionName { get; set; }
 		public string PlaylistCollectionName { get; set; }
 		public string HistoryCollectionName { get; set; }
+		public string TicketCollectionName { get; set; }
 	}
 }

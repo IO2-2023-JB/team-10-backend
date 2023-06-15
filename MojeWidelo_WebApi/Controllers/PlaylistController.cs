@@ -112,7 +112,9 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
 			}
 
-			if (GetUserIdFromToken() != playlist.AuthorId)
+			var userId = GetUserIdFromToken();
+			var user = await _repository.UsersRepository.GetById(userId);
+			if (userId != playlist.AuthorId && user.UserType != UserType.Administrator)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do usunięcia playlisty.");
 			}
@@ -135,13 +137,14 @@ namespace MojeWidelo_WebApi.Controllers
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(IEnumerable<PlaylistBaseDto>))]
 		public async Task<IActionResult> GetPlaylistsForUser([Required] string id)
 		{
-			var userID = GetUserIdFromToken();
+			var userId = GetUserIdFromToken();
 
 			var targetUser = await _repository.UsersRepository.GetById(id);
 			if (targetUser == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Użytkownik o podanym ID nie istnieje.");
 
-			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(targetUser.Id, userID);
+			var user = await _repository.UsersRepository.GetById(userId);
+			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(targetUser.Id, user);
 			var playlistBases = new List<PlaylistBaseDto>();
 			foreach (var playlist in playlists)
 				playlistBases.Add(_mapper.Map<PlaylistBaseDto>(playlist));
@@ -170,8 +173,13 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
 			}
 
-			var userID = GetUserIdFromToken();
-			if (playlist.Visibility == PlaylistVisibility.Private && userID != playlist.AuthorId)
+			var userId = GetUserIdFromToken();
+			var user = await _repository.UsersRepository.GetById(userId);
+			if (
+				playlist.Visibility == PlaylistVisibility.Private
+				&& userId != playlist.AuthorId
+				&& user.UserType != UserType.Administrator
+			)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do playlisty.");
 			}
@@ -179,9 +187,9 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<PlaylistDto>(playlist);
 			var author = await _repository.UsersRepository.GetById(result.AuthorId);
 			result.AuthorNickname = author.Nickname;
-
-			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userID);
-			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
+      
+			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userId);
+      videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Videos.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result.Videos, users);

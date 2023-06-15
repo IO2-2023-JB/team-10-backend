@@ -136,6 +136,11 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		public async Task<IActionResult> RegisterUser([FromBody] RegisterRequestDto registerDto)
 		{
+			if (registerDto.UserType == UserType.Administrator)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Nie można utworzyć konta będącego administratorem.");
+			}
+
 			var existingUser = await _repository.UsersRepository.FindUserByEmail(registerDto.Email);
 			if (existingUser != null)
 				return StatusCode(StatusCodes.Status409Conflict, "Konto z podanym emailem już istnieje.");
@@ -160,6 +165,12 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> DeleteUser([Required] string id)
 		{
+			var senderId = GetUserIdFromToken();
+			var user = await _repository.UsersRepository.GetById(senderId);
+			if (user.UserType != UserType.Administrator && senderId != id)
+			{
+				return StatusCode(StatusCodes.Status403Forbidden, "Nie masz uprawnień do usunięcia konta.");
+			}
 			await _repository.UsersRepository.Delete(id);
 			return StatusCode(StatusCodes.Status200OK, "Użytkownik został usunięty pomyślnie.");
 		}

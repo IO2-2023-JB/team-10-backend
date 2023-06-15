@@ -9,5 +9,6 @@
 		ISubscriptionsRepository SubscriptionsRepository { get; }
 		IPlaylistRepository PlaylistRepository { get; }
 		IHistoryRepository HistoryRepository { get; }
+		ITicketRepository TicketRepository { get; }
 	}
 }
