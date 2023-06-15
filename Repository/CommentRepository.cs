@@ -29,13 +29,6 @@ namespace Repository
 
 		public async Task DeleteVideoComments(string videoId)
 		{
-			var comments = (await Collection.FindAsync(x => x.VideoId == videoId)).ToList();
-
-			foreach (var comment in comments)
-			{
-				await DeleteCommentResponses(comment.Id);
-			}
-
 			await Collection.DeleteManyAsync(x => x.VideoId == videoId);
 		}
 	}
