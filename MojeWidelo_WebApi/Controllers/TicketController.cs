@@ -150,7 +150,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		/// <response code="200">Created</response>
+		/// <response code="200">Ok</response>
 		/// <response code="400">Bad request</response>
 		[HttpGet("ticket")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
@@ -174,7 +174,6 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			var result = _mapper.Map<GetTicketDto>(ticket);
-			result.TicketId = id;
 			return StatusCode(StatusCodes.Status200OK, result);
 		}
 
@@ -183,7 +182,7 @@ namespace MojeWidelo_WebApi.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		/// <response code="200">Created</response>
+		/// <response code="200">Ok</response>
 		/// <response code="400">Bad request</response>
 		[HttpGet("ticket/status")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
@@ -233,13 +232,7 @@ namespace MojeWidelo_WebApi.Controllers
 				tickets = await _repository.TicketRepository.GetTicketsByUserId(user.Id);
 			}
 
-			var ticketsDtos = new List<GetTicketDto>();
-			foreach (var ticket in tickets)
-			{
-				var tempTicket = _mapper.Map<GetTicketDto>(ticket);
-				tempTicket.TicketId = ticket.Id;
-				ticketsDtos.Add(tempTicket);
-			}
+			var ticketsDtos = _mapper.Map<IEnumerable<GetTicketDto>>(tickets);
 			return StatusCode(StatusCodes.Status200OK, ticketsDtos);
 		}
 	}

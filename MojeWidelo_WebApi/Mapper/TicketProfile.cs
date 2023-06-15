@@ -10,7 +10,8 @@ namespace MojeWidelo_WebApi.Mapper
 			CreateMap<SubmitTicketDto, Ticket>();
 			CreateMap<Ticket, SubmitTicketResponseDto>();
 			CreateMap<RespondToTicketDto, Ticket>();
-			CreateMap<Ticket, GetTicketDto>();
+			CreateMap<Ticket, GetTicketDto>()
+				.ForMember(ticket => ticket.TicketId, opt => opt.MapFrom(ticket => ticket.Id));
 			CreateMap<Ticket, GetTicketStatusDto>();
 		}
 	}
