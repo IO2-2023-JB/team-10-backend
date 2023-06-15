@@ -102,9 +102,10 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <param name="id"></param>
 		/// <param name="respondToTicketDto"></param>
 		/// <returns></returns>
-		/// <response code="200">Created</response>
+		/// <response code="200">Ok</response>
 		/// <response code="400">Bad request</response>
 		/// <response code="401">Unauthorized</response>
+		/// <response code="404">Not found</response>
 		[HttpPut("ticket")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(SubmitTicketResponseDto))]
@@ -117,7 +118,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (ticket == null)
 			{
-				return StatusCode(StatusCodes.Status400BadRequest, "Ticket o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Ticket o podanym ID nie istnieje.");
 			}
 
 			if (ticket.AdminId != null || ticket.Response != null)
@@ -128,7 +129,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var user = await GetUserFromToken();
 			if (user.UserType != UserType.Administrator)
 			{
-				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik nie jest administratorem.");
+				return StatusCode(StatusCodes.Status401Unauthorized, "Użytkownik nie jest administratorem.");
 			}
 
 			ticket = _mapper.Map<RespondToTicketDto, Ticket>(respondToTicketDto, ticket);
@@ -148,6 +149,8 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <returns></returns>
 		/// <response code="200">Ok</response>
 		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		/// <response code="404">Not found</response>
 		[HttpGet("ticket")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(GetTicketDto))]
@@ -157,14 +160,14 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (ticket == null)
 			{
-				return StatusCode(StatusCodes.Status400BadRequest, "Ticket o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Ticket o podanym ID nie istnieje.");
 			}
 
 			var user = await GetUserFromToken();
 			if (user.UserType != UserType.Administrator || ticket.SubmitterId != user.Id)
 			{
 				return StatusCode(
-					StatusCodes.Status400BadRequest,
+					StatusCodes.Status401Unauthorized,
 					"Brak uprawnień do dostępu do ticketu o podanym ID!"
 				);
 			}
@@ -180,6 +183,8 @@ namespace MojeWidelo_WebApi.Controllers
 		/// <returns></returns>
 		/// <response code="200">Ok</response>
 		/// <response code="400">Bad request</response>
+		/// <response code="401">Unauthorized</response>
+		/// <response code="404">Not found</response>
 		[HttpGet("ticket/status")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
 		[Produces(MediaTypeNames.Application.Json, Type = typeof(GetTicketStatusDto))]
@@ -189,14 +194,14 @@ namespace MojeWidelo_WebApi.Controllers
 
 			if (ticket == null)
 			{
-				return StatusCode(StatusCodes.Status400BadRequest, "Ticket o podanym ID nie istnieje.");
+				return StatusCode(StatusCodes.Status404NotFound, "Ticket o podanym ID nie istnieje.");
 			}
 
 			var user = await GetUserFromToken();
 			if (user.UserType != UserType.Administrator || ticket.SubmitterId != user.Id)
 			{
 				return StatusCode(
-					StatusCodes.Status400BadRequest,
+					StatusCodes.Status401Unauthorized,
 					"Brak uprawnień do dostępu do ticketu o podanym ID!"
 				);
 			}
