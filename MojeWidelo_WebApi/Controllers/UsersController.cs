@@ -172,6 +172,14 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status403Forbidden, "Nie masz uprawnień do usunięcia konta.");
 			}
 			await _repository.UsersRepository.Delete(id);
+
+			var subs = await _repository.SubscriptionsRepository.GetUserSubscriptions(senderId);
+			foreach (var sub in subs)
+			{
+				await _repository.SubscriptionsRepository.Delete(sub.Id);
+				await _repository.UsersRepository.UpdateSubscriptionCount(sub.CreatorId, -1);
+			}
+
 			return StatusCode(StatusCodes.Status200OK, "Użytkownik został usunięty pomyślnie.");
 		}
 
