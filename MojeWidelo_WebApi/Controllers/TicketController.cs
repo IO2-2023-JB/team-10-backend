@@ -86,11 +86,7 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var ticket = _mapper.Map<Ticket>(submitTicketDto);
 			ticket.SubmitterId = userID;
-<<<<<<< HEAD
 			ticket.TargetType = type.Value;
-=======
-			ticket.TargetType = (TicketTargetTypeDto)type;
->>>>>>> 0d3915f (Fix model so that it fits documentation)
 			ticket.Status = TicketStatus.Submitted;
 			ticket.CreationDate = DateTime.Now;
 
