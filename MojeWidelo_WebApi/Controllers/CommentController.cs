@@ -171,46 +171,21 @@ namespace MojeWidelo_WebApi.Controllers
 			return StatusCode(StatusCodes.Status200OK, "Odpowiedź dodana pomyślnie.");
 		}
 
-		[HttpGet("comment/commentById", Name = "getCommentById")]
+		[HttpGet]
+		[Route("comment/commentById")]
+		[Route("comment/responseById")]
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> GetCommentById([Required] string id)
 		{
-			var commentDto = await GetCommentOrResponseById(id);
+			var comment = await _repository.CommentRepository.GetById(id);
 
-			if (commentDto == null)
+			if (comment == null)
 			{
 				return StatusCode(
 					StatusCodes.Status404NotFound,
 					"Nie znaleziono komentarza o podanym identyfikatorze."
 				);
 			}
-
-			return StatusCode(StatusCodes.Status200OK, commentDto);
-		}
-
-		[HttpGet("comment/responseById", Name = "getResponseById")]
-		[ServiceFilter(typeof(ObjectIdValidationFilter))]
-		public async Task<IActionResult> GetResponseById([Required] string id)
-		{
-			var responseDto = await GetCommentOrResponseById(id);
-
-			if (responseDto == null)
-			{
-				return StatusCode(
-					StatusCodes.Status404NotFound,
-					"Nie znaleziono odpowiedzi o podanym identyfikatorze."
-				);
-			}
-
-			return StatusCode(StatusCodes.Status200OK, responseDto);
-		}
-
-		private async Task<CommentDto?> GetCommentOrResponseById(string id)
-		{
-			var comment = await _repository.CommentRepository.GetById(id);
-
-			if (comment == null)
-				return null;
 
 			var commentDto = _mapper.Map<CommentDto>(comment);
 
@@ -227,7 +202,7 @@ namespace MojeWidelo_WebApi.Controllers
 				commentDto.AvatarImage = commentAuthor.AvatarImage;
 			}
 
-			return commentDto;
+			return StatusCode(StatusCodes.Status200OK, commentDto);
 		}
 	}
 }
