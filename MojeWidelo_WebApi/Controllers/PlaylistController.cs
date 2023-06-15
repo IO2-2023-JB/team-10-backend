@@ -173,11 +173,10 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status404NotFound, "Playlista o podanym ID nie istnieje.");
 			}
 
-			var userId = GetUserIdFromToken();
-			var user = await _repository.UsersRepository.GetById(userId);
+			var user = await GetUserFromToken();
 			if (
 				playlist.Visibility == PlaylistVisibility.Private
-				&& userId != playlist.AuthorId
+				&& user.Id != playlist.AuthorId
 				&& user.UserType != UserType.Administrator
 			)
 			{
@@ -187,9 +186,9 @@ namespace MojeWidelo_WebApi.Controllers
 			var result = _mapper.Map<PlaylistDto>(playlist);
 			var author = await _repository.UsersRepository.GetById(result.AuthorId);
 			result.AuthorNickname = author.Nickname;
-      
-			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, userId);
-      videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
+
+			var videos = await _repository.VideoRepository.GetVideos(playlist.Videos, user.Id);
+			videos = videos.Where(x => x.ProcessingProgress == ProcessingProgress.Ready);
 			result.Videos = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos).ToArray();
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Videos.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result.Videos, users);
