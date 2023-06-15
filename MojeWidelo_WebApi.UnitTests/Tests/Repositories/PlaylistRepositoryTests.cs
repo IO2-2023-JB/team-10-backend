@@ -9,8 +9,10 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 		[InlineData("6429a1ee0d48bf254e17eaf7", "6429a1ee0d48bf254e17eaf7")]
 		public async Task GetPlaylistByUserIdOwnerTest(string id, string callerId)
 		{
-			var respository = MockIPlaylistRepository.GetMock().Object;
-			var result = await respository.GetPlaylistByUserId(id, callerId);
+			var playlistRepository = MockIPlaylistRepository.GetMock().Object;
+			var usersRepository = MockIUsersRepository.GetMock().Object;
+			var caller = await usersRepository.GetById(callerId);
+			var result = await playlistRepository.GetPlaylistByUserId(id, caller);
 
 			Assert.NotNull(result);
 			Assert.IsAssignableFrom<IEnumerable<Playlist>>(result);
@@ -21,8 +23,10 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Repositories
 		[InlineData("6429a1ee0d48bf254e17eaf7", "64390ed1d3768498801aa03f")]
 		public async Task GetPlaylistByUserIdNotOwnerTest(string id, string callerId)
 		{
-			var respository = MockIPlaylistRepository.GetMock().Object;
-			var result = await respository.GetPlaylistByUserId(id, callerId);
+			var playlistRepository = MockIPlaylistRepository.GetMock().Object;
+			var usersRepository = MockIUsersRepository.GetMock().Object;
+			var caller = await usersRepository.GetById(callerId);
+			var result = await playlistRepository.GetPlaylistByUserId(id, caller);
 
 			Assert.NotNull(result);
 			Assert.IsAssignableFrom<IEnumerable<Playlist>>(result);

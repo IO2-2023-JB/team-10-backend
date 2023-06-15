@@ -16,6 +16,14 @@ namespace MojeWidelo_WebApi.Mapper
 							user =>
 								user.UserType == Entities.Enums.UserType.Creator ? (int?)user.SubscriptionsCount : null
 						)
+				)
+				.ForMember(
+					user => user.AccountBalance,
+					opt =>
+						opt.MapFrom(
+							user =>
+								user.UserType == Entities.Enums.UserType.Creator ? (decimal?)user.AccountBalance : null
+						)
 				);
 			CreateMap<UpdateUserDto, User>();
 

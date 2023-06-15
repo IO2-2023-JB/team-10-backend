@@ -35,13 +35,17 @@ namespace MojeWidelo_WebApi.UnitTests.Mocks
 
 			var mock = GetBaseMock(collection);
 
-			mock.Setup(m => m.GetPlaylistByUserId(It.IsAny<string>(), It.IsAny<string>()))
+			mock.Setup(m => m.GetPlaylistByUserId(It.IsAny<string>(), It.IsAny<User>()))
 				.ReturnsAsync(
-					(string id, string callerID) =>
+					(string id, User caller) =>
 						collection.Where(
 							x =>
 								x.AuthorId == id
-								&& (x.Visibility == PlaylistVisibility.Public || x.AuthorId == callerID)
+								&& (
+									x.Visibility == PlaylistVisibility.Public
+									|| x.AuthorId == caller.Id
+									|| caller.UserType == UserType.Administrator
+								)
 						)
 				);
 

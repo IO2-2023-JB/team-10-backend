@@ -113,12 +113,17 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> GetVideoMetadataById([Required] string id)
 		{
 			var userId = GetUserIdFromToken();
+			var user = await _repository.UsersRepository.GetById(userId);
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
 				return StatusCode(StatusCodes.Status404NotFound, "Wideo o podanym ID nie istnieje.");
 
-			if (video.Visibility == VideoVisibility.Private && userId != video.AuthorId)
+			if (
+				video.Visibility == VideoVisibility.Private
+				&& userId != video.AuthorId
+				&& user.UserType != UserType.Administrator
+			)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do dostępu do metadanych.");
 			}
@@ -281,6 +286,7 @@ namespace MojeWidelo_WebApi.Controllers
 		public async Task<IActionResult> DeleteVideo([Required] string id)
 		{
 			var userId = GetUserIdFromToken();
+			var user = await _repository.UsersRepository.GetById(userId);
 			var video = await _repository.VideoRepository.GetById(id);
 
 			if (video == null)
@@ -289,7 +295,7 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			// dodać logikę że jak jest administratorem to może nawet jak nie jego wideo??
-			if (video.AuthorId != userId)
+			if (video.AuthorId != userId && user.UserType != UserType.Administrator)
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Brak uprawnień do usunięcia wideo.");
 			}
@@ -398,6 +404,8 @@ namespace MojeWidelo_WebApi.Controllers
 		[ServiceFilter(typeof(ObjectIdValidationFilter))]
 		public async Task<IActionResult> GetUsersVideos([Required] string id)
 		{
+			var senderId = GetUserIdFromToken();
+			var userSender = await _repository.UsersRepository.GetById(senderId);
 			var user = await _repository.UsersRepository.GetById(id);
 
 			if (user == null)
@@ -410,9 +418,9 @@ namespace MojeWidelo_WebApi.Controllers
 				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym ID nie jest twórcą.");
 			}
 
-			bool isAuthor = id == GetUserIdFromToken();
+			bool hasPermission = (id == senderId || userSender.UserType == UserType.Administrator);
 
-			var videos = await _repository.VideoRepository.GetVideosByUserId(id, isAuthor);
+			var videos = await _repository.VideoRepository.GetVideosByUserId(id, hasPermission);
 			var videosDto = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(videosDto.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(videosDto, users);
