@@ -22,9 +22,21 @@ namespace Repository
 			return await Collection.Find((x) => x.OriginCommentId == id).ToListAsync();
 		}
 
-		public void DeleteCommentResponses(string id)
+		public async Task DeleteCommentResponses(string id)
 		{
-			Collection.DeleteManyAsync(x => x.OriginCommentId == id);
+			await Collection.DeleteManyAsync(x => x.OriginCommentId == id);
+		}
+
+		public async Task DeleteVideoComments(string videoId)
+		{
+			var comments = (await Collection.FindAsync(x => x.VideoId == videoId)).ToList();
+
+			foreach (var comment in comments)
+			{
+				await DeleteCommentResponses(comment.Id);
+			}
+
+			await Collection.DeleteManyAsync(x => x.VideoId == videoId);
 		}
 	}
 }
