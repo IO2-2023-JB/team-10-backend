@@ -287,12 +287,6 @@ namespace MojeWidelo_WebApi.Controllers
 			var user = await GetUserFromToken();
 
 			var videoIDs = await _videoManager.GetRecommendationsFromEngine(user.Id);
-			if (videoIDs == null)
-				return StatusCode(
-					StatusCodes.Status500InternalServerError,
-					"Próba uzyskania rekomendacji nie powiodła się!"
-				);
-
 			var videos = await _repository.VideoRepository.GetMoreVideosToRecommend(videoIDs, user.Id);
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));

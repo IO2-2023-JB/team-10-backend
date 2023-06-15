@@ -71,7 +71,7 @@ namespace Repository.Managers
 			}
 		}
 
-		public async Task<IEnumerable<RecommendationDto>?> GetRecommendationsFromEngine(string userId)
+		public async Task<IEnumerable<RecommendationDto>> GetRecommendationsFromEngine(string userId)
 		{
 			try
 			{
@@ -79,14 +79,14 @@ namespace Repository.Managers
 				{
 					var json = await client.GetStringAsync(recommendationPath + userId);
 					if (json == null)
-						return null;
+						return Array.Empty<RecommendationDto>();
 
 					return JsonSerializer.Deserialize<IEnumerable<RecommendationDto>>(json)!;
 				}
 			}
 			catch
 			{
-				return null;
+				return Array.Empty<RecommendationDto>();
 			}
 		}
 	}
