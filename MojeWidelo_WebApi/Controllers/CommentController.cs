@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities.Data.Comment;
 using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ using MojeWidelo_WebApi.Filters;
 using Repository.Managers;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using Entities.Data.Comment;
 
 namespace MojeWidelo_WebApi.Controllers
 {
@@ -169,6 +169,65 @@ namespace MojeWidelo_WebApi.Controllers
 			await _repository.CommentRepository.Update(id, originComment);
 
 			return StatusCode(StatusCodes.Status200OK, "Odpowiedź dodana pomyślnie.");
+		}
+
+		[HttpGet("comment/commentById", Name = "getCommentById")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> GetCommentById([Required] string id)
+		{
+			var commentDto = await GetCommentOrResponseById(id);
+
+			if (commentDto == null)
+			{
+				return StatusCode(
+					StatusCodes.Status404NotFound,
+					"Nie znaleziono komentarza o podanym identyfikatorze."
+				);
+			}
+
+			return StatusCode(StatusCodes.Status200OK, commentDto);
+		}
+
+		[HttpGet("comment/responseById", Name = "getResponseById")]
+		[ServiceFilter(typeof(ObjectIdValidationFilter))]
+		public async Task<IActionResult> GetResponseById([Required] string id)
+		{
+			var responseDto = await GetCommentOrResponseById(id);
+
+			if (responseDto == null)
+			{
+				return StatusCode(
+					StatusCodes.Status404NotFound,
+					"Nie znaleziono odpowiedzi o podanym identyfikatorze."
+				);
+			}
+
+			return StatusCode(StatusCodes.Status200OK, responseDto);
+		}
+
+		private async Task<CommentDto?> GetCommentOrResponseById(string id)
+		{
+			var comment = await _repository.CommentRepository.GetById(id);
+
+			if (comment == null)
+				return null;
+
+			var commentDto = _mapper.Map<CommentDto>(comment);
+
+			var commentAuthor = await _repository.UsersRepository.GetById(comment.AuthorId);
+			if (commentAuthor == null)
+			{
+				// nie zwracam 404 - nie znaleziono usera, zamiast tego informacja, że autor zgłoszonego komentarza już nie istnieje (np. w przypadku gdy został zbanowany)
+				// w ten sposób można pobrać informację o zgłoszonym rozstrzygniętym komentarzu
+				commentDto.Nickname = "Użytkownik usunięty";
+			}
+			else
+			{
+				commentDto.Nickname = commentAuthor.Nickname;
+				commentDto.AvatarImage = commentAuthor.AvatarImage;
+			}
+
+			return commentDto;
 		}
 	}
 }
