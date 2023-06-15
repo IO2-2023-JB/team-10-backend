@@ -13,6 +13,7 @@
 		string SubscriptionCollectionName { get; set; }
 		string PlaylistCollectionName { get; set; }
 		string HistoryCollectionName { get; set; }
+		string TicketCollectionName { get; set; }
 		#endregion
 	}
 }
