@@ -17,11 +17,11 @@ namespace MojeWidelo_WebApi.Controllers
 			: base(repository, mapper) { }
 
 		/// <summary>
-		/// Ticket creatrion
+		/// Ticket creation
 		/// </summary>
 		/// <param name="submitTicketDto"></param>
 		/// <returns></returns>
-		/// <response code="200">Created</response>
+		/// <response code="201">Created</response>
 		/// <response code="400">Bad request</response>
 		[HttpPost("ticket")]
 		[ServiceFilter(typeof(ModelValidationFilter))]
@@ -86,14 +86,14 @@ namespace MojeWidelo_WebApi.Controllers
 
 			var ticket = _mapper.Map<Ticket>(submitTicketDto);
 			ticket.SubmitterId = userID;
-			ticket.TargetType = (TicketTargetTypeDto)type;
+			ticket.TargetType = type.Value;
 			ticket.Status = TicketStatus.Submitted;
 			ticket.CreationDate = DateTime.Now;
 
 			ticket = await _repository.TicketRepository.Create(ticket);
 			var result = _mapper.Map<SubmitTicketResponseDto>(ticket);
 
-			return StatusCode(StatusCodes.Status200OK, result);
+			return StatusCode(StatusCodes.Status201Created, result);
 		}
 
 		/// <summary>
