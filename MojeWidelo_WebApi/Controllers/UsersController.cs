@@ -194,6 +194,12 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				await _repository.CommentRepository.Delete(c.Id);
 			}
+
+			var history = await _repository.HistoryRepository.GetById(id);
+			if (history != null)
+			{
+				await _repository.HistoryRepository.Delete(history.Id);
+			}
 			#endregion
 
 			await _repository.UsersRepository.Delete(id);
