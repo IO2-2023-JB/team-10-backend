@@ -23,5 +23,6 @@ namespace Contracts
 			IEnumerable<RecommendationDto> videoIDs,
 			string userId
 		);
+		Task<string?> DeleteVideo(string id);
 	}
 }

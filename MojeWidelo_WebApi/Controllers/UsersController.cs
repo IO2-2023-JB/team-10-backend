@@ -176,7 +176,10 @@ namespace MojeWidelo_WebApi.Controllers
 			var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
 			foreach (var v in videos)
 			{
-				await _repository.VideoRepository.Delete(v.Id);
+				string? errorMessage = await _repository.VideoRepository.DeleteVideo(v.Id);
+				if (errorMessage != null)
+					return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
+
 				await _repository.CommentRepository.DeleteVideoComments(v.Id);
 			}
 
