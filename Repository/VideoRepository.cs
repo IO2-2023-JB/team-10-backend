@@ -160,11 +160,13 @@ namespace Repository
 				{
 					video = new VideoMetadata();
 					video.Title = "Wideo zostało usunięte.";
+					video.ProcessingProgress = ProcessingProgress.Ready;
 				}
 				else if (video.Visibility == VideoVisibility.Private && video.AuthorId != userID)
 				{
 					video = new VideoMetadata();
 					video.Title = "Wideo jest niedostępne.";
+					video.ProcessingProgress = ProcessingProgress.Ready;
 				}
 				toReturn.Add(video);
 			}
