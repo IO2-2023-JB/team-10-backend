@@ -20,7 +20,7 @@ namespace MojeWidelo_WebApi.Filters
 			if (extension == null)
 				context.Result = new BadRequestResult();
 
-			string[] acceptedExtensions = { ".mkv", ".mp4", ".avi", ".webm" };
+			string[] acceptedExtensions = { ".mkv", ".mp4", ".avi", ".webm", ".mov" };
 
 			if (!acceptedExtensions.Contains(extension!.ToLower()))
 				context.Result = new BadRequestResult();
