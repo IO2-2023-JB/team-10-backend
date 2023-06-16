@@ -1,7 +1,10 @@
-﻿namespace Entities.Data.Playlist
+﻿using System.Text.Json.Serialization;
+
+namespace Entities.Data.Playlist
 {
 	public class RecommendationDto
 	{
-		public string video_id { get; set; }
+		[JsonPropertyName("video_id")]
+		public string VideoId { get; set; }
 	}
 }

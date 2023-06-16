@@ -1,17 +1,21 @@
-﻿using Entities.Data.Video;
+﻿using Entities.Data.Playlist;
+using Entities.Data.Video;
 using Entities.Models;
 using Entities.Utils;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Repository.Managers
 {
 	public class VideoManager
 	{
 		readonly string videoStorageLocation;
+		readonly string recommendationPath;
 
 		public VideoManager(IOptions<Variables> variables)
 		{
 			videoStorageLocation = variables.Value.VideoStorageLocation;
+			recommendationPath = variables.Value.RecommendationPath;
 		}
 
 		public string? CreateNewPath(string id, string fileName)
@@ -67,6 +71,30 @@ namespace Repository.Managers
 					video.Thumbnail = location.AbsoluteUri + video.Thumbnail;
 				}
 			}
+		}
+
+		public async Task<IEnumerable<RecommendationDto>> GetRecommendationsFromEngine(string userId)
+		{
+			try
+			{
+				using (HttpClient client = new())
+				{
+					var json = await client.GetStringAsync(recommendationPath + userId);
+					if (json == null)
+						return Array.Empty<RecommendationDto>();
+
+					return JsonSerializer.Deserialize<IEnumerable<RecommendationDto>>(json)!;
+				}
+			}
+			catch
+			{
+				return Array.Empty<RecommendationDto>();
+			}
+		}
+
+		public bool IsVideoFromSubscribedCreator(IEnumerable<Subscription> subscriptions, VideoMetadata video)
+		{
+			return subscriptions.Any(sub => sub.CreatorId == video.AuthorId);
 		}
 	}
 }

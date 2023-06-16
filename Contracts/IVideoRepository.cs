@@ -21,7 +21,8 @@ namespace Contracts
 		Task ProcessAndAddDuration(string id, string path);
 		Task<IEnumerable<VideoMetadata>> GetMoreVideosToRecommend(
 			IEnumerable<RecommendationDto> videoIDs,
-			string userId
+			string userId,
+			IEnumerable<Subscription> userSubscriptions
 		);
 	}
 }

@@ -16,7 +16,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			var repositoryWrapperMock = GetRepositoryWrapperMock();
 			var mapper = GetMapper();
 
-			var location = new Variables() { VideoStorageLocation = "" };
+			var location = new Variables() { VideoStorageLocation = "", RecommendationPath = "" };
 			IOptions<Variables> vars = Options.Create(location);
 
 			var videoManager = new VideoManager(vars);
@@ -35,7 +35,7 @@ namespace MojeWidelo_WebApi.UnitTests.Tests.Controllers
 			var repositoryWrapperMock = GetRepositoryWrapperMock();
 			var mapper = GetMapper();
 
-			var location = new Variables() { VideoStorageLocation = "" };
+			var location = new Variables() { VideoStorageLocation = "", RecommendationPath = "" };
 			IOptions<Variables> vars = Options.Create(location);
 
 			var videoManager = new VideoManager(vars);

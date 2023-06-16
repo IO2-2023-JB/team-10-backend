@@ -231,12 +231,18 @@ namespace Repository
 
 		public async Task<IEnumerable<VideoMetadata>> GetMoreVideosToRecommend(
 			IEnumerable<RecommendationDto> videoIDs,
-			string userId
+			string userId,
+			IEnumerable<Subscription> userSubscriptions
 		)
 		{
 			List<VideoMetadata> toReturn = new List<VideoMetadata>();
+
 			foreach (var v in videoIDs)
-				toReturn.Add(await GetById(v.video_id));
+			{
+				var video = await GetById(v.VideoId);
+				if (!videoManager.IsVideoFromSubscribedCreator(userSubscriptions, video))
+					toReturn.Add(video);
+			}
 
 			toReturn = toReturn.Where(x => x.ProcessingProgress == ProcessingProgress.Ready).ToList();
 
@@ -253,7 +259,10 @@ namespace Repository
 				.ToListAsync();
 
 			foreach (var v in videos)
-				if (!toReturn.Any(video => video.Id == v.Id))
+				if (
+					!toReturn.Any(video => video.Id == v.Id)
+					&& !videoManager.IsVideoFromSubscribedCreator(userSubscriptions, v)
+				)
 				{
 					toReturn.Add(v);
 					if (toReturn.Count >= minNumberOfRecommendations)
