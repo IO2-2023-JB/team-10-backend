@@ -8,5 +8,6 @@ namespace Contracts
 		Task<List<Comment>> GetCommentResponses(string id);
 		Task DeleteCommentResponses(string id);
 		Task DeleteVideoComments(string videoId);
+		Task<IEnumerable<Comment>> GetCommentsByUserId(string id);
 	}
 }

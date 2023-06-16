@@ -24,5 +24,6 @@ namespace Contracts
 			string userId,
 			IEnumerable<Subscription> userSubscriptions
 		);
+		Task<string?> DeleteVideo(string id);
 	}
 }

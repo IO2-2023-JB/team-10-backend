@@ -172,6 +172,42 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Nie masz uprawnień do usunięcia konta.");
 			}
+			var userToBeRemoved = await _repository.UsersRepository.GetById(id);
+			if (userToBeRemoved == null)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym id nie istnieje!");
+			}
+
+			#region Nuke
+			if (userToBeRemoved.UserType == UserType.Creator)
+			{
+				var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
+				foreach (var v in videos)
+				{
+					string? errorMessage = await _repository.VideoRepository.DeleteVideo(v.Id);
+					if (errorMessage != null)
+						return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
+
+					await _repository.CommentRepository.DeleteVideoComments(v.Id);
+				}
+			}
+
+			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(id, user);
+			foreach (var p in playlists)
+			{
+				await _repository.PlaylistRepository.Delete(p.Id);
+			}
+
+			var comments = await _repository.CommentRepository.GetCommentsByUserId(id);
+			foreach (var c in comments)
+			{
+				await _repository.CommentRepository.DeleteCommentResponses(c.Id);
+				await _repository.CommentRepository.Delete(c.Id);
+			}
+
+			await _repository.HistoryRepository.Delete(id);
+			#endregion
+
 			await _repository.UsersRepository.Delete(id);
 
 			var subs = await _repository.SubscriptionsRepository.GetUserSubscriptions(id);

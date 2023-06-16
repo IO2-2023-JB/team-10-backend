@@ -271,5 +271,33 @@ namespace Repository
 
 			return toReturn;
 		}
+
+		public async Task<string?> DeleteVideo(string id)
+		{
+			string? location = videoManager.GetStorageDirectory();
+			if (location == null)
+				return "System nie posiada zdefiniowanej lokalizacji przechowania plików wideo.";
+
+			string[] filesToDelete = Directory.GetFiles(location, id + "*");
+
+			foreach (var file in filesToDelete)
+			{
+				if (System.IO.File.Exists(file))
+				{
+					try
+					{
+						System.IO.File.Delete(file);
+					}
+					catch (IOException)
+					{
+						return "Plik " + file + " jest obecnie używany. Usunięcie niemożliwe.";
+					}
+				}
+			}
+
+			await base.Delete(id);
+
+			return null;
+		}
 	}
 }

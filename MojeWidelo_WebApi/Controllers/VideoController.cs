@@ -312,34 +312,10 @@ namespace MojeWidelo_WebApi.Controllers
 				);
 			}
 
-			string? location = _videoManager.GetStorageDirectory();
-			if (location == null)
-				return StatusCode(
-					StatusCodes.Status501NotImplemented,
-					"System nie posiada zdefiniowanej lokalizacji przechowania plików wideo."
-				);
+			string? errorMessage = await _repository.VideoRepository.DeleteVideo(id);
+			if (errorMessage != null)
+				return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
 
-			string[] filesToDelete = Directory.GetFiles(location, id + "*");
-
-			foreach (var file in filesToDelete)
-			{
-				if (System.IO.File.Exists(file))
-				{
-					try
-					{
-						System.IO.File.Delete(file);
-					}
-					catch (IOException)
-					{
-						return StatusCode(
-							StatusCodes.Status500InternalServerError,
-							"Plik " + file + " jest obecnie używany. Usunięcie niemożliwe."
-						);
-					}
-				}
-			}
-
-			await _repository.VideoRepository.Delete(id);
 			await _repository.CommentRepository.DeleteVideoComments(id);
 
 			return StatusCode(StatusCodes.Status200OK, "Wideo usunięte pomyślnie.");

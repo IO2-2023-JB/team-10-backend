@@ -31,5 +31,10 @@ namespace Repository
 		{
 			await Collection.DeleteManyAsync(x => x.VideoId == videoId);
 		}
+
+		public async Task<IEnumerable<Comment>> GetCommentsByUserId(string id)
+		{
+			return await Collection.Find(x => x.AuthorId == id).ToListAsync();
+		}
 	}
 }
