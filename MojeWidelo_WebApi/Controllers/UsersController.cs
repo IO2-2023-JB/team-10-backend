@@ -173,8 +173,7 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			#region Nuke
-			var userToBeDeleted = await _repository.UsersRepository.GetById(id);
-			if (userToBeDeleted.UserType == UserType.Creator)
+			if ((await _repository.UsersRepository.GetById(id)).UserType == UserType.Creator)
 			{
 				var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
 				foreach (var v in videos)
@@ -187,7 +186,7 @@ namespace MojeWidelo_WebApi.Controllers
 				}
 			}
 
-			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(id, userToBeDeleted);
+			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(id, user);
 			foreach (var p in playlists)
 			{
 				await _repository.PlaylistRepository.Delete(p.Id);
@@ -200,11 +199,7 @@ namespace MojeWidelo_WebApi.Controllers
 				await _repository.CommentRepository.Delete(c.Id);
 			}
 
-			var history = await _repository.HistoryRepository.GetById(id);
-			if (history != null)
-			{
-				await _repository.HistoryRepository.Delete(history.Id);
-			}
+			await _repository.HistoryRepository.Delete(id);
 			#endregion
 
 			await _repository.UsersRepository.Delete(id);
