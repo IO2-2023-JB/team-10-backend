@@ -171,6 +171,31 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Nie masz uprawnień do usunięcia konta.");
 			}
+
+			#region Nuke
+			var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
+			foreach (var v in videos)
+			{
+				await _repository.VideoRepository.Delete(v.Id);
+				await _repository.CommentRepository.DeleteVideoComments(v.Id);
+			}
+
+			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(
+				id,
+				await _repository.UsersRepository.GetById(id)
+			);
+			foreach (var p in playlists)
+			{
+				await _repository.PlaylistRepository.Delete(p.Id);
+			}
+
+			var comments = await _repository.CommentRepository.GetCommentsByUserId(id);
+			foreach (var c in comments)
+			{
+				await _repository.CommentRepository.Delete(c.Id);
+			}
+			#endregion
+
 			await _repository.UsersRepository.Delete(id);
 			return StatusCode(StatusCodes.Status200OK, "Użytkownik został usunięty pomyślnie.");
 		}
