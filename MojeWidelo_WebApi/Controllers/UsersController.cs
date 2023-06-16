@@ -173,20 +173,21 @@ namespace MojeWidelo_WebApi.Controllers
 			}
 
 			#region Nuke
-			var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
-			foreach (var v in videos)
+			var userToBeDeleted = await _repository.UsersRepository.GetById(id);
+			if (userToBeDeleted.UserType == UserType.Creator)
 			{
-				string? errorMessage = await _repository.VideoRepository.DeleteVideo(v.Id);
-				if (errorMessage != null)
-					return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
+				var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
+				foreach (var v in videos)
+				{
+					string? errorMessage = await _repository.VideoRepository.DeleteVideo(v.Id);
+					if (errorMessage != null)
+						return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
 
-				await _repository.CommentRepository.DeleteVideoComments(v.Id);
+					await _repository.CommentRepository.DeleteVideoComments(v.Id);
+				}
 			}
 
-			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(
-				id,
-				await _repository.UsersRepository.GetById(id)
-			);
+			var playlists = await _repository.PlaylistRepository.GetPlaylistByUserId(id, userToBeDeleted);
 			foreach (var p in playlists)
 			{
 				await _repository.PlaylistRepository.Delete(p.Id);
@@ -195,6 +196,7 @@ namespace MojeWidelo_WebApi.Controllers
 			var comments = await _repository.CommentRepository.GetCommentsByUserId(id);
 			foreach (var c in comments)
 			{
+				await _repository.CommentRepository.DeleteCommentResponses(c.Id);
 				await _repository.CommentRepository.Delete(c.Id);
 			}
 
