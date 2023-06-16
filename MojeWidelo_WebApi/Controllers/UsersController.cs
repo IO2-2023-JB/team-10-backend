@@ -171,9 +171,14 @@ namespace MojeWidelo_WebApi.Controllers
 			{
 				return StatusCode(StatusCodes.Status403Forbidden, "Nie masz uprawnień do usunięcia konta.");
 			}
+			var userToBeRemoved = await _repository.UsersRepository.GetById(id);
+			if (userToBeRemoved == null)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, "Użytkownik o podanym id nie istnieje!");
+			}
 
 			#region Nuke
-			if ((await _repository.UsersRepository.GetById(id)).UserType == UserType.Creator)
+			if (userToBeRemoved.UserType == UserType.Creator)
 			{
 				var videos = await _repository.VideoRepository.GetVideosByUserId(id, true);
 				foreach (var v in videos)
