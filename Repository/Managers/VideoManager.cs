@@ -89,5 +89,10 @@ namespace Repository.Managers
 				return Array.Empty<RecommendationDto>();
 			}
 		}
+
+		public bool IsVideoFromSubscribedCreator(IEnumerable<Subscription> subscriptions, VideoMetadata video)
+		{
+			return subscriptions.Any(sub => sub.CreatorId == video.AuthorId);
+		}
 	}
 }

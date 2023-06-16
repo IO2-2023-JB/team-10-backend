@@ -287,7 +287,11 @@ namespace MojeWidelo_WebApi.Controllers
 			var user = await GetUserFromToken();
 
 			var videoIDs = await _videoManager.GetRecommendationsFromEngine(user.Id);
-			var videos = await _repository.VideoRepository.GetMoreVideosToRecommend(videoIDs, user.Id);
+			var videos = await _repository.VideoRepository.GetMoreVideosToRecommend(
+				videoIDs,
+				user.Id,
+				await _repository.SubscriptionsRepository.GetUserSubscriptions(user.Id)
+			);
 			var result = _mapper.Map<IEnumerable<VideoMetadataDto>>(videos);
 			var users = (await _repository.UsersRepository.GetUsersByIds(result.Select(x => x.AuthorId)));
 			_videoManager.AddAuthorNickname(result, users);
