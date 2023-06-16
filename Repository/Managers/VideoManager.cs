@@ -51,6 +51,8 @@ namespace Repository.Managers
 				var videoAuthor = users.Where(user => user.Id == video.AuthorId).SingleOrDefault();
 				if (videoAuthor != null)
 					video.AuthorNickname = videoAuthor.Nickname;
+				else if (videoAuthor == null && video.AuthorId == null)
+					continue;
 				else
 					throw new Exception("Nie znaleziono użytkownika");
 			}
