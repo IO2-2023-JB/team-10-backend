@@ -244,7 +244,14 @@ namespace Repository
 					toReturn.Add(video);
 			}
 
-			toReturn = toReturn.Where(x => x.ProcessingProgress == ProcessingProgress.Ready).ToList();
+			toReturn = toReturn
+				.Where(
+					x =>
+						x.ProcessingProgress == ProcessingProgress.Ready
+						&& x.AuthorId != userId
+						&& x.Visibility == VideoVisibility.Public
+				)
+				.ToList();
 
 			if (toReturn.Count >= minNumberOfRecommendations)
 				return toReturn;
