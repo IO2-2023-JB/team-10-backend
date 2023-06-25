@@ -2,6 +2,7 @@
 {
 	public enum SortingCriterion
 	{
+		BestMatch,
 		PublishDate,
 		Alphabetical,
 		Popularity

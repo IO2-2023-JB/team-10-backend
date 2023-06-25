@@ -3,6 +3,8 @@ using Entities.Data.Playlist;
 using Entities.Data.User;
 using Entities.Data.Video;
 using Entities.Enums;
+using Entities.Utils;
+using FuzzySearch;
 using FuzzyString;
 
 namespace Repository.Managers
@@ -12,34 +14,56 @@ namespace Repository.Managers
 		private static readonly List<FuzzyStringComparisonOptions> _searchOptions =
 			new()
 			{
-				FuzzyStringComparisonOptions.UseOverlapCoefficient,
 				FuzzyStringComparisonOptions.UseLongestCommonSubsequence,
 				FuzzyStringComparisonOptions.UseLongestCommonSubstring,
+				FuzzyStringComparisonOptions.UseSorensenDiceDistance,
+				FuzzyStringComparisonOptions.UseRatcliffObershelpSimilarity,
 			};
 
 		private static readonly FuzzyStringComparisonTolerance _searchTolerance = FuzzyStringComparisonTolerance.Normal;
 
-		private static Func<T, bool> CreatePredicate<T>(string query, Func<T, string[]> getValues)
+		private readonly Dictionary<string, double> cachedSearchScores;
+		private readonly double tolerance;
+
+		public SearchManager()
 		{
-			return x =>
+			cachedSearchScores = new();
+			tolerance = _searchTolerance switch
 			{
-				foreach (var value in getValues(x))
-				{
-					if (value.ApproximatelyEquals(query, _searchOptions, _searchTolerance))
-					{
-						return true;
-					}
-				}
-				return false;
+				FuzzyStringComparisonTolerance.Strong => 0.25,
+				FuzzyStringComparisonTolerance.Normal => 0.5,
+				FuzzyStringComparisonTolerance.Weak => 0.75,
+				FuzzyStringComparisonTolerance.Manual => 0.6,
+				_ => default,
 			};
 		}
 
-		private static List<T> FuzzySearch<T>(IEnumerable<T> collection, string query, Func<T, string[]> getValues)
+		private List<T> FuzzySearch<T>(IEnumerable<T> collection, string query, Func<T, string[]> getValues)
 			where T : ISearchable
 		{
-			var predicate = CreatePredicate(query, getValues);
+			List<FuzzySearchResult<T>> searchResults = new();
+			foreach (var item in collection)
+			{
+				double currentScore = tolerance;
+				var values = getValues(item);
+				foreach (var value in values)
+				{
+					if (!cachedSearchScores.TryGetValue(value, out double score))
+					{
+						score = value.CompareStrings(query, _searchOptions);
+						cachedSearchScores.Add(value, score);
+					}
+					currentScore = Math.Min(currentScore, score);
+				}
 
-			return collection.Where(predicate).ToList();
+				if (currentScore < tolerance)
+				{
+					searchResults.Add(new FuzzySearchResult<T>(item, currentScore));
+				}
+			}
+
+			var result = searchResults.OrderBy(x => x.Score).Select(x => x.Data).ToList();
+			return result;
 		}
 
 		public List<UserDto> SearchUsers(IEnumerable<UserDto> users, string query)
@@ -104,6 +128,9 @@ namespace Repository.Managers
 						return videoMetadataDtos.OrderBy(x => x.UploadDate).ToList();
 					else
 						return videoMetadataDtos.OrderByDescending(x => x.UploadDate).ToList();
+
+				case SortingCriterion.BestMatch:
+					return videoMetadataDtos;
 
 				default:
 					throw new Exception("Unexpected value in sortingCriterion parameter");
